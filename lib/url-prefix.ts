@@ -1,0 +1,1 @@
+export const URL_PREFIX = "https://tbga-screenshot.herokuapp.com"

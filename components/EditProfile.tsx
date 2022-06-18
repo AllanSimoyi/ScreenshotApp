@@ -1,0 +1,179 @@
+import { Alert, Button, Flex, FormControl, HStack, Input, Modal, Text, VStack } from 'native-base';
+import { useCallback, useState } from 'react';
+import { useMutation } from 'react-query';
+import { postRequest } from '../lib/post-request';
+import { CURRENT_USER_KEY, getFromLocalStorage, saveToLocalStorage } from '../lib/session';
+import { URL_PREFIX } from '../lib/url-prefix';
+import { User } from '../lib/users';
+import { UpdateProfile, UpdateProfileSchema } from '../lib/validations';
+import { CustomError } from './custom-error';
+import { Loading } from './loading';
+
+interface Props {
+  input: Input,
+  isOpen: boolean;
+  setIsOpen: (newState: boolean) => void;
+  updateDetails: (newDetails: { username: string, phoneNumber: string }) => void;
+}
+
+type Input = UpdateProfile & {
+  passwordConfirmation: string;
+}
+
+export function EditProfile (props: Props) {
+  const { input, isOpen, setIsOpen, updateDetails } = props;
+
+  const [username, setUsername] = useState(input.username || '');
+  const [phoneNumber, setPhoneNumber] = useState(input.phoneNumber || '');
+
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const mutation = useMutation(async (input: UpdateProfile) => {
+    const [result, err] = await postRequest<{ user: User; errorMessage: string }>(URL_PREFIX + "/api/update-profile", input);
+    if (err) {
+      throw err;
+    }
+    if (result?.errorMessage) {
+      throw new Error(result?.errorMessage);
+    }
+    return result?.user || undefined;
+  }, {
+    onMutate: () => {
+      setIsLoading(true);
+    },
+    onSuccess: async (newCurrentUser: User | undefined) => {
+      if (newCurrentUser) {
+        saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
+        updateDetails({
+          username: newCurrentUser.username, 
+          phoneNumber: newCurrentUser.phoneNumber
+        });
+        setIsOpen(false);
+      }
+    },
+    onError: (error) => {
+      setError((error as any).toString());
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    }
+  });
+
+  const submitFn = useCallback(async () => {
+    const currentUserId = await getFromLocalStorage(CURRENT_USER_KEY);
+    if (!currentUserId) {
+      return setError("No currrent user data found");
+    }
+    if (password !== passwordConfirmation) {
+      return setError("Please ensure passwords match");
+    }
+    const result = await UpdateProfileSchema.safeParseAsync({
+      userId: Number(currentUserId),
+      username,
+      phoneNumber,
+      password: password || undefined,
+      passwordConfirmation: passwordConfirmation || undefined,
+    });
+    if (!result.success) {
+      return setError(result.error.issues.map(issue => issue.path[0].toString() + " " + issue.message.toLowerCase()).join(", "));
+    }
+    mutation.mutate({
+      userId: Number(currentUserId),
+      username,
+      phoneNumber,
+      password: password || undefined,
+      passwordConfirmation: passwordConfirmation || undefined,
+    });
+  }, [mutation]);
+
+  return (
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal.Content maxWidth="400px">
+        <Modal.CloseButton />
+        <Modal.Header backgroundColor={"#333"}>
+          <Text fontSize="lg" color="#fff">Edit Profile</Text>
+        </Modal.Header>
+        <Modal.Body backgroundColor={"#333"}>
+          {
+            !isLoading &&
+            <>
+              <FormControl>
+                <FormControl.Label>Username</FormControl.Label>
+                <Input
+                  color="white"
+                  fontSize={"md"}
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholder="Enter your username"
+                />
+              </FormControl>
+              <FormControl mt="3">
+                <FormControl.Label>PhoneNumber</FormControl.Label>
+                <Input
+                  color="white"
+                  fontSize={"md"}
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  placeholder="Enter your phone number"
+                />
+              </FormControl>
+              <FormControl mt="3">
+                <FormControl.Label>Password</FormControl.Label>
+                <Input
+                  type="password"
+                  color="white"
+                  fontSize={"md"}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                />
+              </FormControl>
+              <FormControl mt="3">
+                <FormControl.Label>Re-enter Password</FormControl.Label>
+                <Input
+                  type="password"
+                  color="white"
+                  fontSize={"md"}
+                  value={passwordConfirmation}
+                  onChangeText={setPasswordConfirmation}
+                  placeholder="Re-enter your password"
+                />
+              </FormControl>
+            </>
+          }
+          {
+            error &&
+            <CustomError retry={submitFn}>{error}</CustomError>
+          }
+          {
+            isLoading &&
+            <Loading>Updating Profile...</Loading>
+          }
+        </Modal.Body>
+        <Modal.Footer backgroundColor={"#333"}>
+          <Button.Group space={2}>
+            <Button
+              size="lg"
+              variant="ghost"
+              disabled={isLoading}
+              onPress={() => setIsOpen(false)}>
+              <Text color="#fff">Cancel</Text>
+            </Button>
+            <Button
+              size="lg"
+              bgColor="yellow.600"
+              disabled={isLoading}
+              onPress={submitFn}>
+              {!isLoading && "Update"}
+              {isLoading && "Updating..."}
+            </Button>
+          </Button.Group>
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal>
+  )
+}
