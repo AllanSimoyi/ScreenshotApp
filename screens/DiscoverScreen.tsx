@@ -106,7 +106,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
     }
   })();
 
-  const query = useQuery<Post[], Error>('posts', async () => {
+  const query = useQuery<Post[], Error>('discover', async () => {
     const [result, err] = await getRequest<{ posts: Post[]; errorMessage: string }>(URL_PREFIX + "/api/feed");
     if (err) {
       throw err;

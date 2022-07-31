@@ -8,7 +8,7 @@ import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
 
-  const query = useQuery<Post[], Error>('posts', async () => {
+  const query = useQuery<Post[], Error>('feed', async () => {
     const [result, err] = await getRequest<{ posts: Post[]; errorMessage: string }>(URL_PREFIX + "/api/feed");
     if (err) {
       throw err;

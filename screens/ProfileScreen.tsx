@@ -27,7 +27,7 @@ export default function ProfileScreen ({ navigation }: RootTabScreenProps<'Profi
     isLoading, details, setDetails, error, setError, setIsRetryToggle,
   } = useProfileDetails();
 
-  const query = useQuery<Post[], Error>('posts', async () => {
+  const query = useQuery<Post[], Error>('profile', async () => {
     const [result, err] = await getRequest<{ posts: Post[]; errorMessage: string }>(URL_PREFIX + "/api/feed");
     if (err) {
       throw err;
