@@ -95,7 +95,10 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
                   pb="1"
                 >
                   <ImageBackground
-                    source={{ uri: item.resourceUrl }}
+                    // source={{ uri: item.resourceUrl }}
+                    source={item.resourceUrl ?
+                      { uri: item.resourceUrl } :
+                      require('../assets/images/image_placeholder.jpeg')}
                     accessible
                     accessibilityLabel="Feed Banner"
                     resizeMode="cover"

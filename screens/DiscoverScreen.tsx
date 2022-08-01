@@ -261,7 +261,9 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
                 style={{ height: "100%" }}
               >
                 <ImageBackground
-                  source={{ uri: item.resourceUrl }}
+                  source={item.resourceUrl ?
+                    { uri: item.resourceUrl } :
+                    require('../assets/images/image_placeholder.jpeg')}
                   accessible
                   borderRadius={10}
                   accessibilityLabel="Feed Banner"
@@ -297,7 +299,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
         }}
         keyExtractor={(_, index) => index.toString()}
       />
-      <Flex flexGrow={1} />
+      < Flex flexGrow={1} />
       <Flex
         direction="row"
         justify="center"
@@ -331,7 +333,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
           </Flex>
         ))}
       </Flex>
-    </Flex>
+    </Flex >
   );
 }
 

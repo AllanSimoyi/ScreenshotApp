@@ -217,7 +217,7 @@ export default function ProfileScreen ({ navigation }: RootTabScreenProps<'Profi
                   {toMatrix(posts, 3).map(row => (
                     <Row>
                       {row.map(post => (
-                        <Col >
+                        <Col key={post.id}>
                           <Flex
                             flexDirection="column"
                             justifyContent="center"
@@ -229,7 +229,9 @@ export default function ProfileScreen ({ navigation }: RootTabScreenProps<'Profi
                               borderRadius="5"
                               size={150}
                               resizeMode={"cover"}
-                              source={{ uri: post.resourceUrl }}
+                              source={post.resourceUrl ?
+                                { uri: post.resourceUrl } :
+                                require('../assets/images/image_placeholder.jpeg')}
                             />
                           </Flex>
                         </Col>
