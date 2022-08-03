@@ -55,7 +55,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
                     <UnderlinedFeedText onPress={() => navigation.navigate('Discover', { category: item.category })}>
-                      #. {item.category}
+                      # {item.category}
                     </UnderlinedFeedText>
                   </VStack>
                 </ImageBackground>
