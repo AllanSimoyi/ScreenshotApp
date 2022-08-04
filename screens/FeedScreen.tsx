@@ -5,9 +5,12 @@ import { CustomError } from '../components/custom-error';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { UnderlinedFeedText } from '../components/UnderlinedFeedText';
 import { getRequest } from '../lib/get-request';
+import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
+
+const imageFallbackUrl = "../assets/images/image_placeholder.jpeg";
 
 export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
 
@@ -45,9 +48,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
                 <ImageBackground
-                  source={item.resourceUrl ?
-                    { uri: item.resourceUrl } :
-                    require('../assets/images/image_placeholder.jpeg')}
+                  source={getImageSource(item.resourceUrl, imageFallbackUrl)}
                   accessible
                   accessibilityLabel="Feed Banner"
                   resizeMode="cover"
@@ -84,3 +85,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 });
+
+// source={item.resourceUrl ?
+//   { uri: item.resourceUrl } :
+//   require('../assets/images/image_placeholder.jpeg')}

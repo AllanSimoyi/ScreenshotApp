@@ -5,7 +5,7 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { useQuery } from 'react-query';
 import { CustomHighlight } from "../components/custom-highlight";
 import { getRequest } from '../lib/get-request';
-import { Post, postHasSearchString } from '../lib/posts';
+import { Post, postHasSearchString, usePosts } from '../lib/posts';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
 
@@ -106,16 +106,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
     }
   })();
 
-  const query = useQuery<Post[], Error>('discover', async () => {
-    const [result, err] = await getRequest<{ posts: Post[]; errorMessage: string }>(URL_PREFIX + "/api/feed");
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.posts || [];
-  });
+  const query = usePosts('discover');
 
   const [category, setCategory] = useState(initialCategory || 'Abuse of State Resources');
 
