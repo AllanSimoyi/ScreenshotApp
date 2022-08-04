@@ -16,11 +16,13 @@ interface FeedItem {
   description?: string;
 }
 
+const abuseCategory: FeedItem = {
+  image: require('../assets/images/feed_banner.jpeg'),
+  category: "Abuse of State Resources"
+};
+
 const categoryOptions: FeedItem[] = [
-  {
-    image: require('../assets/images/feed_banner.jpeg'),
-    category: "Abuse of State Resources"
-  },
+  abuseCategory,
   {
     image: require('../assets/images/violence.jpeg'),
     category: "Public Finance Management"
@@ -95,9 +97,9 @@ const feedItems: FeedItem[] = [
 ]
 
 export default function DiscoverScreen ({ navigation, route }: RootTabScreenProps<'Discover'>) {
-  const initialCategory = route.params?.category || 'Abuse of State Resources';
+  const initialCategory = route.params?.category || abuseCategory.category;
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(initialCategory || 'Abuse of State Resources');
+  const [category, setCategory] = useState(initialCategory || abuseCategory.category);
   const query = usePosts('discover');
   useEffect(() => {
     setCategory(initialCategory);
