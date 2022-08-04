@@ -95,10 +95,10 @@ const feedItems: FeedItem[] = [
 ]
 
 export default function DiscoverScreen ({ navigation, route }: RootTabScreenProps<'Discover'>) {
-  const [search, setSearch] = useState("");
   const initialCategory = route.params?.category || 'Abuse of State Resources';
-  const query = usePosts('discover');
+  const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory || 'Abuse of State Resources');
+  const query = usePosts('discover');
   useEffect(() => {
     setCategory(initialCategory);
   }, [initialCategory])
