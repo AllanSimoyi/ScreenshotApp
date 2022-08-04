@@ -95,33 +95,18 @@ const feedItems: FeedItem[] = [
 ]
 
 export default function DiscoverScreen ({ navigation, route }: RootTabScreenProps<'Discover'>) {
-  // const { category: initialCategory } = route.params;
-
   const [search, setSearch] = useState("");
-
-  const initialCategory = (() => {
-    if (route.params && route.params.category) {
-      return route.params.category;
-    } else {
-      return 'Abuse of State Resources';
-    }
-  })();
-
+  const initialCategory = route.params?.category || 'Abuse of State Resources';
   const query = usePosts('discover');
-
   const [category, setCategory] = useState(initialCategory || 'Abuse of State Resources');
-
   useEffect(() => {
     setCategory(initialCategory);
   }, [initialCategory])
-
   const categoryItems = query.data ?
     query.data
       .filter(item => item.category === category)
       .filter(item => postHasSearchString(item, search)) :
     [];
-  // const categoryItems = feedItems.filter(item => item.category === category);
-
   return (
     <Flex
       direction="column"
