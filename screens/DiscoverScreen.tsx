@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { ImageBackground, StyleSheet } from 'react-native';
 import { useQuery } from 'react-query';
 import { CustomHighlight } from "../components/custom-highlight";
+import { usePosts } from "../hooks/usePosts";
 import { getRequest } from '../lib/get-request';
-import { Post, postHasSearchString, usePosts } from '../lib/posts';
+import { Post, postHasSearchString } from '../lib/posts';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
 
