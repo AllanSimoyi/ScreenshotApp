@@ -2,7 +2,7 @@ import { Text } from "native-base";
 import { InterfaceTextProps } from "native-base/lib/typescript/components/primitives/Text/types";
 
 interface Props extends InterfaceTextProps {
-  onPress: () => void;
+  onPress?: () => void;
   bottomBorder?: boolean;
   children: React.ReactNode;
 }
