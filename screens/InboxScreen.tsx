@@ -1,16 +1,11 @@
 import dayjs from 'dayjs';
 import { Alert, Button, FlatList, Flex, HStack, Skeleton, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
-import { useMutation } from 'react-query';
 import { SendMessage } from '../components/send-message';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
-import { useMessages } from '../hooks/useMessages';
+import { useMessages, useRecordMutation } from '../hooks/useMessages';
 import { useProfileDetails } from '../hooks/useProfileDetails';
-import { Message } from '../lib/messages';
-import { postRequest } from '../lib/post-request';
-import { URL_PREFIX } from '../lib/url-prefix';
-import { CreateMessage } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
 export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
@@ -19,22 +14,9 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useMessages('messages');
-  const mutation = useMutation(async (newMessage: CreateMessage) => {
-    const [result, err] = await postRequest<{ message: Message; errorMessage: string; }>(URL_PREFIX + "/api/messages", newMessage);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.message || undefined;
-  }, {
-    onError: (error) => {
-      setError((error as any).toString());
-    },
-    onSettled: () => {
-      query.refetch();
-    }
+  const mutation = useRecordMutation({
+    onError: (error) => setError((error as any).toString()),
+    onSettled: () => query.refetch()
   });
   const sendMessage = useCallback(() => {
     if (message) {
