@@ -108,9 +108,6 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
             <ShadowedText
               pb={2}
               bottomBorder={category === option.category}
-              // onPress={() => {
-              //   navigation.navigate('Discover', { category: option.category });
-              // }}
               onPress={() => setCategory(option.category)}
             >
               {option.category}
