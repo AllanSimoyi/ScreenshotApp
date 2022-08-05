@@ -12,7 +12,7 @@ export function CustomImageBackground (props: Props) {
       accessible
       borderRadius={10}
       resizeMode="cover"
-      accessibilityLabel="Feed Banner"
+      accessibilityLabel="Image Post"
       {...restOfProps}
     >
       {children}
