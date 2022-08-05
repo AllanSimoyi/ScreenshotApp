@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { CustomError } from '../components/custom-error';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { ShadowedText } from '../components/ShadowedText';
+import { usePosts } from '../hooks/usePosts';
 import { getRequest } from '../lib/get-request';
 import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
@@ -11,25 +12,11 @@ import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
-
-  const query = useQuery<Post[], Error>('feed', async () => {
-    const [result, err] = await getRequest<{ posts: Post[]; errorMessage: string }>(URL_PREFIX + "/api/feed");
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    const posts = result?.posts || [];
-    return posts.reduce((acc, post) => {
-      const alreadyAdded = acc.some(el => el.category === post.category);
-      if (alreadyAdded) {
-        return acc;
-      }
-      return [...acc, post];
-    }, [] as Post[]);
-  });
-
+  const query = usePosts('feed');
+  const majorPosts = (query.data || []).reduce((acc, post) => {
+    const alreadyAdded = acc.some(el => el.category === post.category);
+    return alreadyAdded ? acc : [...acc, post];
+  }, [] as Post[]);
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch" px={0}>
@@ -39,7 +26,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
           </CustomError>
         )}
         {query.isLoading && <CustomSkeletons num={4} />}
-        {query.data && (
+        {majorPosts && (
           <FlatList
             data={query.data}
             keyExtractor={(_, index) => index.toString()}
