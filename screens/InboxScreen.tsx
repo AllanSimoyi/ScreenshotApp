@@ -7,7 +7,7 @@ import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
 import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getRequest } from '../lib/get-request';
-import { Message } from '../lib/messages';
+import { Message, useMessages } from '../lib/messages';
 import { postRequest } from '../lib/post-request';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { CreateMessage } from '../lib/validations';
@@ -18,16 +18,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
-  const query = useQuery<Message[], Error>('messages', async () => {
-    const [result, err] = await getRequest<{ messages: Message[]; errorMessage: string }>(URL_PREFIX + "/api/messages");
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.messages || [];
-  });
+  const query = useMessages('messages');
   const mutation = useMutation(async (newMessage: CreateMessage) => {
     const [result, err] = await postRequest<{ message: Message; errorMessage: string; }>(URL_PREFIX + "/api/messages", newMessage);
     if (err) {
