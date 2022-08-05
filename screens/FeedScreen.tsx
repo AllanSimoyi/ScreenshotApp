@@ -1,15 +1,12 @@
 import { FlatList, View, VStack } from 'native-base';
-import { ImageBackground, StyleSheet } from 'react-native';
-import { useQuery } from 'react-query';
+import { StyleSheet } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { ShadowedText } from '../components/ShadowedText';
 import { usePosts } from '../hooks/usePosts';
-import { getRequest } from '../lib/get-request';
 import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
-import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
