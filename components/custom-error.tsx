@@ -1,14 +1,15 @@
 import { Alert, Button, HStack, Text, VStack } from 'native-base';
+import { InterfaceVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 
-interface Props {
+interface Props extends InterfaceVStackProps {
   retry: () => void;
   children: React.ReactNode;
 }
 
 export function CustomError (props: Props) {
-  const { retry, children } = props;
+  const { retry, children, ...restOfProps } = props;
   return (
-    <VStack justifyContent="center" alignItems="stretch" p={4}>
+    <VStack justifyContent="center" alignItems="stretch" p={4} {...restOfProps}>
       <Alert w="100%" status="error">
         <VStack space={2} flexShrink={1} w="100%">
           <HStack space={2} flexShrink={1} justifyContent="space-between">
