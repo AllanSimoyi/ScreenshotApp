@@ -34,7 +34,7 @@ const categoryOptions: FeedItem[] = [
   },
 ];
 
-export default function DiscoverScreen ({ navigation, route }: RootTabScreenProps<'Discover'>) {
+export default function DiscoverScreen ({ route }: RootTabScreenProps<'Discover'>) {
   const initialCategory = route.params?.category || abuseCategory.category;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory || abuseCategory.category);
@@ -87,10 +87,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
                 style={{ flex: 1, justifyContent: 'flex-end', flexGrow: 1, width: 200, }}
               >
                 <VStack alignItems="flex-start" p={2}>
-                  <ShadowedText
-                    onPress={() => {
-                      navigation.navigate('Discover', { category: item.category });
-                    }}>
+                  <ShadowedText>
                     <CustomHighlight searchString={search}>
                       {item.description || "..."}
                     </CustomHighlight>
