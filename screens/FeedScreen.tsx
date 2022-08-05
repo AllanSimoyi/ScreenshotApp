@@ -60,17 +60,4 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     justifyContent: 'flex-start',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
 });
-
-// source={item.resourceUrl ?
-//   { uri: item.resourceUrl } :
-//   require('../assets/images/image_placeholder.jpeg')}
