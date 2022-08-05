@@ -18,8 +18,7 @@ export default function DiscoverScreen ({ route }: RootTabScreenProps<'Discover'
   const query = usePosts('discover');
   const categoryItems = query.data ?
     query.data.filter(item => {
-      return (item.category === category) &&
-        postHasSearchString(item, search);
+      return (item.category === category) && postHasSearchString(item, search);
     }) :
     [];
   useEffect(() => {
