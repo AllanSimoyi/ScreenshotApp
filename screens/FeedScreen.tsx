@@ -3,14 +3,12 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { useQuery } from 'react-query';
 import { CustomError } from '../components/custom-error';
 import { CustomSkeletons } from '../components/CustomSkeletons';
-import { UnderlinedFeedText } from '../components/UnderlinedFeedText';
+import { ShadowedText } from '../components/ShadowedText';
 import { getRequest } from '../lib/get-request';
 import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { RootTabScreenProps } from '../types';
-
-const imageFallbackUrl = "../assets/images/image_placeholder.jpeg";
 
 export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
 
@@ -48,16 +46,16 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
                 <ImageBackground
-                  source={getImageSource(item.resourceUrl, imageFallbackUrl)}
+                  source={getImageSource(item.resourceUrl, "../assets/images/image_placeholder.jpeg")}
                   accessible
                   accessibilityLabel="Feed Banner"
                   resizeMode="cover"
                   style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
-                    <UnderlinedFeedText onPress={() => navigation.navigate('Discover', { category: item.category })}>
+                    <ShadowedText bottomBorder onPress={() => navigation.navigate('Discover', { category: item.category })}>
                       # {item.category}
-                    </UnderlinedFeedText>
+                    </ShadowedText>
                   </VStack>
                 </ImageBackground>
               </VStack>
