@@ -2,6 +2,7 @@ import { FlatList, View, VStack } from 'native-base';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { useQuery } from 'react-query';
 import { CustomError } from '../components/custom-error';
+import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { ShadowedText } from '../components/ShadowedText';
 import { usePosts } from '../hooks/usePosts';
@@ -32,19 +33,18 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             keyExtractor={(_, index) => index.toString()}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
-                <ImageBackground
+                <CustomImageBackground
                   source={getImageSource(item.resourceUrl)}
-                  accessible
-                  accessibilityLabel="Feed Banner"
-                  resizeMode="cover"
                   style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText bottomBorder onPress={() => navigation.navigate('Discover', { category: item.category })}>
+                    <ShadowedText bottomBorder onPress={() => {
+                      navigation.navigate('Discover', { category: item.category });
+                    }}>
                       # {item.category}
                     </ShadowedText>
                   </VStack>
-                </ImageBackground>
+                </CustomImageBackground>
               </VStack>
             )}
           />
