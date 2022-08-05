@@ -83,7 +83,7 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
           <VStack alignItems="stretch" p={2}>
             <VStack alignItems="stretch" style={{ height: "100%" }}>
               <CustomImageBackground
-                source={getImageSource(item.resourceUrl, "../assets/images/image_placeholder.jpeg")}
+                source={getImageSource(item.resourceUrl)}
                 style={{ flex: 1, justifyContent: 'flex-end', flexGrow: 1, width: 200, }}
               >
                 <VStack alignItems="flex-start" p={2}>
