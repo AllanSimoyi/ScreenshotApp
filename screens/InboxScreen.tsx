@@ -1,13 +1,13 @@
 import dayjs from 'dayjs';
 import { Alert, Button, FlatList, Flex, HStack, Skeleton, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 import { SendMessage } from '../components/send-message';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
+import { useMessages } from '../hooks/useMessages';
 import { useProfileDetails } from '../hooks/useProfileDetails';
-import { getRequest } from '../lib/get-request';
-import { Message, useMessages } from '../lib/messages';
+import { Message } from '../lib/messages';
 import { postRequest } from '../lib/post-request';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { CreateMessage } from '../lib/validations';
