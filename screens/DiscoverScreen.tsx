@@ -60,14 +60,14 @@ export default function DiscoverScreen ({ navigation, route }: RootTabScreenProp
             InputRightElement={<Icon mx="2" size="6" color="yellow.600" as={<Ionicons name="ios-search" />} />}
           />
         </VStack>
+        <VStack justifyContent={"center"} alignItems="center" p={2}>
+          <IconButton
+            colorScheme="yellow" size="md" borderWidth={2} borderRadius="full" variant="outline"
+            onPress={() => query.refetch()}
+            _icon={{ as: MaterialIcons, name: "sync" }}
+          />
+        </VStack>
       </HStack>
-      <VStack justifyContent={"center"} alignItems="center" p={2}>
-        <IconButton
-          colorScheme="yellow" size="md" borderWidth={2} borderRadius="full" variant="outline"
-          onPress={() => query.refetch()}
-          _icon={{ as: MaterialIcons, name: "sync" }}
-        />
-      </VStack>
       {query.isError && (
         <CustomError retry={() => query.refetch()}>
           {query.error.message}
