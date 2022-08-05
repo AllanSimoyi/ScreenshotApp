@@ -26,7 +26,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
         {query.isLoading && <CustomSkeletons num={4} />}
         {majorPosts && (
           <FlatList
-            data={query.data}
+            data={majorPosts}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
