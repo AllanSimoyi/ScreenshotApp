@@ -46,7 +46,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
                 <ImageBackground
-                  source={getImageSource(item.resourceUrl, "../assets/images/image_placeholder.jpeg")}
+                  source={getImageSource(item.resourceUrl)}
                   accessible
                   accessibilityLabel="Feed Banner"
                   resizeMode="cover"
