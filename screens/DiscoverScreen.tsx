@@ -8,31 +8,8 @@ import { CustomSkeletons } from "../components/CustomSkeletons";
 import { ShadowedText } from "../components/ShadowedText";
 import { usePosts } from "../hooks/usePosts";
 import { getImageSource } from "../lib/image-rendering";
-import { postHasSearchString } from '../lib/posts';
+import { abuseCategory, categoryOptions, postHasSearchString } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
-
-interface FeedItem {
-  image: any,
-  category: string;
-  description?: string;
-}
-
-const abuseCategory: FeedItem = {
-  image: require('../assets/images/feed_banner.jpeg'),
-  category: "Abuse of State Resources"
-};
-
-const categoryOptions: FeedItem[] = [
-  abuseCategory,
-  {
-    image: require('../assets/images/violence.jpeg'),
-    category: "Public Finance Management"
-  },
-  {
-    image: require('../assets/images/tollgate.jpeg'),
-    category: "Natural Resource Governance"
-  },
-];
 
 export default function DiscoverScreen ({ route }: RootTabScreenProps<'Discover'>) {
   const initialCategory = route.params?.category || abuseCategory.category;

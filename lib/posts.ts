@@ -10,6 +10,29 @@ export interface Post {
   updatedAt: Date;
 }
 
+export interface FeedItem {
+  image: any,
+  category: string;
+  description?: string;
+}
+
+export const abuseCategory: FeedItem = {
+  image: require('../assets/images/feed_banner.jpeg'),
+  category: "Abuse of State Resources"
+};
+
+export const categoryOptions: FeedItem[] = [
+  abuseCategory,
+  {
+    image: require('../assets/images/violence.jpeg'),
+    category: "Public Finance Management"
+  },
+  {
+    image: require('../assets/images/tollgate.jpeg'),
+    category: "Natural Resource Governance"
+  },
+];
+
 export function toMatrix<T extends any> (arr: T[], width: number) {
   return arr.reduce((rows, key, index) => {
     if (index % width == 0) {
