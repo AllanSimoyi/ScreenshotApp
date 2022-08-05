@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import { Alert, Button, FlatList, Flex, HStack, Skeleton, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { useMutation, useQuery } from 'react-query';
 import { SendMessage } from '../components/send-message';
 import { SignIn } from '../components/SignIn';
@@ -10,25 +9,15 @@ import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getRequest } from '../lib/get-request';
 import { Message } from '../lib/messages';
 import { postRequest } from '../lib/post-request';
-import { Post } from "../lib/posts";
 import { URL_PREFIX } from '../lib/url-prefix';
-import { CreateMessage, CreatePost } from '../lib/validations';
+import { CreateMessage } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
-export default function InboxScreen ({ navigation }: RootTabScreenProps<'Inbox'>) {
-
+export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
   const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
-
   const [message, setMessage] = useState("");
-
-  const {
-    isLoading, setIsLoading,
-    details, setDetails,
-    error, setError,
-    setIsRetryToggle,
-  } = useProfileDetails();
-
+  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useQuery<Message[], Error>('messages', async () => {
     const [result, err] = await getRequest<{ messages: Message[]; errorMessage: string }>(URL_PREFIX + "/api/messages");
     if (err) {
@@ -39,7 +28,6 @@ export default function InboxScreen ({ navigation }: RootTabScreenProps<'Inbox'>
     }
     return result?.messages || [];
   });
-
   const mutation = useMutation(async (newMessage: CreateMessage) => {
     const [result, err] = await postRequest<{ message: Message; errorMessage: string; }>(URL_PREFIX + "/api/messages", newMessage);
     if (err) {
@@ -56,8 +44,7 @@ export default function InboxScreen ({ navigation }: RootTabScreenProps<'Inbox'>
     onSettled: () => {
       query.refetch();
     }
-  })
-
+  });
   const sendMessage = useCallback(() => {
     if (message) {
       mutation.mutate({
@@ -67,14 +54,12 @@ export default function InboxScreen ({ navigation }: RootTabScreenProps<'Inbox'>
       });
     }
   }, [message, mutation]);
-
   const messages = details.userId ?
     query.data?.filter(message => {
       return message.senderId === details.userId ||
         message.receiverId === details.userId;
     }) || [] :
     query.data || [];
-
   return (
     <Flex
       direction="column"
