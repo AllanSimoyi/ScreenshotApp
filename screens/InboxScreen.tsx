@@ -18,6 +18,11 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
     onError: (error) => setError((error as any).toString()),
     onSettled: () => query.refetch()
   });
+  const messages = details.userId ?
+    query.data?.filter(message => {
+      return message.senderId === details.userId || message.receiverId === details.userId;
+    }) || [] :
+    query.data || [];
   const sendMessage = useCallback(() => {
     if (message) {
       mutation.mutate({
@@ -27,12 +32,6 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
       });
     }
   }, [message, mutation]);
-  const messages = details.userId ?
-    query.data?.filter(message => {
-      return message.senderId === details.userId ||
-        message.receiverId === details.userId;
-    }) || [] :
-    query.data || [];
   return (
     <Flex
       direction="column"
