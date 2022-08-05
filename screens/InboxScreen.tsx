@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { SendMessage } from '../components/send-message';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
-import { useMessages, useRecordMutation } from '../hooks/useMessages';
+import { useMessages, useRecordMessage } from '../hooks/useMessages';
 import { useProfileDetails } from '../hooks/useProfileDetails';
 import { RootTabScreenProps } from '../types';
 
@@ -14,7 +14,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useMessages('messages');
-  const mutation = useRecordMutation({
+  const mutation = useRecordMessage({
     onError: (error) => setError((error as any).toString()),
     onSettled: () => query.refetch()
   });

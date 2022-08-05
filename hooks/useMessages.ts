@@ -18,12 +18,12 @@ export function useMessages (queryKey: QueryKey) {
   });
 }
 
-interface UseRecordMutationProps {
+interface useRecordMessageProps {
   onError: (error: unknown) => void;
   onSettled: () => void;
 }
 
-export function useRecordMutation (props: UseRecordMutationProps) {
+export function useRecordMessage (props: useRecordMessageProps) {
   const { onError, onSettled } = props;
   return useMutation(async (newMessage: CreateMessage) => {
     const [result, err] = await postRequest<{ message: Message; errorMessage: string; }>(URL_PREFIX + "/api/messages", newMessage);
