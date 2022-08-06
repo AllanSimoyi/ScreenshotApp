@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { postRequest } from "../lib/post-request";
 import { CURRENT_USER_KEY, getFromLocalStorage } from "../lib/session";
 import { URL_PREFIX } from "../lib/url-prefix";
-import { User } from "../lib/users";
+import { createEmptyUser, User } from "../lib/users";
 import { GetCurrentUser } from "../lib/validations";
 
 export function useProfileDetails () {
-
   const [details, setDetails] = useState({
     userId: 0,
     username: "",
@@ -14,13 +13,9 @@ export function useProfileDetails () {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [isRetryToggle, setIsRetryToggle] = useState(false);
-
   useEffect(() => {
-
     init();
-
     async function fetchCurrentUser (input: GetCurrentUser) {
       const [result, err] = await postRequest<{ currentUser: User; errorMessage: string; }>(URL_PREFIX + "/api/custom-current-user", input);
       if (err) {
@@ -31,27 +26,19 @@ export function useProfileDetails () {
       }
       return result?.currentUser || undefined;
     }
-
     async function init () {
       try {
         setIsLoading(true);
+        let currentUser: User | undefined = createEmptyUser();
         const currentUserId = await getFromLocalStorage(CURRENT_USER_KEY);
-        console.log("currentUserId >>>", currentUserId);
         if (currentUserId) {
-          const currentUser = await fetchCurrentUser({ userId: Number(currentUserId) });
-          console.log("currentUser >>>", currentUser);
-          setDetails({
-            userId: currentUser?.id || 0,
-            username: currentUser?.username || "",
-            phoneNumber: currentUser?.phoneNumber || "",
-          });
-        } else {
-          setDetails({
-            userId: 0,
-            username: "",
-            phoneNumber: "",
-          });
+          currentUser = await fetchCurrentUser({ userId: Number(currentUserId) });
         }
+        setDetails({
+          userId: currentUser?.id || 0,
+          username: currentUser?.username || "",
+          phoneNumber: currentUser?.phoneNumber || "",
+        });
       } catch ({ message }) {
         setError((message as string || "Something went wrong, please try again"));
       } finally {
@@ -59,12 +46,10 @@ export function useProfileDetails () {
       }
     }
   }, [isRetryToggle, setIsLoading, setDetails, setError]);
-
   return {
     isLoading, setIsLoading,
     details, setDetails,
     error, setError,
     setIsRetryToggle,
   }
-
 }
