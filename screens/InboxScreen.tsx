@@ -16,27 +16,27 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useMessages('messages');
-  // const mutation = useRecordMessage({
-  //   onError: (error) => setError((error as any).toString()),
-  //   onSettled: () => query.refetch()
-  // });
+  const mutation = useRecordMessage({
+    onError: (error) => setError((error as any).toString()),
+    onSettled: () => query.refetch()
+  });
   const messages = details.userId ?
     query.data?.filter(message => {
       return message.senderId === details.userId || message.receiverId === details.userId;
     }) || [] :
     query.data || [];
-  // const sendMessage = useCallback(() => {
-  //   if (message) {
-  //     mutation.mutate({
-  //       userId: details.userId,
-  //       content: message,
-  //       receiverId: 123,
-  //     });
-  //   }
-  // }, [message, mutation]);
   const sendMessage = useCallback(() => {
-    console.log("zxc");
-  }, []);
+    if (message) {
+      mutation.mutate({
+        userId: details.userId,
+        content: message,
+        receiverId: 123,
+      });
+    }
+  }, [message, mutation]);
+  // const sendMessage = useCallback(() => {
+  //   console.log("zxc");
+  // }, []);
   return (
     <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
       <HStack alignItems="center" py={2}>
@@ -50,11 +50,11 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           {query?.error?.message}
         </CustomError>
       )}
-      {/* {error && (
+      {error && (
         <CustomError retry={() => setIsRetryToggle(prevState => !prevState)} style={{ height: "100%" }}>
           {error}
         </CustomError>
-      )} */}
+      )}
       {(query.isLoading || isLoading) && <CustomSkeletons num={4} />}
       {/* {!isLoading && (
         <SignIn
