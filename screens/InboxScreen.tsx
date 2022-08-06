@@ -13,7 +13,7 @@ import { RootTabScreenProps } from '../types';
 export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   // const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
   // const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
-  // const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useMessages('messages');
   // const mutation = useRecordMessage({
@@ -34,6 +34,9 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   //     });
   //   }
   // }, [message, mutation]);
+  const sendMessage = useCallback(() => {
+    console.log("zxc");
+  }, []);
   return (
     <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
       <HStack alignItems="center" py={2}>
@@ -92,7 +95,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           )}
         />
       )} */}
-      {/* {Boolean(details.userId) && (
+      {Boolean(details.userId) && (
         <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
           <SendMessage
             message={message}
@@ -100,7 +103,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
             sendMessage={sendMessage}
           />
         </VStack>
-      )} */}
+      )}
     </VStack>
   );
 }
