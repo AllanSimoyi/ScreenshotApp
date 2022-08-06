@@ -20,11 +20,11 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   //   onError: (error) => setError((error as any).toString()),
   //   onSettled: () => query.refetch()
   // });
-  // const messages = details.userId ?
-  //   query.data?.filter(message => {
-  //     return message.senderId === details.userId || message.receiverId === details.userId;
-  //   }) || [] :
-  //   query.data || [];
+  const messages = details.userId ?
+    query.data?.filter(message => {
+      return message.senderId === details.userId || message.receiverId === details.userId;
+    }) || [] :
+    query.data || [];
   // const sendMessage = useCallback(() => {
   //   if (message) {
   //     mutation.mutate({
@@ -72,7 +72,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           openSignInModal={() => setSignInModalIsOpen(true)}
         />
       )} */}
-      {/* {Boolean(messages) && (
+      {Boolean(messages) && (
         <FlatList
           data={messages}
           keyExtractor={(_, index) => index.toString()}
@@ -94,7 +94,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
             </VStack>
           )}
         />
-      )} */}
+      )}
       {Boolean(details.userId) && (
         <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
           <SendMessage
