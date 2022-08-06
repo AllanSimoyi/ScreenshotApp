@@ -15,7 +15,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   // const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   // const [message, setMessage] = useState("");
   // const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
-  // const query = useMessages('messages');
+  const query = useMessages('messages');
   // const mutation = useRecordMessage({
   //   onError: (error) => setError((error as any).toString()),
   //   onSettled: () => query.refetch()
@@ -36,9 +36,17 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   // }, [message, mutation]);
   return (
     <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
-      <Text bold fontSize="md" px="3" color="#fff">
-        Messages
-      </Text>
+      <HStack alignItems="center" py={2}>
+        <Text bold fontSize="md" px="3" color="#fff">
+          Messages
+        </Text>
+        <Flex flexGrow={1} />
+      </HStack>
+      {query.isError && (
+        <CustomError retry={() => query.refetch()} style={{ height: "100%" }}>
+          {query?.error?.message}
+        </CustomError>
+      )}
     </VStack>
     // <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
     //   <HStack alignItems="center" py={2}>
