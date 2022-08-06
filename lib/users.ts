@@ -12,3 +12,15 @@ export interface ProfileDetails {
   username: string;
   phoneNumber: string;
 }
+
+export function createEmptyUser () {
+  const currentUser: User = {
+    id: 0,
+    username: "",
+    phoneNumber: "",
+    role: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  return currentUser;
+}
