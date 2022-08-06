@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import { postRequest } from "../lib/post-request";
 import { CURRENT_USER_KEY, getFromLocalStorage } from "../lib/session";
-import { URL_PREFIX } from "../lib/url-prefix";
-import { createEmptyUser, User } from "../lib/users";
-import { GetCurrentUser } from "../lib/validations";
+import { createEmptyUser, fetchCurrentUser, User } from "../lib/users";
 
 export function useProfileDetails () {
   const [details, setDetails] = useState({
@@ -16,16 +13,6 @@ export function useProfileDetails () {
   const [isRetryToggle, setIsRetryToggle] = useState(false);
   useEffect(() => {
     init();
-    async function fetchCurrentUser (input: GetCurrentUser) {
-      const [result, err] = await postRequest<{ currentUser: User; errorMessage: string; }>(URL_PREFIX + "/api/custom-current-user", input);
-      if (err) {
-        throw err;
-      }
-      if (result?.errorMessage) {
-        throw new Error(result?.errorMessage);
-      }
-      return result?.currentUser || undefined;
-    }
     async function init () {
       try {
         setIsLoading(true);
