@@ -1,5 +1,4 @@
 import { ImageBackground, ImageBackgroundProps } from "react-native";
-import { getImageSource } from "../lib/image-rendering";
 
 interface Props extends ImageBackgroundProps {
   children: React.ReactNode;
