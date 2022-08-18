@@ -10,8 +10,8 @@ interface Props {
 export function SendMessage (props: Props) {
   const { message, setMessage, sendMessage } = props;
   return (
-    <HStack alignItems="stretch" style={{ borderRadius: 10, backgroundColor: "rgba(255, 255, 255, 0.24)" }}>
-      <VStack justifyContent="center" alignItems="center" p={2} style={{ flexGrow: 1 }}>
+    <HStack alignItems="stretch" style={{ borderRadius: 10, backgroundColor: "rgba(255, 255, 255, 0.1)" }}>
+      <VStack justifyContent="center" alignItems="center" pl={2} py={2} style={{ flexGrow: 1 }}>
         <Input
           value={message} onChangeText={(text) => setMessage(text)}
           fontWeight="bold" variant="rounded" placeholder="Type Something..."
