@@ -55,7 +55,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           {error}
         </CustomError>
       )}
-      {(query.isLoading || isLoading) && <CustomSkeletons num={4} />}
+      {(query.isLoading || isLoading) && <CustomSkeletons num={4} h={20} />}
       {!isLoading && (
         <SignIn
           isOpen={signInModalIsOpen}
@@ -77,7 +77,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           data={messages}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item: report }) => (
-            <VStack alignItems="stretch" p={2}>
+            <VStack alignItems="stretch" px={4} py={2}>
               <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
                 <Text color="yellow.600" fontSize={"lg"}>
                   {report.sender.username}
@@ -96,14 +96,14 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
         />
       )}
       {!Boolean(details.userId) && (
-        <VStack justifyContent="center" alignItems="stretch" p={4} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
+        <VStack justifyContent="center" alignItems="stretch" px={4} py={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
           <Button onPress={() => setSignInModalIsOpen(true)} size="lg" colorScheme="yellow" variant="solid" borderRadius={10} py={4} px={6}>
             SIGN IN / CREATE ACCOUNT
           </Button>
         </VStack>
       )}
       {Boolean(details.userId) && (
-        <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
+        <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
           <SendMessage
             message={message}
             setMessage={setMessage}
