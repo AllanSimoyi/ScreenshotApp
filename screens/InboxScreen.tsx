@@ -25,7 +25,6 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
       return message.senderId === details.userId || message.receiverId === details.userId;
     }) || [] :
     [];
-    // query.data || [];
   const sendMessage = useCallback(() => {
     if (message) {
       mutation.mutate({
@@ -35,9 +34,6 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
       });
     }
   }, [message, mutation]);
-  // const sendMessage = useCallback(() => {
-  //   console.log("zxc");
-  // }, []);
   return (
     <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
       <HStack alignItems="center" py={2}>
