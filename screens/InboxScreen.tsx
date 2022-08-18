@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FlatList, Flex, HStack, Text, VStack } from 'native-base';
+import { Button, FlatList, Flex, HStack, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
 import { CustomError } from '../components/custom-error';
 import { CustomSkeletons } from '../components/CustomSkeletons';
@@ -14,9 +14,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
   const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails({
-    openSignInModal: () => setSignInModalIsOpen(true)
-  });
+  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
   const query = useMessages('messages');
   const mutation = useRecordMessage({
     onError: (error) => setError((error as any).toString()),
@@ -96,6 +94,13 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
             </VStack>
           )}
         />
+      )}
+      {!Boolean(details.userId) && (
+        <VStack justifyContent="center" alignItems="stretch" p={4} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
+          <Button onPress={() => setSignInModalIsOpen(true)} size="lg" colorScheme="yellow" variant="solid" borderRadius={10} py={4} px={6}>
+            SIGN IN / CREATE ACCOUNT
+          </Button>
+        </VStack>
       )}
       {Boolean(details.userId) && (
         <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#000" }}>
