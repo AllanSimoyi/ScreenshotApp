@@ -29,6 +29,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
           <FlatList
             data={majorPosts}
             keyExtractor={(_, index) => index.toString()}
+            contentContainerStyle={{ flexGrow: 1 }}
             refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
             ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
             renderItem={({ item }) => (

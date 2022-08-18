@@ -74,6 +74,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
       {Boolean(messages) && (
         <FlatList
           data={messages}
+          contentContainerStyle={{ flexGrow: 1 }}
           keyExtractor={(_, index) => index.toString()}
           refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
           ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
