@@ -8,8 +8,8 @@ export function CustomSkeletons (props: Props) {
   const { num, ...restOfProps } = props;
   return (
     <VStack alignItems="stretch" p={4}>
-      {createNumberedArray(num).map(_ => (
-        <Skeleton mb="4" h="40" rounded="10" {...restOfProps} />
+      {createNumberedArray(num).map((_, index) => (
+        <Skeleton key={index.toString()} mb="4" h="40" rounded="10" {...restOfProps} />
       ))}
     </VStack>
   )
