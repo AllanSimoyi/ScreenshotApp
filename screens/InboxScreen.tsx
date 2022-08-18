@@ -11,10 +11,12 @@ import { useProfileDetails } from '../hooks/useProfileDetails';
 import { RootTabScreenProps } from '../types';
 
 export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
-  // const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
-  // const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
+  const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
+  const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
+  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails({
+    openSignInModal: () => setSignInModalIsOpen(true)
+  });
   const query = useMessages('messages');
   const mutation = useRecordMessage({
     onError: (error) => setError((error as any).toString()),
@@ -50,28 +52,28 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           {query?.error?.message}
         </CustomError>
       )}
-      {error && (
+      {Boolean(error) && (
         <CustomError retry={() => setIsRetryToggle(prevState => !prevState)} style={{ height: "100%" }}>
           {error}
         </CustomError>
       )}
       {(query.isLoading || isLoading) && <CustomSkeletons num={4} />}
-      {/* {!isLoading && (
+      {!isLoading && (
         <SignIn
           isOpen={signInModalIsOpen}
           setIsOpen={setSignInModalIsOpen}
           updateProfileDetails={setDetails}
           openSignUpModal={() => setSignUpModalIsOpen(true)}
         />
-      )} */}
-      {/* {!isLoading && (
+      )}
+      {!isLoading && (
         <SignUp
           isOpen={signUpModalIsOpen}
           updateProfileDetails={setDetails}
           setIsOpen={setSignUpModalIsOpen}
           openSignInModal={() => setSignInModalIsOpen(true)}
         />
-      )} */}
+      )}
       {Boolean(messages) && (
         <FlatList
           data={messages}
