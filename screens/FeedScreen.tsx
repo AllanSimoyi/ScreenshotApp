@@ -3,6 +3,7 @@ import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
+import { NoListItems } from '../components/NoListItems';
 import { ShadowedText } from '../components/ShadowedText';
 import { usePosts } from '../hooks/usePosts';
 import { getImageSource } from '../lib/image-rendering';
@@ -29,13 +30,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             data={majorPosts}
             keyExtractor={(_, index) => index.toString()}
             refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
-            ListEmptyComponent={(
-              <VStack justifyContent={"center"} alignItems="center" p={4}>
-                <Text color="white" fontSize={"lg"}>
-                  No posts found
-                </Text>
-              </VStack>
-            )}
+            ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
                 <CustomImageBackground
