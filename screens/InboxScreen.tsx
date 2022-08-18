@@ -24,7 +24,8 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
     query.data?.filter(message => {
       return message.senderId === details.userId || message.receiverId === details.userId;
     }) || [] :
-    query.data || [];
+    [];
+    // query.data || [];
   const sendMessage = useCallback(() => {
     if (message) {
       mutation.mutate({
