@@ -1,5 +1,5 @@
-import { FlatList, View, VStack } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { FlatList, Text, View, VStack } from 'native-base';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
@@ -28,6 +28,14 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
           <FlatList
             data={majorPosts}
             keyExtractor={(_, index) => index.toString()}
+            refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
+            ListEmptyComponent={(
+              <VStack justifyContent={"center"} alignItems="center" p={4}>
+                <Text color="white" fontSize={"lg"}>
+                  No posts found
+                </Text>
+              </VStack>
+            )}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
                 <CustomImageBackground
