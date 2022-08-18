@@ -76,6 +76,13 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
         <FlatList
           data={messages}
           keyExtractor={(_, index) => index.toString()}
+          ListEmptyComponent={(
+            <VStack justifyContent={"center"} alignItems="center" p={4}>
+              <Text color="white" fontSize={"lg"}>
+                No messages found
+              </Text>
+            </VStack>
+          )}
           renderItem={({ item: report }) => (
             <VStack alignItems="stretch" px={4} py={2}>
               <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
