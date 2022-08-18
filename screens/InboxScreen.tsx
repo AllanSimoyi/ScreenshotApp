@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import { Button, FlatList, Flex, HStack, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
+import { RefreshControl } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomSkeletons } from '../components/CustomSkeletons';
+import { NoListItems } from '../components/NoListItems';
 import { SendMessage } from '../components/send-message';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
@@ -73,13 +75,8 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
         <FlatList
           data={messages}
           keyExtractor={(_, index) => index.toString()}
-          ListEmptyComponent={(
-            <VStack justifyContent={"center"} alignItems="center" p={4}>
-              <Text color="white" fontSize={"lg"}>
-                No messages found
-              </Text>
-            </VStack>
-          )}
+          refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
+          ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
           renderItem={({ item: report }) => (
             <VStack alignItems="stretch" px={4} py={2}>
               <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
