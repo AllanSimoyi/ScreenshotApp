@@ -1,15 +1,15 @@
-import { Skeleton, VStack } from "native-base";
+import { ISkeletonProps, Skeleton, VStack } from "native-base";
 
-interface Props {
+interface Props extends ISkeletonProps {
   num: number;
 }
 
 export function CustomSkeletons (props: Props) {
-  const { num } = props;
+  const { num, ...restOfProps } = props;
   return (
     <VStack alignItems="stretch" p={4}>
       {createNumberedArray(num).map(_ => (
-        <Skeleton mb="4" h="40" rounded="10" />
+        <Skeleton mb="4" h="40" rounded="10" {...restOfProps} />
       ))}
     </VStack>
   )
