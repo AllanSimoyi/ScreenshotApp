@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { CURRENT_USER_KEY, getFromLocalStorage } from "../lib/session";
 import { createEmptyUser, fetchCurrentUser, User } from "../lib/users";
 
-export function useProfileDetails () {
+interface Props {
+  openSignInModal: () => void;
+}
+
+export function useProfileDetails (props: Props) {
+  const { openSignInModal } = props;
   const [details, setDetails] = useState({
     userId: 0,
     username: "",
@@ -26,6 +31,9 @@ export function useProfileDetails () {
           username: currentUser?.username || "",
           phoneNumber: currentUser?.phoneNumber || "",
         });
+        if (!currentUser?.id) {
+          openSignInModal();
+        }
       } catch ({ message }) {
         setError((message as string || "Something went wrong, please try again"));
       } finally {
