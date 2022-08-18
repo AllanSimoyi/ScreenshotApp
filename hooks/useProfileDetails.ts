@@ -15,6 +15,7 @@ export function useProfileDetails () {
     init();
     async function init () {
       try {
+        setError("");
         setIsLoading(true);
         let currentUser: User | undefined = createEmptyUser();
         const currentUserId = await getFromLocalStorage(CURRENT_USER_KEY);
