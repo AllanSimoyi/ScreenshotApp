@@ -16,14 +16,14 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const initialCategory = route.params?.category || abuseCategory.category;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory || abuseCategory.category);
-  const query = usePosts('discover');
+  const {refetch, ...query} = usePosts('discover');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data ?
     query.data.filter(item => {
       return (item.category === category) && postHasSearchString(item, search);
     }) :
     [];
-  const refetchCallback = useCallback(() => query.refetch(), []);
+  const refetchCallback = useCallback(() => refetch(), [refetch]);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
