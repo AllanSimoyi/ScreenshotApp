@@ -1,4 +1,4 @@
-import { FlatList, Text, View, VStack } from 'native-base';
+import { FlatList, View, VStack } from 'native-base';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomImageBackground } from '../components/CustomImageBackground';
@@ -18,7 +18,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
   }, [] as Post[]);
   return (
     <View style={styles.container}>
-      <VStack alignItems="stretch" px={0}>
+      <VStack alignItems="stretch">
         {query.isError && (
           <CustomError retry={() => query.refetch()}>
             {query.error.message}
