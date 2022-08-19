@@ -1,6 +1,6 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { FlatList, Flex, HStack, Icon, IconButton, Input, VStack } from 'native-base';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CustomError } from "../components/custom-error";
 import { CustomHighlight } from "../components/custom-highlight";
 import { CustomImageBackground } from "../components/CustomImageBackground";
@@ -11,19 +11,19 @@ import { getImageSource } from "../lib/image-rendering";
 import { abuseCategory, categoryOptions, postHasSearchString } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
 
-export default function DiscoverScreen ({ route }: RootTabScreenProps<'Discover'>) {
+export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
+  const { route } = props;
   const initialCategory = route.params?.category || abuseCategory.category;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory || abuseCategory.category);
   const query = usePosts('discover');
+  useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data ?
     query.data.filter(item => {
       return (item.category === category) && postHasSearchString(item, search);
     }) :
     [];
-  useEffect(() => {
-    setCategory(initialCategory);
-  }, [initialCategory]);
+  const refetchCallback = useCallback(() => query.refetch(), []);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
@@ -38,14 +38,13 @@ export default function DiscoverScreen ({ route }: RootTabScreenProps<'Discover'
         </VStack>
         <VStack justifyContent={"center"} alignItems="center" p={2}>
           <IconButton
-            colorScheme="yellow" size="md" borderWidth={2} borderRadius="full" variant="outline"
-            onPress={() => query.refetch()}
-            _icon={{ as: MaterialIcons, name: "sync" }}
+            onPress={refetchCallback} colorScheme="yellow" size="md" borderWidth={2} 
+            borderRadius="full" variant="outline" _icon={{ as: MaterialIcons, name: "sync" }}
           />
         </VStack>
       </HStack>
       {query.isError && (
-        <CustomError retry={() => query.refetch()}>
+        <CustomError retry={refetchCallback}>
           {query.error.message}
         </CustomError>
       )}

@@ -1,4 +1,5 @@
 import { FlatList, View, VStack } from 'native-base';
+import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/custom-error';
 import { CustomImageBackground } from '../components/CustomImageBackground';
@@ -10,17 +11,23 @@ import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
 
-export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) {
-  const query = usePosts('feed');
+export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
+  const { navigation } = props;
+  const { navigate } = navigation;
+  const { refetch, ...query } = usePosts('feed');
   const majorPosts = (query.data || []).reduce((acc, post) => {
     const alreadyAdded = acc.some(el => el.category === post.category);
     return alreadyAdded ? acc : [...acc, post];
   }, [] as Post[]);
+  const refetchCallback = useCallback(() => refetch(), [refetch]);
+  const navigateToDiscover = useCallback((category: string) => {
+    navigate('Discover', { category });
+  }, [navigate]);
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch">
         {query.isError && (
-          <CustomError retry={() => query.refetch()}>
+          <CustomError retry={refetchCallback}>
             {query.error.message}
           </CustomError>
         )}
@@ -30,7 +37,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
             data={majorPosts}
             keyExtractor={(_, index) => index.toString()}
             contentContainerStyle={{ flexGrow: 1 }}
-            refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
+            refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
             ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
@@ -39,9 +46,7 @@ export default function FeedScreen ({ navigation }: RootTabScreenProps<'Feed'>) 
                   style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText bottomBorder onPress={() => {
-                      navigation.navigate('Discover', { category: item.category });
-                    }}>
+                    <ShadowedText bottomBorder onPress={() => navigateToDiscover(item.category)}>
                       # {item.category}
                     </ShadowedText>
                   </VStack>
