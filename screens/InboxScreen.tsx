@@ -10,6 +10,7 @@ import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
 import { useMessages, useRecordMessage } from '../hooks/useMessages';
 import { useProfileDetails } from '../hooks/useProfileDetails';
+import { Message } from '../lib/messages';
 import { RootTabScreenProps } from '../types';
 
 export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
@@ -17,25 +18,25 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
   const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
-  const query = useMessages('messages');
-  const mutation = useRecordMessage({
-    onError: (error) => setError((error as any).toString()),
-    onSettled: () => query.refetch()
+  const { refetch, ...query } = useMessages('messages');
+  const refetchCallback = useCallback(() => refetch(), [refetch]);
+  const setErrorCallback = useCallback((error: unknown) => setError(error as string), []);
+  const { mutate, ...mutation } = useRecordMessage({
+    onError: setErrorCallback,
+    onSettled: refetchCallback
   });
-  const messages = details.userId ?
-    query.data?.filter(message => {
-      return message.senderId === details.userId || message.receiverId === details.userId;
-    }) || [] :
-    [];
+  const isUserMessage = useCallback((message: Message) => {
+    return message.senderId === details.userId || message.receiverId === details.userId;
+  }, [details.userId]);
+  const messages = details.userId ? query.data?.filter(isUserMessage) || [] : [];
   const sendMessage = useCallback(() => {
     if (message) {
-      mutation.mutate({
-        userId: details.userId,
-        content: message,
-        receiverId: 123,
-      });
+      mutate({ userId: details.userId, content: message, receiverId: 123 });
     }
-  }, [message, mutation]);
+  }, [message, mutate]);
+  const toggleRetry = useCallback(() => setIsRetryToggle(prevState => !prevState), []);
+  const openSignInModal = useCallback(() => setSignInModalIsOpen(true), []);
+  const openSignUpModal = useCallback(() => setSignUpModalIsOpen(true), []);
   return (
     <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
       <HStack alignItems="center" py={2}>
@@ -45,22 +46,24 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
         <Flex flexGrow={1} />
       </HStack>
       {query.isError && (
-        <CustomError retry={() => query.refetch()} style={{ height: "100%" }}>
+        <CustomError retry={refetchCallback}>
           {query?.error?.message}
         </CustomError>
       )}
       {Boolean(error) && (
-        <CustomError retry={() => setIsRetryToggle(prevState => !prevState)} style={{ height: "100%" }}>
+        <CustomError retry={toggleRetry}>
           {error}
         </CustomError>
       )}
-      {(query.isLoading || isLoading) && <CustomSkeletons num={4} h={20} />}
+      {(query.isLoading || isLoading) && (
+        <CustomSkeletons num={4} h={20} />
+      )}
       {!isLoading && (
         <SignIn
           isOpen={signInModalIsOpen}
           setIsOpen={setSignInModalIsOpen}
           updateProfileDetails={setDetails}
-          openSignUpModal={() => setSignUpModalIsOpen(true)}
+          openSignUpModal={openSignUpModal}
         />
       )}
       {!isLoading && (
@@ -68,7 +71,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           isOpen={signUpModalIsOpen}
           updateProfileDetails={setDetails}
           setIsOpen={setSignUpModalIsOpen}
-          openSignInModal={() => setSignInModalIsOpen(true)}
+          openSignInModal={openSignInModal}
         />
       )}
       {Boolean(messages) && (
@@ -76,7 +79,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
           data={messages}
           contentContainerStyle={{ flexGrow: 1 }}
           keyExtractor={(_, index) => index.toString()}
-          refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={query.refetch} />}
+          refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
           ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
           renderItem={({ item: report }) => (
             <VStack alignItems="stretch" px={4} py={2}>
@@ -99,18 +102,14 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
       )}
       {!Boolean(details.userId) && (
         <VStack justifyContent="center" alignItems="stretch" px={4} py={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
-          <Button onPress={() => setSignInModalIsOpen(true)} size="lg" colorScheme="yellow" variant="solid" borderRadius={10} py={4} px={6}>
+          <Button onPress={openSignInModal} size="lg" colorScheme="yellow" variant="solid" borderRadius={10} py={4} px={6}>
             SIGN IN / CREATE ACCOUNT
           </Button>
         </VStack>
       )}
       {Boolean(details.userId) && (
         <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
-          <SendMessage
-            message={message}
-            setMessage={setMessage}
-            sendMessage={sendMessage}
-          />
+          <SendMessage message={message} setMessage={setMessage} sendMessage={sendMessage} />
         </VStack>
       )}
     </VStack>
