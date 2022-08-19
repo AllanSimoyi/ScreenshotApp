@@ -12,8 +12,7 @@ import { Post } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
-  const { navigation } = props;
-  const { navigate } = navigation;
+  const { navigate } = props.navigation;
   const { refetch, ...query } = usePosts('feed');
   const majorPosts = (query.data || []).reduce((acc, post) => {
     const alreadyAdded = acc.some(el => el.category === post.category);
