@@ -16,7 +16,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const initialCategory = route.params?.category || abuseCategory.category;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory || abuseCategory.category);
-  const {refetch, ...query} = usePosts('discover');
+  const { refetch, ...query } = usePosts('discover');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data ?
     query.data.filter(item => {
@@ -24,6 +24,8 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
     }) :
     [];
   const refetchCallback = useCallback(() => refetch(), [refetch]);
+  const searchOnChange = useCallback((text: string) => setSearch(text), []);
+  const categoryOnChange = useCallback((category: string) => setCategory(category), []);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
@@ -32,13 +34,13 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
             size="xl" width="100%" value={search}
             borderWidth="2" fontWeight="bold" variant="rounded"
             color="yellow.600" placeholder="Search" my="2" py="1" px="4"
-            borderColor="yellow.600" onChangeText={(text) => setSearch(text)}
+            borderColor="yellow.600" onChangeText={searchOnChange}
             InputRightElement={<Icon mx="2" size="6" color="yellow.600" as={<Ionicons name="ios-search" />} />}
           />
         </VStack>
         <VStack justifyContent={"center"} alignItems="center" p={2}>
           <IconButton
-            onPress={refetchCallback} colorScheme="yellow" size="md" borderWidth={2} 
+            onPress={refetchCallback} colorScheme="yellow" size="md" borderWidth={2}
             borderRadius="full" variant="outline" _icon={{ as: MaterialIcons, name: "sync" }}
           />
         </VStack>
@@ -59,7 +61,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
             <VStack alignItems="stretch" style={{ height: "100%" }}>
               <CustomImageBackground
                 source={getImageSource(item.resourceUrl)}
-                style={{ flex: 1, justifyContent: 'flex-end', flexGrow: 1, width: 200, }}
+                style={{ flex: 1, justifyContent: 'flex-end', flexGrow: 1, width: 200 }}
               >
                 <VStack alignItems="flex-start" p={2}>
                   <ShadowedText>
@@ -77,11 +79,8 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
       <HStack justifyContent={"center"} alignItems="stretch">
         {categoryOptions.map((option, index) => (
           <VStack key={index} alignItems="flex-start" p={4} style={{ width: "33%" }}>
-            <ShadowedText
-              pb={2}
-              bottomBorder={category === option.category}
-              onPress={() => setCategory(option.category)}
-            >
+            <ShadowedText pb={2} bottomBorder={category === option.category}
+              onPress={() => categoryOnChange(option.category)}>
               {option.category}
             </ShadowedText>
           </VStack>
