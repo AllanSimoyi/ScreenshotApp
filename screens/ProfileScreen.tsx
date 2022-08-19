@@ -20,7 +20,8 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
   const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
   const { isLoading, details, setDetails, error, setError, setIsRetryToggle } = useProfileDetails();
-  const query = usePosts("profile");
+  const { refetch, ...query } = usePosts("profile");
+  const refetchCallback = useCallback(() => refetch(), [refetch]);
   const handleEditedDetails = useCallback((editedDetails: Omit<ProfileDetails, "userId">) => {
     setDetails(prevState => ({
       ...prevState,
@@ -31,6 +32,9 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
     setError("");
     setIsRetryToggle(prevState => !prevState);
   }, [setIsRetryToggle]);
+  const openSignInModal = useCallback(() => setSignInModalIsOpen(true), []);
+  const openSignUpModal = useCallback(() => setSignUpModalIsOpen(true), []);
+  const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
   const posts = query.data?.filter(post => post.userId !== details.userId) || [];
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -45,7 +49,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
       {!Boolean(details.userId) && !isLoading && (
         <VStack justifyContent="center" alignItems="center" py={2} style={{ height: "100%" }}>
           <Button size="lg" px="6" colorScheme="yellow" variant="outline" borderColor="#fff"
-            borderWidth={1} borderRadius={35} onPress={() => setSignInModalIsOpen(true)}>
+            borderWidth={1} borderRadius={35} onPress={openSignInModal}>
             <Text color="#fff" fontWeight={"bold"} fontSize="md">
               Sign In To Access Profile
             </Text>
@@ -57,7 +61,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
           isOpen={signInModalIsOpen}
           setIsOpen={setSignInModalIsOpen}
           updateProfileDetails={setDetails}
-          openSignUpModal={() => setSignUpModalIsOpen(true)}
+          openSignUpModal={openSignUpModal}
         />
       )}
       {!isLoading && (
@@ -65,7 +69,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
           isOpen={signUpModalIsOpen}
           setIsOpen={setSignUpModalIsOpen}
           updateProfileDetails={setDetails}
-          openSignInModal={() => setSignInModalIsOpen(true)}
+          openSignInModal={openSignUpModal}
         />
       )}
       {Boolean(details.userId) && !isLoading && (
@@ -97,7 +101,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
             <Flex flexGrow={1} />
             <VStack justifyContent="center" alignItems="center" p={2}>
               <Button
-                onPress={() => setEditModalIsOpen(true)}
+                onPress={openEditModal}
                 leftIcon={<Icon as={Ionicons} color="#333" name="pencil" size="md" />}
                 size="lg" colorScheme="yellow" variant="outline" px="6"
                 borderColor="black" borderWidth={1} borderRadius={35}>
@@ -113,7 +117,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
               {query.isLoading && "Loading Posts..."}
             </Text>
             {query.isError && (
-              <CustomError retry={() => query.refetch()}>
+              <CustomError retry={refetchCallback}>
                 {query.error.message}
               </CustomError>
             )}
