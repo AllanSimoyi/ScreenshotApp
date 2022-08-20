@@ -5,48 +5,33 @@ import { useMutation } from 'react-query';
 import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
+import { usePostMutation } from '../hooks/usePostMutation';
 import { postRequest } from '../lib/post-request';
 import { Post } from "../lib/posts";
 import { URL_PREFIX } from '../lib/url-prefix';
 import { CreatePost } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
-export default function UploadScreen ({ navigation }: RootTabScreenProps<'Upload'>) {
+export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
+  const { navigate } = props.navigation;
   const [stage, setStage] = useState(1);
   const [mode, setMode] = useState("Anonymously");
   const [error, setError] = useState("");
-
-  const nextStage = useCallback((mode: string) => {
-    setStage(prevState => prevState + 1);
-    setMode(mode);
-  }, []);
-
-  const mutation = useMutation(async (newPost: CreatePost) => {
-    const [result, err] = await postRequest<{ post: Post; errorMessage: string; }>(URL_PREFIX + "/api/create-post", newPost);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.post || undefined;
-  }, {
+  const { mutate } = usePostMutation({
     onSuccess: () => {
       setStage(3);
       setTimeout(() => {
         setStage(1);
-        navigation.navigate('Discover', { category: undefined });
+        navigate('Discover', { category: undefined });
       }, 2000);
     },
-    onError: (error) => {
-      setError((error as any).toString());
-    }
-  })
-
-  const sendMessage = useCallback((newPost: CreatePost) => {
-    mutation.mutate(newPost);
-  }, [mutation]);
-
+    onError: (error) => setError((error as string))
+  });
+  const nextStage = useCallback((mode: string) => {
+    setStage(prevState => prevState + 1);
+    setMode(mode);
+  }, []);
+  const sendMessage = useCallback((newPost: CreatePost) => mutate(newPost), [mutate]);
   return (
     <Flex
       direction="column"
