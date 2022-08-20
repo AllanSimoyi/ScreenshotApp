@@ -31,7 +31,10 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
     <VStack alignItems="stretch">
       {stage === 1 && (<UploadOne nextStage={nextStage} />)}
       {stage === 2 && (
-        <UploadTwo mode={mode} sending={mutation.isLoading} sendMessage={sendMessage} error={error} setError={setError} />
+        <UploadTwo
+          mode={mode} sending={mutation.isLoading}
+          sendMessage={sendMessage} error={error} setError={setError}
+        />
       )}
       {stage === 3 && (<UploadThree />)}
     </VStack>
