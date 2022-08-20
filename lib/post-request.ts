@@ -11,7 +11,6 @@ export async function postRequest<ReturnType>(
       headers,
       withCredentials: true,
     });
-    // console.log("POST REPONSE: ", url, response.data);
     return [response.data, undefined]
   } catch (reason: any) {
     return [undefined, new Error(reason?.message || FALLBACK_ERROR_MESSAGE)]

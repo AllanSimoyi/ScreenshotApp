@@ -10,7 +10,6 @@ export async function getRequest<ReturnType>(
       headers,
       withCredentials: true,
     })
-    // console.log("GET REPONSE: ", url, response.data)
     return [response.data, undefined]
   } catch (reason: any) {
     return [undefined, new Error(reason?.message || FALLBACK_ERROR_MESSAGE)]
