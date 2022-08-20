@@ -1,4 +1,4 @@
-import { Flex } from 'native-base';
+import { VStack } from 'native-base';
 
 interface Props {
   children: React.ReactNode;
@@ -7,14 +7,8 @@ interface Props {
 export function FullScreenCentered (props: Props) {
   const { children } = props;
   return (
-    <Flex
-      direction="column"
-      justify="center"
-      align="center"
-      py="2"
-      style={{ height: "100%" }}
-    >
+    <VStack justifyContent="center" alignItems="center" py={2} style={{ height: "100%" }}>
       {children}
-    </Flex>
+    </VStack>
   )
 }
