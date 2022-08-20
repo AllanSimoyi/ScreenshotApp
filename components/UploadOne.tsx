@@ -1,4 +1,5 @@
 import { Button, Flex, Image, Text, View } from 'native-base';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 
 export default function UploadOne (props: Props) {
   const { nextStage } = props;
+  const selectPublic = useCallback(() => nextStage("Publicly"), [nextStage]);
+  const selectAnonymous = useCallback(() => nextStage("Anonymously"), [nextStage]);
   return (
     <Flex
       direction="column"
@@ -45,7 +48,7 @@ export default function UploadOne (props: Props) {
           width="70%"
         >
           <Button
-            onPress={() => nextStage("Anonymously")}
+            onPress={selectAnonymous}
             size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m="4">
             <Text color="#fff" fontWeight={"bold"} fontSize="xl">
               Anonymously
@@ -60,9 +63,7 @@ export default function UploadOne (props: Props) {
               Or
             </Text>
           </Flex>
-          <Button
-            onPress={() => nextStage("Publicly")}
-            size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m="4">
+          <Button onPress={selectPublic} size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m={4}>
             <Text color="#fff" fontWeight={"bold"} fontSize="xl">
               Publicly
             </Text>
