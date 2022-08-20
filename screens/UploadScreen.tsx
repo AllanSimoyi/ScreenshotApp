@@ -1,6 +1,5 @@
-import { Flex } from 'native-base';
+import { VStack } from 'native-base';
 import { useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
@@ -29,47 +28,12 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   }, []);
   const sendMessage = useCallback((newPost: CreatePost) => mutate(newPost), [mutate]);
   return (
-    <Flex
-      direction="column"
-      justify="flex-start"
-      align="stretch"
-      px="0"
-    >
-      {
-        stage === 1 &&
-        <UploadOne nextStage={nextStage} />
-      }
-      {
-        stage === 2 &&
-        <UploadTwo
-          mode={mode}
-          sending={mutation.isLoading}
-          sendMessage={sendMessage}
-          error={error}
-          setError={setError}
-        />
-      }
-      {
-        stage === 3 &&
-        <UploadThree />
-      }
-    </Flex>
+    <VStack alignItems="stretch">
+      {stage === 1 && (<UploadOne nextStage={nextStage} />)}
+      {stage === 2 && (
+        <UploadTwo mode={mode} sending={mutation.isLoading} sendMessage={sendMessage} error={error} setError={setError} />
+      )}
+      {stage === 3 && (<UploadThree />)}
+    </VStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
