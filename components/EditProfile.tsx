@@ -1,9 +1,7 @@
-import { Alert, Button, Flex, FormControl, HStack, Input, Modal, Text, VStack } from 'native-base';
+import { Button, FormControl, Input, Modal, Text } from 'native-base';
 import { useCallback, useState } from 'react';
-import { useMutation } from 'react-query';
-import { postRequest } from '../lib/post-request';
+import { useProfileMutation } from '../hooks/useProfileMutation';
 import { CURRENT_USER_KEY, getFromLocalStorage, saveToLocalStorage } from '../lib/session';
-import { URL_PREFIX } from '../lib/url-prefix';
 import { User } from '../lib/users';
 import { UpdateProfile, UpdateProfileSchema } from '../lib/validations';
 import { CustomError } from './custom-error';
@@ -32,35 +30,20 @@ export function EditProfile (props: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const mutation = useMutation(async (input: UpdateProfile) => {
-    const [result, err] = await postRequest<{ user: User; errorMessage: string }>(URL_PREFIX + "/api/update-profile", input);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.user || undefined;
-  }, {
-    onMutate: () => {
-      setIsLoading(true);
-    },
+  const { mutate } = useProfileMutation({
+    onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
         saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
         updateDetails({
-          username: newCurrentUser.username, 
+          username: newCurrentUser.username,
           phoneNumber: newCurrentUser.phoneNumber
         });
         setIsOpen(false);
       }
     },
-    onError: (error) => {
-      setError((error as any).toString());
-    },
-    onSettled: () => {
-      setIsLoading(false);
-    }
+    onError: (error) => setError((error as string)),
+    onSettled: () => setIsLoading(false),
   });
 
   const submitFn = useCallback(async () => {
@@ -79,16 +62,19 @@ export function EditProfile (props: Props) {
       passwordConfirmation: passwordConfirmation || undefined,
     });
     if (!result.success) {
-      return setError(result.error.issues.map(issue => issue.path[0].toString() + " " + issue.message.toLowerCase()).join(", "));
+      const errorMessage = result.error.issues
+        .map(issue => `${issue.path[0].toString()} ${issue.message.toLowerCase()}`)
+        .join(", ");
+      return setError(errorMessage);
     }
-    mutation.mutate({
+    mutate({
       userId: Number(currentUserId),
       username,
       phoneNumber,
       password: password || undefined,
       passwordConfirmation: passwordConfirmation || undefined,
     });
-  }, [mutation]);
+  }, [mutate]);
 
   return (
     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
