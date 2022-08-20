@@ -1,24 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { extendTheme, NativeBaseProvider } from "native-base";
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-import { NativeBaseProvider, extendTheme } from "native-base";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-  onlineManager,
-  focusManager,
-} from 'react-query'
-import { NoInternetModal } from './components/NoInternet';
-import { useOnlineManager } from './hooks/useOnlineManager';
-import { useAppState } from './hooks/useAppState';
 import { Platform } from 'react-native';
+import {
+  focusManager, onlineManager, QueryClient,
+  QueryClientProvider
+} from 'react-query';
+import { NoInternetModal } from './components/NoInternet';
+import { useAppState } from './hooks/useAppState';
+import { useOnlineManager } from './hooks/useOnlineManager';
 
 const queryClient = new QueryClient({
   // defaultOptions: { queries: { retry: 2 } },
