@@ -85,39 +85,24 @@ export function SignIn (props: Props) {
           <Text fontSize="lg" color="#fff">Sign In</Text>
         </Modal.Header>
         <Modal.Body backgroundColor={"#333"}>
-          {
-            isLoading &&
-            <Loading>Signing In...</Loading>
-          }
-          {
-            !isLoading &&
+          {isLoading && <Loading>Signing In...</Loading>}
+          {!isLoading && (
             <>
               <FormControl>
                 <FormControl.Label>Username</FormControl.Label>
                 <Input
-                  color="white"
-                  fontSize={"md"}
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholder="Enter your username"
+                  value={username} onChangeText={setUsername}
+                  color="white" fontSize={"md"} placeholder="Enter your username"
                 />
               </FormControl>
               <FormControl mt="3">
                 <FormControl.Label>Password</FormControl.Label>
                 <Input
-                  type="password"
-                  color="white"
-                  fontSize={"md"}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
+                  value={password} onChangeText={setPassword}
+                  type="password" color="white" fontSize={"md"} placeholder="Enter your password"
                 />
               </FormControl>
-              <Flex
-                flexDirection="column"
-                justify="center"
-                align="center"
-                p="4">
+              <Flex flexDirection="column" justify="center" align="center" p="4">
                 <Button size="sm" variant="link" onPress={createAccountAction}>
                   <Text color="yellow.600" textAlign="center">
                     Don't have an account? Tap here to create one
@@ -125,26 +110,15 @@ export function SignIn (props: Props) {
                 </Button>
               </Flex>
             </>
-          }
-          {
-            error &&
-            <CustomError retry={submitFn}>{error}</CustomError>
-          }
+          )}
+          {error && <CustomError retry={submitFn}>{error}</CustomError>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
-            <Button
-              size="md"
-              variant="ghost"
-              disabled={isLoading}
-              onPress={() => setIsOpen(false)}>
+            <Button size="md" variant="ghost" disabled={isLoading} onPress={() => setIsOpen(false)}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button
-              size="md"
-              bgColor="yellow.600"
-              disabled={isLoading}
-              onPress={submitFn}>
+            <Button size="md" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
               {!isLoading && "Sign In"}
               {isLoading && "Signing In..."}
             </Button>
