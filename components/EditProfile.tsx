@@ -30,6 +30,8 @@ export function EditProfile (props: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const handleClose = useCallback(() => setIsOpen(false), []);
+
   const { mutate } = useProfileMutation({
     onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
@@ -116,22 +118,14 @@ export function EditProfile (props: Props) {
           </>
           }
           {Boolean(error) && <CustomError retry={submitFn}>{error}</CustomError>}
-          ({isLoading && <Loading>Updating Profile...</Loading>}
+          {isLoading && <Loading>Updating Profile...</Loading>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
-            <Button
-              size="lg"
-              variant="ghost"
-              disabled={isLoading}
-              onPress={() => setIsOpen(false)}>
+            <Button size="lg" variant="ghost" disabled={isLoading} onPress={handleClose}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button
-              size="lg"
-              bgColor="yellow.600"
-              disabled={isLoading}
-              onPress={submitFn}>
+            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
               {!isLoading && "Update"}
               {isLoading && "Updating..."}
             </Button>
