@@ -1,4 +1,4 @@
-import { Button, Flex, Image, Text, View } from 'native-base';
+import { Button, Flex, Image, Text, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
@@ -11,67 +11,32 @@ export default function UploadOne (props: Props) {
   const selectPublic = useCallback(() => nextStage("Publicly"), [nextStage]);
   const selectAnonymous = useCallback(() => nextStage("Anonymously"), [nextStage]);
   return (
-    <Flex
-      direction="column"
-      justify="flex-start"
-      align="stretch"
-      px="0"
-      style={{ height: "100%" }}
-    >
-      <Flex
-        direction="column"
-        justify="flex-start"
-        align="center"
-        px="0"
-        py="8"
-        style={{ backgroundColor: "orange" }}
-      >
+    <VStack alignItems="stretch" style={{ height: "100%" }}>
+      <VStack alignItems="center" py={8} style={{ backgroundColor: "orange" }}>
         <Text fontWeight="bold" fontSize="xl" color="#333">
           Choose how you want to report
         </Text>
-      </Flex>
-      <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        px="0"
-        py="8"
-        style={{ backgroundColor: "#000", flexGrow: 1 }}
-      >
+      </VStack>
+      <VStack justifyContent="center" alignItems="center" py={8} style={{ backgroundColor: "#000", flexGrow: 1 }}>
         <Flex flexGrow={1}></Flex>
-        <Flex
-          direction="column"
-          justify="center"
-          align="stretch"
-          px="0"
-          py="8"
-          width="70%"
-        >
-          <Button
-            onPress={selectAnonymous}
-            size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m="4">
+        <VStack justifyContent="center" alignItems="stretch" py={8} width="70%">
+          <Button onPress={selectAnonymous} size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m={4}>
             <Text color="#fff" fontWeight={"bold"} fontSize="xl">
               Anonymously
             </Text>
           </Button>
-          <Flex
-            direction="column"
-            justify="center"
-            align="center"
-          >
-            <Text fontWeight="bold" fontSize="xl" color="#fff">
-              Or
-            </Text>
-          </Flex>
+          <VStack justifyContent={"center"} alignItems="center">
+            <Text fontWeight="bold" fontSize="xl" color="#fff">Or</Text>
+          </VStack>
           <Button onPress={selectPublic} size="lg" colorScheme="yellow" variant="outline" borderColor="yellow.500" borderWidth={1} borderRadius={35} py={4} px={6} m={4}>
             <Text color="#fff" fontWeight={"bold"} fontSize="xl">
               Publicly
             </Text>
           </Button>
-        </Flex>
+        </VStack>
         <Flex flexGrow={1}></Flex>
-      </Flex>
-    </Flex>
+      </VStack>
+    </VStack>
 
   );
 }
