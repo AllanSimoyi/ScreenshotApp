@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-  launchCameraAsync,
+  ImagePickerResult, launchCameraAsync,
   launchImageLibraryAsync,
   MediaTypeOptions,
   requestCameraPermissionsAsync
 } from 'expo-image-picker';
-import { Alert, Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
+import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { getImageSource } from '../lib/image-rendering';
@@ -37,20 +37,28 @@ export default function UploadTwo (props: Props) {
   const [category, setCategory] = useState(categories[0]);
   const [description, setDescription] = useState("");
 
+  const requestCamera = useCallback(async () => {
+    const { status } = await requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      return setError('No access to camera');
+    }
+  }, [requestCameraPermissionsAsync]);
+
+  const processCameraResult = useCallback((result: ImagePickerResult) => {
+    if (!result.cancelled) {
+      setBase64(result.base64 || '');
+      setImagePath(result.uri);
+      setResourceType(result.type || "");
+      setFileName((new Date).getTime().toString())
+    }
+  }, []);
+
   const takePicture = useCallback(async () => {
     try {
-      const { status } = await requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        return setError('No access to camera');
-      }
       setIsLoading(true);
+      await requestCamera();
       const result = await launchCameraAsync({ base64: true, quality: 1 });
-      if (!result.cancelled) {
-        setBase64(result.base64 || '');
-        setImagePath(result.uri);
-        setResourceType(result.type || "");
-        setFileName((new Date).getTime().toString())
-      }
+      processCameraResult(result);
     } catch ({ message }) {
       console.log(message as string);
     } finally {
@@ -60,23 +68,15 @@ export default function UploadTwo (props: Props) {
 
   const selectImage = useCallback(async () => {
     try {
-      const { status } = await requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        return setError('No access to camera');
-      }
       setIsLoading(true);
+      await requestCamera();
       const result = await launchImageLibraryAsync({
         mediaTypes: MediaTypeOptions.All,
         allowsEditing: true,
         quality: 1,
         base64: true,
       });
-      if (!result.cancelled) {
-        setBase64(result.base64 || '');
-        setImagePath(result.uri);
-        setResourceType(result.type || "");
-        setFileName((new Date).getTime().toString())
-      }
+      processCameraResult(result);
     } catch ({ message }) {
       console.log(message as string);
     } finally {
