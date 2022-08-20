@@ -106,7 +106,7 @@ function BottomTabNavigator () {
         options={({ }: RootTabScreenProps<'Inbox'>) => ({
           headerStyle: { backgroundColor: "orange", height: 150 },
           headerTitle: (_) => (
-            <VStack alignItems="stretch" py={2}>
+            <VStack alignItems="stretch" py={2} minWidth="full">
               <Text fontSize="2xl" fontWeight="bold" color="#333">Inbox</Text>
               <Input
                 size="xl" mt="2" py="1" px="4"
