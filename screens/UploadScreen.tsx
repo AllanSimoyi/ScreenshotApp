@@ -17,7 +17,7 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   const [stage, setStage] = useState(1);
   const [mode, setMode] = useState("Anonymously");
   const [error, setError] = useState("");
-  const { mutate } = usePostMutation({
+  const { mutate, ...mutation } = usePostMutation({
     onSuccess: () => {
       setStage(3);
       setTimeout(() => {
