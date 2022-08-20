@@ -22,16 +22,12 @@ import UploadScreen from '../screens/UploadScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
-
 export default function Navigation ({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar
-        animated={true}
-        barStyle={'dark-content'}
-      />
+      <StatusBar animated={true} barStyle={'dark-content'} />
       <RootNavigator />
     </NavigationContainer>
   );
@@ -69,15 +65,13 @@ function BottomTabNavigator () {
       initialRouteName="Feed"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
-        headerStyle: {
-          backgroundColor: 'orange',
-        }
+        headerStyle: { backgroundColor: 'orange' }
       }}>
       <BottomTab.Screen
         name="Feed"
         component={FeedScreen}
-        options={({ navigation }: RootTabScreenProps<'Feed'>) => ({
-          headerTitle: (props) => <Text fontSize="2xl" fontWeight="bold" color="#333">Feeds</Text>,
+        options={({ }: RootTabScreenProps<'Feed'>) => ({
+          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Feeds</Text>,
           tabBarIcon: ({ color }) => <TabBarIcon name="feed" color={color} />,
         })}
       />
