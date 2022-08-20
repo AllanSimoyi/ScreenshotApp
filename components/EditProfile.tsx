@@ -48,7 +48,7 @@ export function EditProfile (props: Props) {
     onSettled: () => setIsLoading(false),
   });
 
-  const submitFn = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     const currentUserId = await getFromLocalStorage(CURRENT_USER_KEY);
     if (!currentUserId) {
       return setError("No currrent user data found");
@@ -117,7 +117,7 @@ export function EditProfile (props: Props) {
             </FormControl>
           </>
           }
-          {Boolean(error) && <CustomError retry={submitFn}>{error}</CustomError>}
+          {Boolean(error) && <CustomError retry={handleSubmit}>{error}</CustomError>}
           {isLoading && <Loading>Updating Profile...</Loading>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
@@ -125,7 +125,7 @@ export function EditProfile (props: Props) {
             <Button size="lg" variant="ghost" disabled={isLoading} onPress={handleClose}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
+            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={handleSubmit}>
               {!isLoading && "Update"}
               {isLoading && "Updating..."}
             </Button>
