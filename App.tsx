@@ -15,7 +15,7 @@ import {
   onlineManager,
   focusManager,
 } from 'react-query'
-import { NoInternetModal } from './components/no-internet';
+import { NoInternetModal } from './components/NoInternet';
 import { useOnlineManager } from './hooks/useOnlineManager';
 import { useAppState } from './hooks/useAppState';
 import { Platform } from 'react-native';
