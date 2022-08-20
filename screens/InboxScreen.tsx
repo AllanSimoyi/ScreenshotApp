@@ -5,7 +5,7 @@ import { RefreshControl } from 'react-native';
 import { CustomError } from '../components/CustomError';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { NoListItems } from '../components/NoListItems';
-import { SendMessage } from '../components/send-message';
+import { SendMessage } from '../components/SendMessage';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
 import { useMessages, useRecordMessage } from '../hooks/useMessages';
