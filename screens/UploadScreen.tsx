@@ -1,14 +1,10 @@
 import { Flex } from 'native-base';
 import { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useMutation } from 'react-query';
 import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
 import { usePostMutation } from '../hooks/usePostMutation';
-import { postRequest } from '../lib/post-request';
-import { Post } from "../lib/posts";
-import { URL_PREFIX } from '../lib/url-prefix';
 import { CreatePost } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
