@@ -63,7 +63,7 @@ export function EditProfile (props: Props) {
     });
     if (!result.success) {
       const errorMessage = result.error.issues
-        .map(issue => `${issue.path[0].toString()} ${issue.message.toLowerCase()}`)
+        .map(issue => `${ issue.path[0].toString() } ${ issue.message.toLowerCase() }`)
         .join(", ");
       return setError(errorMessage);
     }
@@ -84,61 +84,39 @@ export function EditProfile (props: Props) {
           <Text fontSize="lg" color="#fff">Edit Profile</Text>
         </Modal.Header>
         <Modal.Body backgroundColor={"#333"}>
-          {
-            !isLoading &&
-            <>
-              <FormControl>
-                <FormControl.Label>Username</FormControl.Label>
-                <Input
-                  color="white"
-                  fontSize={"md"}
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholder="Enter your username"
-                />
-              </FormControl>
-              <FormControl mt="3">
-                <FormControl.Label>PhoneNumber</FormControl.Label>
-                <Input
-                  color="white"
-                  fontSize={"md"}
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                  placeholder="Enter your phone number"
-                />
-              </FormControl>
-              <FormControl mt="3">
-                <FormControl.Label>Password</FormControl.Label>
-                <Input
-                  type="password"
-                  color="white"
-                  fontSize={"md"}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
-                />
-              </FormControl>
-              <FormControl mt="3">
-                <FormControl.Label>Re-enter Password</FormControl.Label>
-                <Input
-                  type="password"
-                  color="white"
-                  fontSize={"md"}
-                  value={passwordConfirmation}
-                  onChangeText={setPasswordConfirmation}
-                  placeholder="Re-enter your password"
-                />
-              </FormControl>
-            </>
+          {!isLoading && <>
+            <FormControl>
+              <FormControl.Label>Username</FormControl.Label>
+              <Input
+                value={username} onChangeText={setUsername}
+                color="white" fontSize={"md"} placeholder="Enter your username"
+              />
+            </FormControl>
+            <FormControl mt="3">
+              <FormControl.Label>PhoneNumber</FormControl.Label>
+              <Input
+                value={phoneNumber} onChangeText={setPhoneNumber}
+                color="white" fontSize={"md"} placeholder="Enter your phone number"
+              />
+            </FormControl>
+            <FormControl mt="3">
+              <FormControl.Label>Password</FormControl.Label>
+              <Input
+                value={password} onChangeText={setPassword}
+                type="password" color="white" fontSize={"md"} placeholder="Enter your password"
+              />
+            </FormControl>
+            <FormControl mt="3">
+              <FormControl.Label>Re-enter Password</FormControl.Label>
+              <Input
+                value={passwordConfirmation} onChangeText={setPasswordConfirmation}
+                type="password" color="white" fontSize={"md"} placeholder="Re-enter your password"
+              />
+            </FormControl>
+          </>
           }
-          {
-            error &&
-            <CustomError retry={submitFn}>{error}</CustomError>
-          }
-          {
-            isLoading &&
-            <Loading>Updating Profile...</Loading>
-          }
+          {Boolean(error) && <CustomError retry={submitFn}>{error}</CustomError>}
+          ({isLoading && <Loading>Updating Profile...</Loading>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
