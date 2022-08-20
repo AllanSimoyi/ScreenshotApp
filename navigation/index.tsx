@@ -7,9 +7,9 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Center, Flex, Icon, Input, Text } from 'native-base';
+import { Icon, Input, Text, VStack } from 'native-base';
 import * as React from 'react';
-import { ColorSchemeName, Pressable, StatusBar } from 'react-native';
+import { ColorSchemeName, StatusBar } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import DiscoverScreen from '../screens/DiscoverScreen';
@@ -84,41 +84,12 @@ function BottomTabNavigator () {
       <BottomTab.Screen
         name="Discover"
         component={DiscoverScreen}
-        options={({ navigation }: RootTabScreenProps<'Discover'>) => ({
-          headerStyle: {
-            backgroundColor: "orange",
-            // height: 150,
-          },
-          headerTitle: (props) => (
-            <Flex
-              direction="column"
-              justify="flex-start"
-              align="stretch"
-              minWidth="full"
-              // py="2"
-            >
+        options={({ }: RootTabScreenProps<'Discover'>) => ({
+          headerStyle: { backgroundColor: "orange" },
+          headerTitle: (_) => (
+            <VStack alignItems="stretch" minWidth="full">
               <Text fontSize="2xl" fontWeight="bold" color="#333">Discover</Text>
-              {/* <Input
-                size="xl"
-                fontWeight="bold"
-                color="black"
-                width="80%"
-                placeholder="Search"
-                variant="rounded"
-                borderColor="#333"
-                borderWidth="2"
-                mt="2"
-                py="1"
-                px="4"
-                InputRightElement={
-                  <Icon
-                    mx="2"
-                    size="6"
-                    color="#333"
-                    as={<Ionicons name="ios-search" />}
-                  />}
-              /> */}
-            </Flex>
+            </VStack>
           ),
           tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
         })}
@@ -126,60 +97,30 @@ function BottomTabNavigator () {
       <BottomTab.Screen
         name="Upload"
         component={UploadScreen}
-        options={({ navigation }: RootTabScreenProps<'Upload'>) => ({
-          headerTitle: (props) => (
-            <Flex
-              direction="column"
-              justify="center"
-              align="center"
-              minWidth="full">
+        options={({ }: RootTabScreenProps<'Upload'>) => ({
+          headerTitle: (_) => (
+            <VStack justifyContent="center" alignItems="center" minWidth="full">
               <Text fontSize="2xl" fontWeight="bold" color="#333">Speak Up & Help</Text>
-            </Flex>
+            </VStack>
           ),
           tabBarIcon: ({ color }) => <TabBarIcon name="plus-square" color={color} />,
-          // headerShown: false,
-          // headerStyle: {
-          // },
         })}
       />
       <BottomTab.Screen
         name="Inbox"
         component={InboxScreen}
-        options={({ navigation }: RootTabScreenProps<'Inbox'>) => ({
-          headerStyle: {
-            backgroundColor: "orange",
-            height: 150,
-          },
-          headerTitle: (props) => (
-            <Flex
-              direction="column"
-              justify="flex-start"
-              align="stretch"
-              minWidth="full"
-              py="2"
-            >
+        options={({ }: RootTabScreenProps<'Inbox'>) => ({
+          headerStyle: { backgroundColor: "orange", height: 150 },
+          headerTitle: (_) => (
+            <VStack alignItems="stretch" py={2}>
               <Text fontSize="2xl" fontWeight="bold" color="#333">Inbox</Text>
               <Input
-                size="xl"
-                fontWeight="bold"
-                color="black"
-                width="80%"
-                placeholder="Search"
-                variant="rounded"
-                borderColor="#333"
-                borderWidth="2"
-                mt="2"
-                py="1"
-                px="4"
-                InputRightElement={
-                  <Icon
-                    mx="2"
-                    size="6"
-                    color="#333"
-                    as={<Ionicons name="ios-search" />}
-                  />}
+                size="xl" mt="2" py="1" px="4"
+                fontWeight="bold" color="black" width="80%"
+                borderWidth="2" variant="rounded" borderColor="#333" placeholder="Search"
+                InputRightElement={<Icon mx="2" size="6" color="#333" as={<Ionicons name="ios-search" />} />}
               />
-            </Flex>
+            </VStack>
           ),
           tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
         })}
@@ -187,8 +128,8 @@ function BottomTabNavigator () {
       <BottomTab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={({ navigation }: RootTabScreenProps<'Profile'>) => ({
-          headerTitle: (props) => <Text fontSize="2xl" fontWeight="bold" color="#333">Profile</Text>,
+        options={({ }: RootTabScreenProps<'Profile'>) => ({
+          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Profile</Text>,
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         })}
       />
