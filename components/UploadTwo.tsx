@@ -7,11 +7,11 @@ import {
 } from 'expo-image-picker';
 import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
-import { ImageBackground, StyleSheet } from 'react-native';
-import { CustomImageBackground } from "./CustomImageBackground";
+import { StyleSheet } from 'react-native';
 import { getImageSource } from '../lib/image-rendering';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './custom-error';
+import { CustomImageBackground } from "./CustomImageBackground";
 
 interface Props {
   mode: string;
