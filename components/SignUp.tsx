@@ -78,87 +78,54 @@ export function SignUp (props: Props) {
           <Text fontSize="lg" color="#fff">Create Account</Text>
         </Modal.Header>
         <Modal.Body backgroundColor={"#333"}>
-          {
-            isLoading &&
-            <Loading>Signing Up...</Loading>
-          }
-          {
-            !isLoading &&
+          {isLoading && <Loading>Signing Up...</Loading>}
+          {!isLoading && (
             <>
               <FormControl>
                 <FormControl.Label>Username</FormControl.Label>
                 <Input
-                  color="white"
-                  fontSize={"md"}
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholder="Enter your username"
+                  value={username} onChangeText={setUsername}
+                  color="white" fontSize={"md"} placeholder="Enter your username"
                 />
               </FormControl>
               <FormControl mt="3">
                 <FormControl.Label>Phone Number (Optional)</FormControl.Label>
                 <Input
-                  color="white"
-                  fontSize={"md"}
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                  placeholder="Enter your phone number (optional)"
+                  value={phoneNumber} onChangeText={setPhoneNumber}
+                  color="white" fontSize={"md"} placeholder="Enter your phone number (optional)"
                 />
               </FormControl>
               <FormControl mt="3">
                 <FormControl.Label>Password</FormControl.Label>
                 <Input
-                  type="password"
-                  color="white"
-                  fontSize={"md"}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
+                  value={password} onChangeText={setPassword}
+                  type="password" color="white" fontSize={"md"} placeholder="Enter your password"
                 />
               </FormControl>
               <FormControl mt="3">
                 <FormControl.Label>Re-enter Password</FormControl.Label>
                 <Input
-                  type="password"
-                  color="white"
-                  fontSize={"md"}
-                  value={passwordConfirmation}
-                  onChangeText={setPasswordConfirmation}
-                  placeholder="Re-enter your password"
+                  value={passwordConfirmation} onChangeText={setPasswordConfirmation}
+                  type="password" color="white" fontSize={"md"} placeholder="Re-enter your password"
                 />
               </FormControl>
-              <Flex
-                flexDirection="column"
-                justify="center"
-                align="center"
-                p="4">
+              <VStack justifyContent="center" alignItems="center" p={4}>
                 <Button size="sm" variant="link" onPress={alreadyHaveAccountAction}>
                   <Text color="yellow.600">
                     Already have an account? Tap here to sign in
                   </Text>
                 </Button>
-              </Flex>
+              </VStack>
             </>
-          }
-          {
-            error &&
-            <CustomError retry={submitFn}>{error}</CustomError>
-          }
+          )}
+          {Boolean(error) && <CustomError retry={submitFn}>{error}</CustomError>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
-            <Button
-              size="lg"
-              variant="ghost"
-              disabled={isLoading}
-              onPress={() => setIsOpen(false)}>
+            <Button size="lg" variant="ghost" disabled={isLoading} onPress={() => setIsOpen(false)}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button
-              size="lg"
-              bgColor="yellow.600"
-              disabled={isLoading}
-              onPress={submitFn}>
+            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
               {!isLoading && "Sign Up"}
               {isLoading && "Signing Up..."}
             </Button>
