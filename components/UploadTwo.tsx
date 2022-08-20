@@ -98,47 +98,7 @@ export default function UploadTwo (props: Props) {
     }
   }, []);
 
-  // const cloudinaryUpload = (photo: any) => {
-  //   return new Promise<string>((resolve, reject) => {
-  //     const UPLOAD_RESET = 'pbpinhve';
-
-  //     const CLOUD_NAME = "dv2mivpiz";
-  //     const url = `https://api.cloudinary.com/v1_1/${ CLOUD_NAME }/upload`;
-
-  //     const formData = new FormData();
-  //     formData.append('file', photo);
-  //     formData.append('upload_preset', UPLOAD_RESET);
-  //     formData.append('tags', 'rte');
-  //     formData.append('context', '');
-  //     formData.append("cloud_name", CLOUD_NAME)
-
-  //     axios.post(url, formData, {
-  //       headers: {
-  //         "Content-type": "multipart/form-data",
-  //         "Access-Control-Allow-Origin": "*",
-  //       }
-  //     })
-  //       .then(data => {
-  //         return resolve((data as any).secure_url);
-  //       }).catch(err => {
-  //         console.log("???" + err);
-  //         return reject(err?.message || "Image upload failed");
-  //       });
-  //   })
-
-  // }
-
   async function submitFn () {
-
-    // let uploadedImageUrl = "";
-
-    // try {
-    //   uploadedImageUrl = await uploadImageToServer(imagePath);
-    //   console.log(uploadedImageUrl + " uploaded");
-    // } catch (error) {
-    //   console.log("---" + error);
-    //   return setError((error as any).toString());
-    // }
     setError("")
 
     const details: CreatePost = {
@@ -178,7 +138,6 @@ export default function UploadTwo (props: Props) {
         >
           <ImageBackground
             source={
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               imagePath
                 ? { uri: imagePath }
                 : require('../assets/images/image_placeholder.jpeg')
@@ -186,7 +145,6 @@ export default function UploadTwo (props: Props) {
             accessible
             accessibilityLabel="Issue"
             resizeMode="cover"
-            // blurRadius={1}
             borderRadius={5}
             style={{
               flex: 1,
@@ -243,32 +201,6 @@ export default function UploadTwo (props: Props) {
                   </Text>
                 </Button>
               </Flex>
-              {/* <Flex
-                direction="column"
-                justify="center"
-                align="stretch"
-                p="2"
-                style={{ flexGrow: 1 }}
-              >
-                <Button
-                  disabled
-                  size="xs"
-                  leftIcon={<Icon as={Ionicons} color="#333" name="videocam" size="xs" />}
-                  colorScheme="yellow"
-                  variant="solid"
-                  bgColor="gray.400"
-                  // bgColor="yellow.600"
-                  // borderColor="yellow.600"
-                  borderWidth={1}
-                  borderRadius={35}
-                  isLoading={isLoading}
-                  isLoadingText="PROCESSING"
-                  onPress={takePicture}>
-                  <Text color="#333" fontWeight={"bold"} fontSize="xs">
-                    VIDEO
-                  </Text>
-                </Button>
-              </Flex> */}
             </Flex>
           </ImageBackground>
         </Flex>
@@ -300,7 +232,6 @@ export default function UploadTwo (props: Props) {
             accessibilityLabel="Choose Category"
             _selectedItem={{
               bg: "gray.400",
-              // borderRadius: 15,
             }} mt={1} onValueChange={itemValue => setCategory(itemValue)}
             placeholder="Choose Category"
           >
@@ -315,9 +246,6 @@ export default function UploadTwo (props: Props) {
             borderRadius={15}
             value={description}
             onChangeText={setDescription}
-            // onChange={(e) => {
-            //   setDescription((e.currentTarget as any).value as string)
-            // }}
             isDisabled={isLoading}
             w="100%"
             color="white"
@@ -355,7 +283,6 @@ export default function UploadTwo (props: Props) {
           }
           <Button
             size="md"
-            // colorScheme="yellow"
             variant="solid"
             bgColor="yellow.600"
             borderWidth={1}
@@ -380,37 +307,7 @@ export default function UploadTwo (props: Props) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    // backgroundColor: '#fff',
     alignItems: 'stretch',
     justifyContent: 'flex-start',
-  },
-  cameraContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'teal',
-  },
-  camera: {
-    width: '100%',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {},
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
