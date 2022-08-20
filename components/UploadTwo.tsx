@@ -8,6 +8,7 @@ import {
 import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
+import { CustomImageBackground } from "./CustomImageBackground";
 import { getImageSource } from '../lib/image-rendering';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './custom-error';
@@ -107,11 +108,7 @@ export default function UploadTwo (props: Props) {
     <ScrollView contentContainerStyle={styles.container}>
       <VStack alignItems="stretch" style={{ height: "100%" }}>
         <VStack justifyContent={"center"} alignItems="stretch" pb={2} style={{ height: 300 }}>
-          <ImageBackground
-            source={getImageSource(imagePath)}
-            accessible accessibilityLabel="Issue" resizeMode="cover"
-            borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}
-          >
+          <CustomImageBackground source={getImageSource(imagePath)} borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
             <Flex direction="row" justify="center" align="flex-end">
               <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                 <Button
@@ -130,7 +127,7 @@ export default function UploadTwo (props: Props) {
                 </Button>
               </VStack>
             </Flex>
-          </ImageBackground>
+          </CustomImageBackground>
         </VStack>
         <VStack alignItems="stretch" p={2}>
           <HStack alignItems="center">
