@@ -35,7 +35,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
   const openSignInModal = useCallback(() => setSignInModalIsOpen(true), []);
   const openSignUpModal = useCallback(() => setSignUpModalIsOpen(true), []);
   const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
-  const posts = query.data?.filter(post => post.userId !== details.userId) || [];
+  const posts = query.data?.filter(post => post.userId === details.userId) || [];
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {isLoading && (
