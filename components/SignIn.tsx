@@ -77,8 +77,10 @@ export function SignIn (props: Props) {
     openSignUpModal();
   }, [setIsOpen, openSignUpModal]);
 
+  const handleClose = useCallback(() => setIsOpen(false), [setIsOpen]);
+
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <Modal.Content maxWidth="400px">
         <Modal.CloseButton />
         <Modal.Header backgroundColor={"#333"}>
@@ -115,7 +117,7 @@ export function SignIn (props: Props) {
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
-            <Button size="md" variant="ghost" disabled={isLoading} onPress={() => setIsOpen(false)}>
+            <Button size="md" variant="ghost" disabled={isLoading} onPress={handleClose}>
               <Text color="#fff">Cancel</Text>
             </Button>
             <Button size="md" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
