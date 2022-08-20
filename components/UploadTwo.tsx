@@ -8,7 +8,9 @@ import {
 import { Alert, Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
+import { getImageSource } from '../lib/image-rendering';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
+import { CustomError } from './custom-error';
 
 interface Props {
   mode: string;
@@ -121,119 +123,43 @@ export default function UploadTwo (props: Props) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Flex
-        direction="column"
-        justify="flex-start"
-        align="stretch"
-        px="0"
-        style={{ height: "100%" }}
-      >
-        <Flex
-          direction="column"
-          justify="center"
-          align="stretch"
-          pb="2"
-          px="0"
-          style={{ height: 300 }}
-        >
+      <VStack alignItems="stretch" style={{ height: "100%" }}>
+        <VStack justifyContent={"center"} alignItems="stretch" pb={2} style={{ height: 300 }}>
           <ImageBackground
-            source={
-              imagePath
-                ? { uri: imagePath }
-                : require('../assets/images/image_placeholder.jpeg')
-            }
-            accessible
-            accessibilityLabel="Issue"
-            resizeMode="cover"
-            borderRadius={5}
-            style={{
-              flex: 1,
-              justifyContent: 'flex-end',
-              height: 300,
-            }}
+            source={getImageSource(imagePath)}
+            accessible accessibilityLabel="Issue" resizeMode="cover"
+            borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}
           >
             <Flex direction="row" justify="center" align="flex-end">
-              <Flex
-                direction="column"
-                justify="center"
-                align="stretch"
-                p="2"
-                style={{ flexGrow: 1 }}
-              >
+              <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                 <Button
-                  size="xs"
-                  leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
-                  colorScheme="yellow"
-                  variant="solid"
-                  bgColor="yellow.600"
-                  borderColor="yellow.600"
-                  borderWidth={1}
-                  borderRadius={35}
-                  isLoading={isLoading}
-                  isLoadingText="PROCESSING"
-                  onPress={takePicture}>
-                  <Text color="#333" fontWeight={"bold"} fontSize="xs">
-                    CAMERA
-                  </Text>
+                  size="xs" leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
+                  colorScheme="yellow" variant="solid" bgColor="yellow.600" onPress={takePicture}
+                  borderColor="yellow.600" borderWidth={1} borderRadius={35} isLoading={isLoading} isLoadingText="PROCESSING">
+                  <Text color="#333" fontWeight={"bold"} fontSize="xs">CAMERA</Text>
                 </Button>
-              </Flex>
-              <Flex
-                direction="column"
-                justify="center"
-                align="stretch"
-                p="2"
-                style={{ flexGrow: 1 }}
-              >
+              </VStack>
+              <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                 <Button
-                  size="xs"
-                  colorScheme="yellow"
-                  variant="solid"
-                  bgColor="yellow.600"
-                  borderColor="yellow.600"
-                  borderWidth={1}
-                  borderRadius={35}
-                  leftIcon={<Icon as={Ionicons} color="#333" name="images" size="xs" />}
-                  isLoading={isLoading}
-                  isLoadingText="PROCESSING"
-                  onPress={selectImage}>
-                  <Text color="#333" fontWeight={"bold"} fontSize="xs">
-                    GALLERY
-                  </Text>
+                  leftIcon={<Icon as={Ionicons} />} onPress={selectImage} name="images"
+                  size="xs" colorScheme="yellow" color="#333" isLoading={isLoading} isLoadingText="PROCESSING"
+                  variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={35}>
+                  <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
                 </Button>
-              </Flex>
+              </VStack>
             </Flex>
           </ImageBackground>
-        </Flex>
-        <Flex
-          direction="column"
-          justify="flex-start"
-          align="stretch"
-          py="2"
-          px="2"
-        >
-          <Flex
-            direction="row"
-            justify="flex-start"
-            align="center">
-            <Text bold fontSize="md" mt="2" color="#fff">
-              Category
-            </Text>
+        </VStack>
+        <VStack alignItems="stretch" p={2}>
+          <HStack alignItems="center">
+            <Text bold fontSize="md" mt="2" color="#fff">Category</Text>
             <Flex flexGrow={1} />
-            <Text italic fontSize="md" mt="2" color="#d1d1d1">
-              {mode}
-            </Text>
-          </Flex>
+            <Text italic fontSize="md" mt="2" color="#d1d1d1">{mode}</Text>
+          </HStack>
           <Select
-            borderRadius={15}
-            color="white"
-            fontSize={"md"}
-            selectedValue={category}
-            minWidth="200"
-            accessibilityLabel="Choose Category"
-            _selectedItem={{
-              bg: "gray.400",
-            }} mt={1} onValueChange={itemValue => setCategory(itemValue)}
-            placeholder="Choose Category"
+            borderRadius={15} color="white" placeholder="Choose Category"
+            fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
+            _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue)}
           >
             {categories.map(category => <Select.Item label={category} value={category} />)}
           </Select>
@@ -242,64 +168,18 @@ export default function UploadTwo (props: Props) {
           </Text>
           <TextArea
             placeholder="Provide a description (optional)"
-            autoCompleteType
-            borderRadius={15}
-            value={description}
-            onChangeText={setDescription}
-            isDisabled={isLoading}
-            w="100%"
-            color="white"
-            fontSize={"md"}
+            autoCompleteType borderRadius={15} value={description} onChangeText={setDescription}
+            isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
           />
-          {
-            error &&
-            <Flex
-              direction="column"
-              justify="center"
-              align="stretch"
-              py="4"
-            >
-              <Alert w="100%" status="error">
-                <VStack space={2} flexShrink={1} w="100%">
-                  <HStack flexShrink={1} space={2} justifyContent="space-between">
-                    <HStack space={2} flexShrink={1}>
-                      <Alert.Icon mt="1" />
-                      <Text fontSize="md" color="coolGray.800">
-                        {error}
-                      </Text>
-                    </HStack>
-                    <Flex
-                      direction="column"
-                      justify="center"
-                      align="center">
-                      <Button borderColor="black" onPress={submitFn} variant="outline">
-                        RETRY
-                      </Button>
-                    </Flex>
-                  </HStack>
-                </VStack>
-              </Alert>
-            </Flex>
-          }
-          <Button
-            size="md"
-            variant="solid"
-            bgColor="yellow.600"
-            borderWidth={1}
-            borderRadius={35}
-            py={2}
-            px={4}
-            mt="6"
-            mb="4"
-            onPress={submitFn}
-          >
+          {error && (<CustomError retry={submitFn}>RETRY</CustomError>)}
+          <Button onPress={submitFn} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={35} py={2} px={4} mt={6} mb={4}>
             <Text color="#333" fontWeight={"bold"} fontSize="xl">
               {sending && "SENDING..."}
               {!sending && "SEND"}
             </Text>
           </Button>
-        </Flex>
-      </Flex>
+        </VStack>
+      </VStack>
     </ScrollView>
   );
 }
