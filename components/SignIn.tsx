@@ -7,7 +7,7 @@ import { URL_PREFIX } from '../lib/url-prefix';
 import { ProfileDetails, User } from '../lib/users';
 import { SignInDetails, SignInSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
-import { Loading } from './loading';
+import { Loading } from './Loading';
 
 interface Props {
   isOpen: boolean;

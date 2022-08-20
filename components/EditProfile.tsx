@@ -5,7 +5,7 @@ import { CURRENT_USER_KEY, getFromLocalStorage, saveToLocalStorage } from '../li
 import { User } from '../lib/users';
 import { UpdateProfile, UpdateProfileSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
-import { Loading } from './loading';
+import { Loading } from './Loading';
 
 interface Props {
   input: Input,

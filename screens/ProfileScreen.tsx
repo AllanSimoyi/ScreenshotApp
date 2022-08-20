@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import { Col, Grid, Row } from "react-native-easy-grid";
 import { CustomError } from '../components/CustomError';
 import { EditProfile } from '../components/EditProfile';
-import { Loading } from '../components/loading';
+import { Loading } from '../components/Loading';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
 import { usePosts } from "../hooks/usePosts";
