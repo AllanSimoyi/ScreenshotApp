@@ -1,11 +1,9 @@
-import { Alert, Button, Flex, FormControl, HStack, Input, Modal, Text, VStack } from 'native-base';
+import { Button, Flex, FormControl, Input, Modal, Text } from 'native-base';
 import { useCallback, useState } from 'react';
-import { useMutation } from 'react-query';
-import { postRequest } from '../lib/post-request';
+import { useSignIn } from '../hooks/useSignIn';
 import { CURRENT_USER_KEY, saveToLocalStorage } from '../lib/session';
-import { URL_PREFIX } from '../lib/url-prefix';
 import { ProfileDetails, User } from '../lib/users';
-import { SignInDetails, SignInSchema } from '../lib/validations';
+import { SignInSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
 import { Loading } from './Loading';
 
@@ -21,23 +19,11 @@ export function SignIn (props: Props) {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const mutation = useMutation(async (input: SignInDetails) => {
-    const [result, err] = await postRequest<{ user: User; errorMessage: string }>(URL_PREFIX + "/api/custom-sign-in", input);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.user || undefined;
-  }, {
-    onMutate: () => {
-      setIsLoading(true);
-    },
+  const { mutate } = useSignIn({
+    onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
         saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
@@ -49,28 +35,21 @@ export function SignIn (props: Props) {
         });
       }
     },
-    onError: (error) => {
-      setError((error as any).toString());
-    },
-    onSettled: () => {
-      setIsLoading(false);
-    }
-  });
+    onError: (error) => setError((error as string)),
+    onSettled: () => setIsLoading(false)
+  })
 
-  const submitFn = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     setError("");
-    const result = await SignInSchema.safeParseAsync({
-      username,
-      password,
-    });
+    const result = await SignInSchema.safeParseAsync({ username, password });
     if (!result.success) {
-      return setError(result.error.issues.map(issue => issue.path[0].toString() + " " + issue.message.toLowerCase()).join(", "));
+      const errorMessage = result.error.issues
+        .map(issue => `${issue.path[0].toString()} ${issue.message.toLowerCase()}`)
+        .join(", ");
+      return setError(errorMessage);
     }
-    mutation.mutate({
-      username,
-      password,
-    });
-  }, [mutation]);
+    mutate({ username, password });
+  }, [mutate]);
 
   const createAccountAction = useCallback(() => {
     setIsOpen(false);
@@ -113,14 +92,14 @@ export function SignIn (props: Props) {
               </Flex>
             </>
           )}
-          {error && <CustomError retry={submitFn}>{error}</CustomError>}
+          {error && <CustomError retry={handleSubmit}>{error}</CustomError>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
             <Button size="md" variant="ghost" disabled={isLoading} onPress={handleClose}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button size="md" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
+            <Button size="md" bgColor="yellow.600" disabled={isLoading} onPress={handleSubmit}>
               {!isLoading && "Sign In"}
               {isLoading && "Signing In..."}
             </Button>
