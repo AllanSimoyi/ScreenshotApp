@@ -1,6 +1,7 @@
 import { Alert, Button, Flex, FormControl, HStack, Input, Modal, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
 import { useMutation } from 'react-query';
+import { useCreateAccount } from '../hooks/useCreateAccount';
 import { postRequest } from '../lib/post-request';
 import { CURRENT_USER_KEY, saveToLocalStorage } from '../lib/session';
 import { URL_PREFIX } from '../lib/url-prefix';
@@ -32,19 +33,8 @@ export function SignUp (props: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const mutation = useMutation(async (input: SignUpDetails) => {
-    const [result, err] = await postRequest<{ user: User; errorMessage: string; }>(URL_PREFIX + "/api/users", input);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.user || undefined;
-  }, {
-    onMutate: () => {
-      setIsLoading(true);
-    },
+  const { mutate } = useCreateAccount({
+    onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
         saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
@@ -56,12 +46,8 @@ export function SignUp (props: Props) {
         });
       }
     },
-    onError: (error) => {
-      setError((error as any).toString());
-    },
-    onSettled: () => {
-      setIsLoading(false);
-    }
+    onError: (error) => setError((error as string)),
+    onSettled: () => setIsLoading(false)
   });
 
   const submitFn = useCallback(async () => {
@@ -69,22 +55,15 @@ export function SignUp (props: Props) {
     if (password !== passwordConfirmation) {
       return setError("Please ensure passwords match");
     }
-    const result = await SignupSchema.safeParseAsync({
-      username,
-      phoneNumber,
-      password,
-      role: "Normal",
-    });
+    const result = await SignupSchema.safeParseAsync({ username, phoneNumber, password, role: "Normal" });
     if (!result.success) {
-      return setError(result.error.issues.map(issue => issue.path[0].toString() + " " + issue.message.toLowerCase()).join(", "));
+      const errorMessage = result.error.issues
+        .map(issue => `${ issue.path[0].toString() } ${ issue.message.toLowerCase() }`)
+        .join(", ");
+      return setError(errorMessage);
     }
-    mutation.mutate({
-      username,
-      phoneNumber,
-      password,
-      role: "Normal",
-    });
-  }, [mutation]);
+    mutate({ username, phoneNumber, password, role: "Normal" });
+  }, [mutate]);
 
   const alreadyHaveAccountAction = useCallback(() => {
     setIsOpen(false);
