@@ -153,7 +153,7 @@ export default function UploadTwo (props: Props) {
             autoCompleteType borderRadius={15} value={description} onChangeText={setDescription}
             isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
           />
-          {error && (<CustomError retry={handleSubmit}>RETRY</CustomError>)}
+          {error && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
           <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={35} py={2} px={4} mt={6} mb={4}>
             <Text color="#333" fontWeight={"bold"} fontSize="xl">
               {sending && "SENDING..."}
