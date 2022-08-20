@@ -59,21 +59,12 @@ const styles = StyleSheet.create({
 });
 
 export function NoInternetModal (props: Props) {
-
   const { show } = props;
-
   return (
-    <Modal isOpen={show} style={styles.modal} _backdrop={{
-      _dark: {
-        bg: "coolGray.800"
-      },
-      bg: "warmGray.50"
-    }}>
+    <Modal isOpen={show} style={styles.modal} _backdrop={{ _dark: { bg: "coolGray.800" }, bg: "warmGray.50" }}>
       <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>Connection Error</Text>
-        <Text style={styles.modalText}>
-          Not connected to the Internet.
-        </Text>
+        <Text style={styles.modalText}>Not connected to the Internet.</Text>
       </View>
     </Modal>
   )
