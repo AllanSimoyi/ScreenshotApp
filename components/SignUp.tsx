@@ -50,7 +50,7 @@ export function SignUp (props: Props) {
     onSettled: () => setIsLoading(false)
   });
 
-  const submitFn = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     setError("");
     if (password !== passwordConfirmation) {
       return setError("Please ensure passwords match");
@@ -118,14 +118,14 @@ export function SignUp (props: Props) {
               </VStack>
             </>
           )}
-          {Boolean(error) && <CustomError retry={submitFn}>{error}</CustomError>}
+          {Boolean(error) && <CustomError retry={handleSubmit}>{error}</CustomError>}
         </Modal.Body>
         <Modal.Footer backgroundColor={"#333"}>
           <Button.Group space={2}>
             <Button size="lg" variant="ghost" disabled={isLoading} onPress={() => setIsOpen(false)}>
               <Text color="#fff">Cancel</Text>
             </Button>
-            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={submitFn}>
+            <Button size="lg" bgColor="yellow.600" disabled={isLoading} onPress={handleSubmit}>
               {!isLoading && "Sign Up"}
               {isLoading && "Signing Up..."}
             </Button>
