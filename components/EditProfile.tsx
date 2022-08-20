@@ -4,7 +4,7 @@ import { useProfileMutation } from '../hooks/useProfileMutation';
 import { CURRENT_USER_KEY, getFromLocalStorage, saveToLocalStorage } from '../lib/session';
 import { User } from '../lib/users';
 import { UpdateProfile, UpdateProfileSchema } from '../lib/validations';
-import { CustomError } from './custom-error';
+import { CustomError } from './CustomError';
 import { Loading } from './loading';
 
 interface Props {

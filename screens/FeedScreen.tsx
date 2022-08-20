@@ -1,7 +1,7 @@
 import { FlatList, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
-import { CustomError } from '../components/custom-error';
+import { CustomError } from '../components/CustomError';
 import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { NoListItems } from '../components/NoListItems';

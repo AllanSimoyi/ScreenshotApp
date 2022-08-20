@@ -10,7 +10,7 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { getImageSource } from '../lib/image-rendering';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
-import { CustomError } from './custom-error';
+import { CustomError } from './CustomError';
 import { CustomImageBackground } from "./CustomImageBackground";
 
 interface Props {

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { Button, FlatList, Flex, HStack, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
 import { RefreshControl } from 'react-native';
-import { CustomError } from '../components/custom-error';
+import { CustomError } from '../components/CustomError';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { NoListItems } from '../components/NoListItems';
 import { SendMessage } from '../components/send-message';

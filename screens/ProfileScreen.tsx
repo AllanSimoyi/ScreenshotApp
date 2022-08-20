@@ -3,7 +3,7 @@ import { Button, Flex, Icon, Image, ScrollView, Text, VStack } from 'native-base
 import { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Col, Grid, Row } from "react-native-easy-grid";
-import { CustomError } from '../components/custom-error';
+import { CustomError } from '../components/CustomError';
 import { EditProfile } from '../components/EditProfile';
 import { Loading } from '../components/loading';
 import { SignIn } from '../components/SignIn';

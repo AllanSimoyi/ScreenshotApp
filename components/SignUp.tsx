@@ -6,7 +6,7 @@ import { CURRENT_USER_KEY, saveToLocalStorage } from '../lib/session';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { ProfileDetails, User } from '../lib/users';
 import { SignUpDetails, SignupSchema } from '../lib/validations';
-import { CustomError } from './custom-error';
+import { CustomError } from './CustomError';
 import { Loading } from './loading';
 
 interface Props {

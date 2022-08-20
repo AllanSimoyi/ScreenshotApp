@@ -1,7 +1,7 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { FlatList, Flex, HStack, Icon, IconButton, Input, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from "react";
-import { CustomError } from "../components/custom-error";
+import { CustomError } from "../components/CustomError";
 import { CustomHighlight } from "../components/custom-highlight";
 import { CustomImageBackground } from "../components/CustomImageBackground";
 import { CustomSkeletons } from "../components/CustomSkeletons";
