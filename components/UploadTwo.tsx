@@ -41,32 +41,23 @@ export default function UploadTwo (props: Props) {
   const takePicture = useCallback(async () => {
     try {
       const { status } = await requestCameraPermissionsAsync();
-
       if (status !== 'granted') {
         return setError('No access to camera');
       }
-
       setIsLoading(true);
-
-      const result = await launchCameraAsync({
-        base64: true,
-        quality: 1,
-      });
-
+      const result = await launchCameraAsync({ base64: true, quality: 1 });
       if (!result.cancelled) {
         setBase64(result.base64 || '');
         setImagePath(result.uri);
         setResourceType(result.type || "");
         setFileName((new Date).getTime().toString())
-      } else {
-        // cancelled
       }
     } catch ({ message }) {
       console.log(message as string);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [requestCameraPermissionsAsync, launchCameraAsync]);
 
   const selectImage = useCallback(async () => {
     try {
