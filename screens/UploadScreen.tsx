@@ -19,7 +19,7 @@ export default function UploadScreen ({ navigation }: RootTabScreenProps<'Upload
   const nextStage = useCallback((mode: string) => {
     setStage(prevState => prevState + 1);
     setMode(mode);
-  }, [setStage])
+  }, []);
 
   const mutation = useMutation(async (newPost: CreatePost) => {
     const [result, err] = await postRequest<{ post: Post; errorMessage: string; }>(URL_PREFIX + "/api/create-post", newPost);
