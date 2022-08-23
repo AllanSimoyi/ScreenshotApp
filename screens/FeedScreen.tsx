@@ -30,14 +30,15 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch">
-        <Text>{query.status}</Text>
+        <Text color="#fff">{query.status}</Text>
+        <Text color="#fff">{JSON.stringify(flattenPostPages(query.data?.pages || [[]]))}</Text>
         {query.isError && (
           <CustomError retry={refetchCallback}>
             {query.error.message}
           </CustomError>
         )}
-        {query.isLoading && <CustomSkeletons num={4} />}
-        {query.isFetching && <CustomSkeletons num={4} height={10} />}
+        {/* {query.isLoading && <CustomSkeletons num={4} />} */}
+        {/* {query.isFetching && <CustomSkeletons num={4} height={10} />} */}
         {query.data?.pages && (
           <FlatList
             data={flattenPostPages(query.data.pages)}
