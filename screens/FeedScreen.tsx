@@ -1,4 +1,4 @@
-import { FlatList, View, VStack } from 'native-base';
+import { FlatList, Text, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -32,12 +32,14 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch">
+        <Text>{query.status}</Text>
         {query.isError && (
           <CustomError retry={refetchCallback}>
             {query.error.message}
           </CustomError>
         )}
         {query.isLoading && <CustomSkeletons num={4} />}
+        {query.isFetching && <CustomSkeletons num={4} height={10} />}
         {query.data?.pages && (
           <FlatList
             data={flattenPostPages(query.data.pages)}
