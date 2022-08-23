@@ -33,6 +33,12 @@ export const categoryOptions: FeedItem[] = [
   },
 ];
 
+export function flattenPostPages (pages: Post[][]) {
+  return pages.reduce((acc, page) => {
+    return [ ...acc, ...page ];
+  }, [] as Post[]);
+}
+
 export function toMatrix<T extends any> (arr: T[], width: number) {
   return arr.reduce((rows, key, index) => {
     if (index % width == 0) {
