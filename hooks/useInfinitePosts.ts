@@ -9,7 +9,7 @@ interface PayloadType {
 }
 
 async function fetchProjects ({ pageParam = 0 }) {
-  const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v2?cursor" + pageParam);
+  const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v2?lastPostId" + pageParam);
     if (err) {
       throw err;
     }
