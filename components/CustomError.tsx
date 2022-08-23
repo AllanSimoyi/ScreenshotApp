@@ -12,7 +12,7 @@ export function CustomError (props: Props) {
     <VStack justifyContent="center" alignItems="stretch" p={4} {...restOfProps}>
       <Alert w="100%" status="error">
         <VStack space={2} flexShrink={1} w="100%">
-          <HStack space={2} flexShrink={1} justifyContent="space-between">
+          <HStack space={2} flexShrink={1} alignItems="center">
             <Alert.Icon mt="1" />
             <Text fontSize="sm" color="coolGray.800" p="1">
               {children}
