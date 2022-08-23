@@ -16,7 +16,7 @@ import { RootTabScreenProps } from '../types';
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   const { navigate } = props.navigation;
   // const { data, error, isError, refetch, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, } = useInfinitePosts('infiniteFeed');
-  const { refetch, ...query } = useInfinitePosts('infiniteFeed');
+  const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
   // const { refetch, ...query } = usePosts('feed');
   // const majorPosts = (query.data || []).reduce((acc, post) => {
   //   const alreadyAdded = acc.some(el => el.category === post.category);
@@ -26,9 +26,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   const navigateToDiscover = useCallback((category: string) => {
     navigate('Discover', { category });
   }, [navigate]);
-  const onEndReached = useCallback(() => {
-    query.fetchNextPage();
-  }, []);
+  const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch">
