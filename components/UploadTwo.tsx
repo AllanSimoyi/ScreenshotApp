@@ -8,6 +8,7 @@ import {
 import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
+import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getImageSource } from '../lib/image-rendering';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
@@ -30,6 +31,7 @@ const categories = [
 export default function UploadTwo (props: Props) {
   const { sendMessage, sending, mode, error, setError } = props;
 
+  const { details: currentUser, ...currentUserQuery } = useProfileDetails();
   const [base64, setBase64] = useState('');
   const [imagePath, setImagePath] = useState('');
   const [resourceType, setResourceType] = useState('');
@@ -88,6 +90,7 @@ export default function UploadTwo (props: Props) {
   const handleSubmit = useCallback(async () => {
     setError("");
     const details: CreatePost = {
+      userId: currentUser.userId,
       resourceBase64: 'data:image/jpeg;base64,' + base64,
       resourceType: "Image",
       publicly: mode !== "Anonymously",
