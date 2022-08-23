@@ -71,7 +71,7 @@ function BottomTabNavigator () {
         name="Feed"
         component={FeedScreen}
         options={({ }: RootTabScreenProps<'Feed'>) => ({
-          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Feeds</Text>,
+          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Feed</Text>,
           tabBarIcon: ({ color }) => <TabBarIcon name="feed" color={color} />,
         })}
       />
