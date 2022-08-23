@@ -16,7 +16,7 @@ import { useAppState } from './hooks/useAppState';
 import { useOnlineManager } from './hooks/useOnlineManager';
 
 const queryClient = new QueryClient({
-  // defaultOptions: { queries: { retry: 2 } },
+  defaultOptions: { queries: { retry: false } },
 });
 
 function onAppStateChange(status: string) {
