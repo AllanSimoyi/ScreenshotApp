@@ -9,7 +9,9 @@ interface PayloadType {
 }
 
 async function fetchProjects ({ pageParam = 0 }) {
+  console.log("Infinite request");
   const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v2?lastPostId=" + pageParam);
+  console.log("Infinite result", result);
     if (err) {
       throw err;
     }
