@@ -13,9 +13,9 @@ import { RootTabScreenProps } from '../types';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { route } = props;
-  const initialCategory = route.params?.category || abuseCategory.category;
+  const initialCategory = route.params?.category || abuseCategory;
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(initialCategory || abuseCategory.category);
+  const [category, setCategory] = useState(initialCategory || abuseCategory);
   const { refetch, ...query } = usePosts('discover');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data ?
@@ -77,11 +77,10 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
       />
       <Flex flexGrow={1} />
       <HStack justifyContent={"center"} alignItems="stretch">
-        {categoryOptions.map((option, index) => (
-          <VStack key={index} alignItems="flex-start" p={4} style={{ width: "33%" }}>
-            <ShadowedText pb={2} bottomBorder={category === option.category}
-              onPress={() => categoryOnChange(option.category)}>
-              {option.category}
+        {categoryOptions.map((option) => (
+          <VStack key={option} alignItems="flex-start" p={4} style={{ width: "33%" }}>
+            <ShadowedText pb={2} bottomBorder={option === category} onPress={() => categoryOnChange(option)}>
+              {option}
             </ShadowedText>
           </VStack>
         ))}
