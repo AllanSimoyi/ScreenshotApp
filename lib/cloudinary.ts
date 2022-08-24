@@ -1,7 +1,7 @@
 import { CloudConfig, CloudinaryImage } from "@cloudinary/url-gen";
 import { thumbnail } from "@cloudinary/url-gen/actions/resize";
 
-export function getPostThumbnailUrl (publicId: string, imageUrl: string) {
+export function getPostThumbnailUrl (publicId: string | undefined, imageUrl: string) {
   if (!publicId) {
     return imageUrl;
   }
