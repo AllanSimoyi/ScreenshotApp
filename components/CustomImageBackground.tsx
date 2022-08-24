@@ -1,17 +1,17 @@
 import { ImageBackground, ImageBackgroundProps } from "react-native";
-export const IMAGE_DEFAULT_SOURCE = require("../assets/images/image_loading.gif");
+export const IMAGE_DEFAULT_SOURCE = require("../assets/images/image_loading.jpeg");
 
 interface Props extends ImageBackgroundProps {
   children: React.ReactNode;
+  noImageFound?: boolean
 }
 
 export function CustomImageBackground (props: Props) {
-  const { children, ...restOfProps } = props;
+  const { children, noImageFound, ...restOfProps } = props;
   return (
     <ImageBackground
       accessible
-      borderRadius={10}
-      resizeMode="cover"
+      resizeMode={noImageFound ? "contain" : "cover"}
       accessibilityLabel="Image Post"
       defaultSource={IMAGE_DEFAULT_SOURCE}
       {...restOfProps}
