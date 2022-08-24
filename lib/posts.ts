@@ -14,8 +14,10 @@ export interface Post {
   updatedAt: Date;
 }
 
+export type PostCategory = "Abuse of State Resources" | "Public Finance Management" | "Natural Resource Governance";
+
 export const abuseCategory = "Abuse of State Resources";
-export const categoryOptions = [
+export const categoryOptions: PostCategory[] = [
   abuseCategory,
   "Public Finance Management",
   "Natural Resource Governance",
