@@ -1,6 +1,7 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { FlatList, Flex, HStack, Icon, IconButton, Input, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from "react";
+import { CategoryMenu } from "../components/CategoryMenu";
 import { CustomError } from "../components/CustomError";
 import { CustomHighlight } from "../components/CustomHighlight";
 import { CustomImageBackground } from "../components/CustomImageBackground";
@@ -8,15 +9,15 @@ import { CustomSkeletons } from "../components/CustomSkeletons";
 import { ShadowedText } from "../components/ShadowedText";
 import { usePosts } from "../hooks/usePosts";
 import { getImageSource } from "../lib/image-rendering";
-import { abuseCategory, categoryOptions, postHasSearchString } from '../lib/posts';
+import { abuseCategory, categoryOptions, PostCategory, postHasSearchString } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { route } = props;
-  const initialCategory = route.params?.category || abuseCategory;
+  const initialCategory = route.params?.category as PostCategory || abuseCategory;
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(initialCategory || abuseCategory);
+  const [category, setCategory] = useState<PostCategory>(initialCategory || abuseCategory);
   const { refetch, ...query } = usePosts('discover');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data ?
@@ -26,7 +27,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
     [];
   const refetchCallback = useCallback(() => refetch(), [refetch]);
   const searchOnChange = useCallback((text: string) => setSearch(text), []);
-  const categoryOnChange = useCallback((category: string) => setCategory(category), []);
+  const categoryOnChange = useCallback((category: PostCategory) => setCategory(category), []);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
@@ -40,10 +41,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
           />
         </VStack>
         <VStack justifyContent={"center"} alignItems="center" p={2}>
-          <IconButton
-            onPress={refetchCallback} colorScheme="yellow" size="md" borderWidth={2}
-            borderRadius="full" variant="outline" _icon={{ as: MaterialIcons, name: "more-vert" }}
-          />
+          <CategoryMenu currentCategory={category} setCurrentCategory={setCategory} />
         </VStack>
       </HStack>
       {query.isError && (
@@ -52,15 +50,6 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         </CustomError>
       )}
       {query.isLoading && <CustomSkeletons num={4} />}
-      <HStack justifyContent={"center"} alignItems="stretch">
-        {categoryOptions.map((option) => (
-          <VStack key={option} alignItems="flex-start" p={4} style={{ width: "33%" }}>
-            <ShadowedText pb={2} bottomBorder={option === category} onPress={() => categoryOnChange(option)}>
-              {option}
-            </ShadowedText>
-          </VStack>
-        ))}
-      </HStack>
       <FlatList
         data={categoryItems}
         flexGrow={1}
