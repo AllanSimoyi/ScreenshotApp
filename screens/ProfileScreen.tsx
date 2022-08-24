@@ -126,8 +126,8 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
             {query.data && (
               <VStack alignItems="stretch" p={2}>
                 <Grid>
-                  {toMatrix(posts, 3).map(row => (
-                    <Row>
+                  {toMatrix(posts, 3).map((row, index) => (
+                    <Row key={index}>
                       {row.map(post => (
                         <Col key={post.id}>
                           <VStack justifyContent={"center"} alignItems="stretch" p={1}>
