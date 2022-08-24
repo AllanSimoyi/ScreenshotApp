@@ -7,7 +7,7 @@ export function getPostThumbnailUrl (publicId: string | undefined, imageUrl: str
   }
   let myImage = new CloudinaryImage(publicId, new CloudConfig({ cloudName: 'dv2mivpiz' }));
   myImage
-    .resize(thumbnail().width("100%").height(250))
+    .resize(thumbnail().height(250))
     .format('auto')
     .quality('auto');
   return myImage.toURL();
