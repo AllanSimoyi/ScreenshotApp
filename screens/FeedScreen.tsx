@@ -9,6 +9,7 @@ import { NoListItems } from '../components/NoListItems';
 import { PostThumbnail } from '../components/PostThumbnail';
 import { ShadowedText } from '../components/ShadowedText';
 import { useInfinitePosts } from '../hooks/useInfinitePosts';
+import { getPostThumbnailUrl } from '../lib/cloudinary';
 // import { usePosts } from '../hooks/usePosts';
 import { FALLBACK_IMAGE_URI, getImageSource } from '../lib/image-rendering';
 import { flattenPostPages, Post } from '../lib/posts';
@@ -49,19 +50,16 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
             onEndReachedThreshold={0.2}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
-                {Boolean(item.resourceUrl) && <PostThumbnail imageUrl={item.resourceUrl} />}
-                {!Boolean(item.resourceUrl) && (
-                  <CustomImageBackground
-                    source={FALLBACK_IMAGE_URI}
-                    style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                  >
-                    <VStack alignItems="flex-start" py={2} px={4}>
-                      <ShadowedText bottomBorder onPress={() => navigateToDiscover(item.category)}>
-                        # {item.category}
-                      </ShadowedText>
-                    </VStack>
-                  </CustomImageBackground>
-                )}
+                <CustomImageBackground
+                  source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
+                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+                >
+                  <VStack alignItems="flex-start" py={2} px={4}>
+                    <ShadowedText bottomBorder onPress={() => navigateToDiscover(item.category)}>
+                      # {item.category}
+                    </ShadowedText>
+                  </VStack>
+                </CustomImageBackground>
                 <CustomImageBackground
                   source={getImageSource(item.resourceUrl)}
                   style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
