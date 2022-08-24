@@ -24,6 +24,7 @@ export const categoryOptions: PostCategory[] = [
 ];
 
 export type UploadMode = "Publicly" | "Anonymously";
+export const uploadModes: UploadMode[] = ["Publicly", "Anonymously"];
 
 export function flattenPostPages (pages: Post[][]) {
   return pages.reduce((acc, page) => {
