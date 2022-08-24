@@ -4,21 +4,19 @@ import { Post } from "../lib/posts";
 import { URL_PREFIX } from "../lib/url-prefix";
 
 interface PayloadType {
-  posts: Post[]; 
+  posts: Post[];
   errorMessage: string;
 }
 
 async function fetchProjects ({ pageParam = 0 }) {
-  console.log("Infinite request");
   const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v2?lastPostId=" + pageParam);
-  console.log("Infinite result", result);
-    if (err) {
-      throw err;
-    }
-    if (result?.errorMessage) {
-      throw new Error(result?.errorMessage);
-    }
-    return result?.posts || [];
+  if (err) {
+    throw err;
+  }
+  if (result?.errorMessage) {
+    throw new Error(result?.errorMessage);
+  }
+  return result?.posts || [];
 }
 
 export function useInfinitePosts (queryKey: QueryKey) {
