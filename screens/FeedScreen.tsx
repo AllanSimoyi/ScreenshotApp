@@ -1,4 +1,4 @@
-import { FlatList, Text, View, VStack } from 'native-base';
+import { FlatList, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -6,24 +6,16 @@ import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { FlatListFooter } from '../components/FlatListFooter';
 import { NoListItems } from '../components/NoListItems';
-import { PostThumbnail } from '../components/PostThumbnail';
 import { ShadowedText } from '../components/ShadowedText';
 import { useInfinitePosts } from '../hooks/useInfinitePosts';
 import { getPostThumbnailUrl } from '../lib/cloudinary';
-// import { usePosts } from '../hooks/usePosts';
-import { FALLBACK_IMAGE_URI, getImageSource } from '../lib/image-rendering';
-import { flattenPostPages, Post } from '../lib/posts';
+import { getImageSource } from '../lib/image-rendering';
+import { flattenPostPages } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   const { navigate } = props.navigation;
-  // const { data, error, isError, refetch, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, } = useInfinitePosts('infiniteFeed');
   const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
-  // const { refetch, ...query } = usePosts('feed');
-  // const majorPosts = (query.data || []).reduce((acc, post) => {
-  //   const alreadyAdded = acc.some(el => el.category === post.category);
-  //   return alreadyAdded ? acc : [...acc, post];
-  // }, [] as Post[]);
   const refetchCallback = useCallback(() => refetch(), [refetch]);
   const navigateToDiscover = useCallback((category: string) => {
     navigate('Discover', { category });
@@ -52,21 +44,12 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
               <VStack alignItems="stretch" pb={1}>
                 <CustomImageBackground
                   source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+                  noImageFound={!item.publicId && !item.resourceUrl}
+                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%", borderBottomColor: "#fff" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText bottomBorder onPress={() => navigateToDiscover(item.category)}>
-                      # {item.category}
-                    </ShadowedText>
-                  </VStack>
-                </CustomImageBackground>
-                <CustomImageBackground
-                  source={getImageSource(item.resourceUrl)}
-                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                >
-                  <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText bottomBorder onPress={() => navigateToDiscover(item.category)}>
-                      # {item.category}
+                    <ShadowedText onPress={() => navigateToDiscover(item.category)}>
+                      {item.category}
                     </ShadowedText>
                   </VStack>
                 </CustomImageBackground>
