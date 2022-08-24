@@ -9,6 +9,7 @@ import { ShadowedText } from "../components/ShadowedText";
 import { usePosts } from "../hooks/usePosts";
 import { getImageSource } from "../lib/image-rendering";
 import { abuseCategory, categoryOptions, postHasSearchString } from '../lib/posts';
+import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
@@ -41,7 +42,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         <VStack justifyContent={"center"} alignItems="center" p={2}>
           <IconButton
             onPress={refetchCallback} colorScheme="yellow" size="md" borderWidth={2}
-            borderRadius="full" variant="outline" _icon={{ as: MaterialIcons, name: "sync" }}
+            borderRadius="full" variant="outline" _icon={{ as: MaterialIcons, name: "more-vert" }}
           />
         </VStack>
       </HStack>
@@ -66,20 +67,19 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
           <VStack alignItems="stretch" pb={1}>
-            <VStack alignItems="stretch" style={{ height: "100%" }}>
-              <CustomImageBackground
-                source={getImageSource(item.resourceUrl)}
-                style={{ flex: 1, justifyContent: 'flex-end', flexGrow: 1, width: 200 }}
-              >
-                <VStack alignItems="flex-start" p={2}>
-                  <ShadowedText>
-                    <CustomHighlight searchString={search}>
-                      {item.description || "..."}
-                    </CustomHighlight>
-                  </ShadowedText>
-                </VStack>
-              </CustomImageBackground>
-            </VStack>
+            <CustomImageBackground
+              source={getImageSource(item.resourceUrl)}
+              noImageFound={!item.publicId && !item.resourceUrl}
+              style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+            >
+              <VStack alignItems="flex-start" py={2} px={4}>
+                <ShadowedText>
+                  <CustomHighlight searchString={search}>
+                    {shortenString(item.description, 100, "addEllipsis")}
+                  </CustomHighlight>
+                </ShadowedText>
+              </VStack>
+            </CustomImageBackground>
           </VStack>
         )}
       />
