@@ -21,6 +21,8 @@ export const categoryOptions = [
   "Natural Resource Governance",
 ];
 
+export type UploadMode = "Publicly" | "Anonymously";
+
 export function flattenPostPages (pages: Post[][]) {
   return pages.reduce((acc, page) => {
     return [...acc, ...page];

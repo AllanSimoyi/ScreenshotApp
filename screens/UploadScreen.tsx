@@ -4,13 +4,14 @@ import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
 import { usePostMutation } from '../hooks/usePostMutation';
+import { UploadMode } from '../lib/posts';
 import { CreatePost } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
 export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   const { navigate } = props.navigation;
   const [stage, setStage] = useState(1);
-  const [mode, setMode] = useState("Anonymously");
+  const [mode, setMode] = useState<UploadMode>("Anonymously");
   const [error, setError] = useState("");
   const { mutate, ...mutation } = usePostMutation({
     onSuccess: () => {
@@ -22,7 +23,7 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
     },
     onError: (error) => setError((error as string))
   });
-  const nextStage = useCallback((mode: string) => {
+  const nextStage = useCallback((mode: UploadMode) => {
     setStage(prevState => prevState + 1);
     setMode(mode);
   }, []);

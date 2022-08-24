@@ -1,9 +1,9 @@
-import { Button, Flex, Image, Text, View, VStack } from 'native-base';
+import { Button, Flex, Text, VStack } from 'native-base';
 import { useCallback } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { UploadMode } from '../lib/posts';
 
 interface Props {
-  nextStage: (mode: string) => void;
+  nextStage: (mode: UploadMode) => void;
 }
 
 export default function UploadOne (props: Props) {
