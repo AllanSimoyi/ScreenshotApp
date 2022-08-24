@@ -10,12 +10,15 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getImageSource } from '../lib/image-rendering';
+import { UploadMode } from '../lib/posts';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
 import { CustomImageBackground } from "./CustomImageBackground";
+import { UploadModeMenu } from './UploadModeMenu';
 
 interface Props {
-  mode: string;
+  mode: UploadMode;
+  setMode: (newMode: UploadMode) => void;
   sendMessage: (newPost: CreatePost) => void;
   sending: boolean;
   error: string;
@@ -29,9 +32,8 @@ const categories = [
 ];
 
 export default function UploadTwo (props: Props) {
-  const { sendMessage, sending, mode, error, setError } = props;
-
-  const { details: currentUser, ...currentUserQuery } = useProfileDetails();
+  const { sendMessage, sending, mode, setMode, error, setError } = props;
+  const { details: currentUser } = useProfileDetails();
   const [base64, setBase64] = useState('');
   const [imagePath, setImagePath] = useState('');
   const [resourceType, setResourceType] = useState('');
@@ -39,7 +41,6 @@ export default function UploadTwo (props: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [category, setCategory] = useState(categories[0]);
   const [description, setDescription] = useState("");
-
   const requestCamera = useCallback(async () => {
     const { status } = await requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -136,7 +137,7 @@ export default function UploadTwo (props: Props) {
           <HStack alignItems="center">
             <Text bold fontSize="md" mt="2" color="#fff">Category</Text>
             <Flex flexGrow={1} />
-            <Text italic fontSize="md" mt="2" color="#d1d1d1">{mode}</Text>
+            <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
           </HStack>
           <Select
             borderRadius={15} color="white" placeholder="Choose Category"
