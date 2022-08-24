@@ -45,7 +45,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
                 <CustomImageBackground
                   source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
                   noImageFound={!item.publicId && !item.resourceUrl}
-                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%", borderBottomColor: "#fff" }}
+                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
                     <ShadowedText onPress={() => navigateToDiscover(item.category)}>
