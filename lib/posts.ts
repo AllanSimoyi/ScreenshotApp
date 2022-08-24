@@ -2,6 +2,10 @@ export interface Post {
   id: number;
   userId: number;
   resourceUrl: string;
+  publicId?: string;
+  width?: number;
+  height?: number;
+
   resourceType: string;
   publicly: boolean;
   category: string;
@@ -35,7 +39,7 @@ export const categoryOptions: FeedItem[] = [
 
 export function flattenPostPages (pages: Post[][]) {
   return pages.reduce((acc, page) => {
-    return [ ...acc, ...page ];
+    return [...acc, ...page];
   }, [] as Post[]);
 }
 
