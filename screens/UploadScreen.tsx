@@ -33,7 +33,7 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
       {stage === 1 && (<UploadOne nextStage={nextStage} />)}
       {stage === 2 && (
         <UploadTwo
-          mode={mode} sending={mutation.isLoading}
+          mode={mode} setMode={setMode} sending={mutation.isLoading}
           sendMessage={sendMessage} error={error} setError={setError}
         />
       )}
