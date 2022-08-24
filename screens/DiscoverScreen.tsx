@@ -51,13 +51,21 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         </CustomError>
       )}
       {query.isLoading && <CustomSkeletons num={4} />}
+      <HStack justifyContent={"center"} alignItems="stretch">
+        {categoryOptions.map((option) => (
+          <VStack key={option} alignItems="flex-start" p={4} style={{ width: "33%" }}>
+            <ShadowedText pb={2} bottomBorder={option === category} onPress={() => categoryOnChange(option)}>
+              {option}
+            </ShadowedText>
+          </VStack>
+        ))}
+      </HStack>
       <FlatList
-        horizontal={true}
         data={categoryItems}
         flexGrow={1}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
-          <VStack alignItems="stretch" p={2}>
+          <VStack alignItems="stretch" pb={1}>
             <VStack alignItems="stretch" style={{ height: "100%" }}>
               <CustomImageBackground
                 source={getImageSource(item.resourceUrl)}
@@ -75,16 +83,6 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
           </VStack>
         )}
       />
-      <Flex flexGrow={1} />
-      <HStack justifyContent={"center"} alignItems="stretch">
-        {categoryOptions.map((option) => (
-          <VStack key={option} alignItems="flex-start" p={4} style={{ width: "33%" }}>
-            <ShadowedText pb={2} bottomBorder={option === category} onPress={() => categoryOnChange(option)}>
-              {option}
-            </ShadowedText>
-          </VStack>
-        ))}
-      </HStack>
     </VStack>
   );
 }
