@@ -26,7 +26,10 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data?.pages ?
     flattenPostPages(query.data.pages).filter(item => {
-      return (item.category === category) && postHasSearchString(item, search);
+      if (search.trim()) {
+        return postHasSearchString(item, search);
+      }
+      return (item.category === category);
     }) :
     [];
   const refetchCallback = useCallback(() => refetch(), [refetch]);
