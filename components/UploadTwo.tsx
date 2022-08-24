@@ -33,7 +33,7 @@ export default function UploadTwo (props: Props) {
   const [resourceType, setResourceType] = useState('');
   const [fileName, setFileName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [category, setCategory] = useState(categoryOptions[0]);
+  const [category, setCategory] = useState<PostCategory>(categoryOptions[0]);
   const [description, setDescription] = useState("");
   const requestCamera = useCallback(async () => {
     const { status } = await requestCameraPermissionsAsync();
