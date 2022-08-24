@@ -11,17 +11,16 @@ import { FlatListFooter } from "../components/FlatListFooter";
 import { NoListItems } from "../components/NoListItems";
 import { ShadowedText } from "../components/ShadowedText";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
-import { usePosts } from "../hooks/usePosts";
 import { getImageSource } from "../lib/image-rendering";
-import { abuseCategory, flattenPostPages, PostCategory, postHasSearchString } from '../lib/posts';
+import { categoryOptions, flattenPostPages, PostCategory, postHasSearchString } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { route } = props;
-  const initialCategory = route.params?.category as PostCategory || abuseCategory;
+  const initialCategory = route.params?.category as PostCategory || categoryOptions[0];
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<PostCategory>(initialCategory || abuseCategory);
+  const [category, setCategory] = useState<PostCategory>(initialCategory || categoryOptions[0]);
   const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data?.pages ?

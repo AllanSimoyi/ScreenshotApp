@@ -10,7 +10,7 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getImageSource } from '../lib/image-rendering';
-import { UploadMode } from '../lib/posts';
+import { categoryOptions, PostCategory, UploadMode } from '../lib/posts';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
 import { CustomImageBackground } from "./CustomImageBackground";
@@ -25,12 +25,6 @@ interface Props {
   setError: (error: string) => void;
 }
 
-const categories = [
-  "Abuse of State Resources",
-  "Public Finance Management",
-  "Natural Resource Governance",
-];
-
 export default function UploadTwo (props: Props) {
   const { sendMessage, sending, mode, setMode, error, setError } = props;
   const { details: currentUser } = useProfileDetails();
@@ -39,7 +33,7 @@ export default function UploadTwo (props: Props) {
   const [resourceType, setResourceType] = useState('');
   const [fileName, setFileName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [category, setCategory] = useState(categories[0]);
+  const [category, setCategory] = useState(categoryOptions[0]);
   const [description, setDescription] = useState("");
   const requestCamera = useCallback(async () => {
     const { status } = await requestCameraPermissionsAsync();
@@ -142,9 +136,9 @@ export default function UploadTwo (props: Props) {
           <Select
             borderRadius={15} color="white" placeholder="Choose Category"
             fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
-            _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue)}
+            _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
           >
-            {categories.map(category => <Select.Item label={category} value={category} />)}
+            {categoryOptions.map(category => <Select.Item label={category} value={category} />)}
           </Select>
           <Text bold fontSize="md" mb="2" mt="4" color="#fff">
             Description (optional)
