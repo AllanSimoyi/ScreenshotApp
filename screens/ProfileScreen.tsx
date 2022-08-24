@@ -4,12 +4,14 @@ import { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Col, Grid, Row } from "react-native-easy-grid";
 import { CustomError } from '../components/CustomError';
+import { IMAGE_DEFAULT_SOURCE } from '../components/CustomImageBackground';
 import { EditProfile } from '../components/EditProfile';
 import { Loading } from '../components/Loading';
 import { SignIn } from '../components/SignIn';
 import { SignUp } from '../components/SignUp';
 import { usePosts } from "../hooks/usePosts";
 import { useProfileDetails } from '../hooks/useProfileDetails';
+import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { getImageSource } from "../lib/image-rendering";
 import { toMatrix } from '../lib/posts';
 import { ProfileDetails } from '../lib/users';
@@ -130,8 +132,9 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
                         <Col key={post.id}>
                           <VStack justifyContent={"center"} alignItems="stretch" p={1}>
                             <Image
-                              alt="Loading..." backgroundColor="#a1a1a1" borderRadius="5" size={150}
-                              resizeMode={"cover"} source={getImageSource(post.resourceUrl)}
+                              alt="Loading..." backgroundColor="#a1a1a1" borderRadius="5" size={150} resizeMode={"cover"}
+                              defaultSource={IMAGE_DEFAULT_SOURCE}
+                              source={getImageSource(getPostThumbnailUrl(post.publicId, post.resourceUrl))}
                             />
                           </VStack>
                         </Col>
