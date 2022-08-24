@@ -24,7 +24,7 @@ async function fetchProjects ({ pageParam = 0 }) {
 export function useInfinitePosts (queryKey: QueryKey) {
   return useInfiniteQuery<Post[], Error, Post[], QueryKey>(queryKey, fetchProjects, {
     getNextPageParam: (lastPage) => {
-      return lastPage?.[lastPage.length - 1].id || undefined;
+      return lastPage?.[(lastPage?.length || 1) - 1]?.id || undefined;
     },
   });
 }
