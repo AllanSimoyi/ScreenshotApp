@@ -58,7 +58,7 @@ export default function UploadTwo (props: Props) {
       const result = await launchCameraAsync({ base64: true, quality: 1 });
       processCameraResult(result);
     } catch ({ message }) {
-      console.log(message as string);
+      console.error(message as string);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +76,7 @@ export default function UploadTwo (props: Props) {
       });
       processCameraResult(result);
     } catch ({ message }) {
-      console.log(message as string);
+      console.error(message as string);
     } finally {
       setIsLoading(false);
     }
