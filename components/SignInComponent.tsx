@@ -1,4 +1,4 @@
-import { Button, HStack, Input, Text, VStack } from 'native-base';
+import { Button, Input, Text, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { useSignIn } from '../hooks/useSignIn';
 import { FALLBACK_ERROR_MESSAGE } from '../lib/errors';
@@ -18,7 +18,7 @@ export function SignInComponent (props: Props) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { mutate, ...mutation } = useSignIn({
-    onMutate: () => setIsLoading(true),
+    onMutate: (_) => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
         saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
@@ -28,7 +28,7 @@ export function SignInComponent (props: Props) {
     onError: (_) => { },
     onSettled: () => setIsLoading(false)
   });
-  const handleSubmit = useCallback(() => mutate({ username, password }), [mutate]);
+  const handleSubmit = useCallback(() => mutate({ username, password }), [mutate, username, password]);
   return (
     <VStack justifyContent={"center"} alignItems="stretch" style={{ height: "100%" }} p={2} space={2}>
       <VStack alignItems="center" py={2}>
@@ -51,7 +51,7 @@ export function SignInComponent (props: Props) {
       </VStack>
       <VStack alignItems="stretch" justifyContent={"center"} py={2} space={2}>
         <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" isDisabled={mutation.isLoading}>
-          <Text color="white" fontWeight={"bold"} fontSize="xl">
+          <Text color="#000" fontWeight={"bold"} fontSize="xl">
             {mutation.isLoading && "SIGNING IN..."}
             {!mutation.isLoading && "SIGN IN"}
           </Text>
