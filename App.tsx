@@ -14,12 +14,13 @@ import {
 import { NoInternetModal } from './components/NoInternet';
 import { useAppState } from './hooks/useAppState';
 import { useOnlineManager } from './hooks/useOnlineManager';
+import { CurrentUserProvider } from './components/CurrentUserProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-function onAppStateChange(status: string) {
+function onAppStateChange (status: string) {
   // React Query already supports in web browser refetch on window focus by default
   if (Platform.OS !== 'web') {
     focusManager.setFocused(status === 'active');
@@ -55,9 +56,11 @@ export default function App () {
       <QueryClientProvider client={queryClient}>
         <NativeBaseProvider theme={theme}>
           <SafeAreaProvider>
-            <NoInternetModal show={!isOnline}/>
-            <Navigation colorScheme={colorScheme} />
-            <StatusBar />
+            <CurrentUserProvider>
+              <NoInternetModal show={!isOnline} />
+              <Navigation colorScheme={colorScheme} />
+              <StatusBar />
+            </CurrentUserProvider>
           </SafeAreaProvider>
         </NativeBaseProvider>
       </QueryClientProvider>
