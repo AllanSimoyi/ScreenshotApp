@@ -19,3 +19,11 @@ export async function getFromLocalStorage (key: string) {
     console.error("Error getting from storage >>>", (error as any).toString())
   }
 }
+
+export async function deleteFromLocalStorage (key: string) {
+  try {
+    await SecureStore.deleteItemAsync(key);
+  } catch (error) {
+    console.error("Error deleting from storage >>>", (error as any).toString())
+  }
+}
