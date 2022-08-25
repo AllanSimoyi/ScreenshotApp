@@ -41,6 +41,7 @@ export function SignIn (props: Props) {
 
   const handleSubmit = useCallback(async () => {
     setError("");
+    console.log(username, password);
     const result = await SignInSchema.safeParseAsync({ username, password });
     if (!result.success) {
       const errorMessage = result.error.issues
@@ -50,6 +51,12 @@ export function SignIn (props: Props) {
     }
     mutate({ username, password });
   }, [mutate]);
+
+  const onPasswordChange = useCallback((text: string) => {
+    console.log("Password chars", text);
+    setPassword(text);
+    setTimeout(() => console.log("New Password", password), 1000);
+  }, []);
 
   const createAccountAction = useCallback(() => {
     setIsOpen(false);
@@ -79,7 +86,7 @@ export function SignIn (props: Props) {
               <FormControl mt="3">
                 <FormControl.Label>Password</FormControl.Label>
                 <Input
-                  value={password} onChangeText={setPassword}
+                  value={password} onChangeText={onPasswordChange}
                   type="password" color="white" fontSize={"md"} placeholder="Enter your password"
                 />
               </FormControl>
