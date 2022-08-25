@@ -5,7 +5,7 @@ import { User } from '../lib/users';
 import { SignInDetails } from '../lib/validations';
 
 interface Props {
-  onMutate: () => void;
+  onMutate: (input: SignInDetails) => void;
   onSuccess: (signedInUser: User | undefined) => void;
   onError: (error: unknown) => void;
   onSettled: () => void;
