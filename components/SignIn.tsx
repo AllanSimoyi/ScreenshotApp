@@ -1,7 +1,7 @@
 import { Button, Flex, FormControl, Input, Modal, Text } from 'native-base';
 import { useCallback, useState } from 'react';
 import { useSignIn } from '../hooks/useSignIn';
-import { CURRENT_USER_KEY, saveToLocalStorage } from '../lib/session';
+import { saveToLocalStorage } from '../lib/local-storage';
 import { ProfileDetails, User } from '../lib/users';
 import { SignInSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
@@ -26,7 +26,7 @@ export function SignIn (props: Props) {
     onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
-        saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
+        saveToLocalStorage("CURRENT_USER_KEY", newCurrentUser.id.toString());
         setIsOpen(false);
         updateProfileDetails({
           userId: newCurrentUser.id,

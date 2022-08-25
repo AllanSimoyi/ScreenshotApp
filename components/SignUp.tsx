@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useCreateAccount } from '../hooks/useCreateAccount';
 import { postRequest } from '../lib/post-request';
-import { CURRENT_USER_KEY, saveToLocalStorage } from '../lib/session';
+import { saveToLocalStorage } from '../lib/local-storage';
 import { URL_PREFIX } from '../lib/url-prefix';
 import { ProfileDetails, User } from '../lib/users';
 import { SignUpDetails, SignupSchema } from '../lib/validations';
@@ -37,7 +37,7 @@ export function SignUp (props: Props) {
     onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
-        saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
+        saveToLocalStorage("CURRENT_USER_KEY", newCurrentUser.id.toString());
         setIsOpen(false);
         updateProfileDetails({
           userId: newCurrentUser.id,

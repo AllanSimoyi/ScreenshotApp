@@ -1,7 +1,7 @@
 import { Button, FormControl, Input, Modal, Text } from 'native-base';
 import { useCallback, useState } from 'react';
 import { useProfileMutation } from '../hooks/useProfileMutation';
-import { CURRENT_USER_KEY, getFromLocalStorage, saveToLocalStorage } from '../lib/session';
+import { getFromLocalStorage, saveToLocalStorage } from '../lib/local-storage';
 import { User } from '../lib/users';
 import { UpdateProfile, UpdateProfileSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
@@ -36,7 +36,7 @@ export function EditProfile (props: Props) {
     onMutate: () => setIsLoading(true),
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
-        saveToLocalStorage(CURRENT_USER_KEY, newCurrentUser.id.toString());
+        saveToLocalStorage("CURRENT_USER_KEY", newCurrentUser.id.toString());
         updateDetails({
           username: newCurrentUser.username,
           phoneNumber: newCurrentUser.phoneNumber
@@ -49,7 +49,7 @@ export function EditProfile (props: Props) {
   });
 
   const handleSubmit = useCallback(async () => {
-    const currentUserId = await getFromLocalStorage(CURRENT_USER_KEY);
+    const currentUserId = await getFromLocalStorage("CURRENT_USER_KEY");
     if (!currentUserId) {
       return setError("No currrent user data found");
     }
