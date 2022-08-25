@@ -1,29 +1,27 @@
-import * as SecureStore from 'expo-secure-store';
+import { CurrentUser } from "../components/CurrentUserProvider";
+import { getFromLocalStorage, saveToLocalStorage } from "./local-storage";
 
-export const CURRENT_USER_KEY = "CURRENT_USER_KEY";
+const CURRENT_USER_ID = "CURRENT_USER_ID";
+const CURRENT_USERNAME = "CURRENT_USERNAME";
+const CURRENT_PHONENUMBER = "CURRENT_PHONENUMBER";
 
-export async function saveToLocalStorage (key: string, value: string) {
-  try {
-    await SecureStore.setItemAsync(key, value);
-  } catch (error) {
-    console.error("Error saving to storage >>>", (error as any).toString())
-  }
-  const zxc = await getFromLocalStorage(key);
+export async function saveUserToLocalStorage (user: CurrentUser) {
+  await Promise.all([
+    saveToLocalStorage(CURRENT_USER_ID, user.userId.toString()),
+    saveToLocalStorage(CURRENT_USERNAME, user.username),
+    saveToLocalStorage(CURRENT_PHONENUMBER, user.phoneNumber)
+  ]);
 }
 
-export async function getFromLocalStorage (key: string) {
-  try {
-    let result = await SecureStore.getItemAsync(key);
-    return result || undefined;
-  } catch (error) {
-    console.error("Error getting from storage >>>", (error as any).toString())
-  }
-}
-
-export async function deleteFromLocalStorage (key: string) {
-  try {
-    await SecureStore.deleteItemAsync(key);
-  } catch (error) {
-    console.error("Error deleting from storage >>>", (error as any).toString())
+export async function getUserFromLocalStorage () {
+  const [userId, username, phoneNumber] = await Promise.all([
+    getFromLocalStorage(CURRENT_USER_ID),
+    getFromLocalStorage(CURRENT_USERNAME),
+    getFromLocalStorage(CURRENT_PHONENUMBER),
+  ]);
+  return {
+    userId: Number(userId || "0"),
+    username: username || "",
+    phoneNumber: phoneNumber || "",
   }
 }

@@ -1,22 +1,25 @@
-import { createContext, useState } from "react";
-import { User } from "../lib/users";
+import { VStack } from "native-base";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { getUserFromLocalStorage, saveUserToLocalStorage } from "../lib/session";
+import { CustomError } from "./CustomError";
+import { LoadingText } from "./LoadingText";
 
-interface CurrentUser {
+export interface CurrentUser {
   userId: number;
   username: string;
   phoneNumber: string;
 }
 
-type UpdateCurrentUser = (newCurrentUser: User | undefined) => void;
+type UpdateCurrentUser = (newCurrentUser: CurrentUser | undefined) => void;
 
 type CustomContext = {
-  currentUser: CurrentUser | undefined;
+  currentUser: CurrentUser;
   updateCurrentUser: UpdateCurrentUser;
 }
 
 export const CurrentUserContext = createContext<CustomContext>({
-  currentUser: undefined,
-  updateCurrentUser: (_) => {}
+  currentUser: { userId: 0, username: "", phoneNumber: "" },
+  updateCurrentUser: (_) => { }
 });
 
 interface Props {
@@ -25,20 +28,52 @@ interface Props {
 
 export function CurrentUserProvider (props: Props) {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<CurrentUser | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [retryToggle, setRetryToggle] = useState(false);
+  const [currentUser, setCurrentUser] = useState<CurrentUser>({
+    userId: 0, username: "", phoneNumber: "",
+  });
   const value = {
     currentUser,
-    updateCurrentUser: (newCurrentUser: User | undefined) => {
-      setCurrentUser({
-        userId: newCurrentUser?.id || 0,
+    updateCurrentUser: async (newCurrentUser: CurrentUser | undefined) => {
+      const details: CurrentUser = {
+        userId: newCurrentUser?.userId || 0,
         username: newCurrentUser?.username || "",
         phoneNumber: newCurrentUser?.phoneNumber || ""
-      });
+      }
+      setCurrentUser(details);
+      await saveUserToLocalStorage(details);
     }
   }
+  useEffect(() => {
+    init();
+    async function init () {
+      try {
+        setIsLoading(true);
+        const currentUser = await getUserFromLocalStorage();
+        setCurrentUser(currentUser);
+      } catch ({ message }) {
+        setError(message as string || "Failed to fetch current user, please try again");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [getUserFromLocalStorage, retryToggle]);
+  const toggleRetry = useCallback(() => setRetryToggle(prevState => !prevState), []);
   return (
     <CurrentUserContext.Provider value={value}>
-      {children}
+      {isLoading && (
+        <VStack justifyContent={"center"} alignItems="stretch" style={{ height: "100%" }} p={2}>
+          <LoadingText />
+        </VStack>
+      )}
+      {Boolean(error) && (
+        <VStack justifyContent={"center"} alignItems="stretch" style={{ height: "100%" }} p={2}>
+          <CustomError retry={toggleRetry}>{error}</CustomError>
+        </VStack>
+      )}
+      {!isLoading && !Boolean(error) && children}
     </CurrentUserContext.Provider>
-  )  
+  )
 }
