@@ -5,101 +5,47 @@ import { Col, Grid, Row } from "react-native-easy-grid";
 import { CustomError } from '../components/CustomError';
 import { IMAGE_DEFAULT_SOURCE } from '../components/CustomImageBackground';
 import { EditProfile } from '../components/EditProfile';
-import { Loading } from '../components/Loading';
-import { SignIn } from '../components/SignIn';
 import { SignInComponent } from '../components/SignInComponent';
-import { SignUp } from '../components/SignUp';
+import { useCurrentUser } from '../components/useCurrentUser';
 import { usePosts } from "../hooks/usePosts";
-import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { getImageSource } from "../lib/image-rendering";
 import { toMatrix } from '../lib/posts';
-import { ProfileDetails, User } from '../lib/users';
+import { ProfileDetails } from '../lib/users';
 import { RootTabScreenProps } from '../types';
 
 export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
-  const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
-  const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
-  // const [signInIsOpen, setSignInIsOpen] = useState(false);
-  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, signOut } = useProfileDetails();
-  const { refetch, ...query } = usePosts("profile");
-  const refetchCallback = useCallback(() => refetch(), [refetch]);
+  const { currentUser, updateCurrentUser } = useCurrentUser();
+  const { refetch: refetchPosts, ...postsQuery } = usePosts("profile");
+  const refetchPostsCallback = useCallback(() => refetchPosts(), [refetchPosts]);
   const handleEditedDetails = useCallback((editedDetails: Omit<ProfileDetails, "userId">) => {
-    setDetails(prevState => ({
-      ...prevState,
+    updateCurrentUser({
+      userId: currentUser?.userId || 0,
       ...editedDetails,
-    }));
-  }, [setDetails]);
-  const retryFetchUser = useCallback(() => {
-    setError("");
-    setIsRetryToggle(prevState => !prevState);
-  }, [setIsRetryToggle]);
+    });
+  }, [updateCurrentUser]);
   const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
-  const openSignInModal = useCallback(() => setSignInModalIsOpen(true), []);
-  const openSignUpModal = useCallback(() => setSignUpModalIsOpen(true), []);
-  // const openSignIn = useCallback(() => setSignInIsOpen(true), []);
-  // const closeSignIn = useCallback(() => setSignInIsOpen(false), []);
-  // const onSignInSuccess = useCallback((newCurrentUser: User) => {
-  //   closeSignIn();
-  //   setDetails({
-  //     userId: newCurrentUser.id,
-  //     username: newCurrentUser.username,
-  //     phoneNumber: newCurrentUser.phoneNumber,
-  //   });
-  // }, [closeSignIn]);
-  // const handleBackFromSignIn = useCallback(() => {
-  //   closeSignIn();
-  // }, [closeSignIn]);
-  const posts = query.data?.filter(post => post.userId === details.userId) || [];
+  const handleSignIn = useCallback(() => {
+    updateCurrentUser({ userId: 0, username: "", phoneNumber: "" });
+  }, [updateCurrentUser]);
+  const posts = currentUser.userId ?
+    postsQuery.data?.filter(post => post.userId === currentUser?.userId) || [] :
+    [];
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {isLoading && (
-        <Loading />
+      {!Boolean(currentUser.userId) && (
+        <SignInComponent noBack={true} />
       )}
-      {Boolean(error) && (
-        <CustomError retry={retryFetchUser}>
-          {error}
-        </CustomError>
-      )}
-      {/* {!Boolean(details.userId) && !isLoading && (
-        <SignInComponent onSuccess={onSignInSuccess} noBack={true} back={handleBackFromSignIn} />
-      )} */}
-      {!Boolean(details.userId) && !isLoading && (
-        <VStack justifyContent="center" alignItems="center" py={2} style={{ height: "100%" }}>
-          <Button size="lg" px="6" colorScheme="yellow" variant="outline" borderColor="#fff"
-            borderWidth={1} borderRadius={35} onPress={openSignInModal}>
-            <Text color="#fff" fontWeight={"bold"} fontSize="md">
-              Sign In To Access Profile
-            </Text>
-          </Button>
-        </VStack>
-      )}
-      {!isLoading && (
-        <SignIn
-          isOpen={signInModalIsOpen}
-          setIsOpen={setSignInModalIsOpen}
-          updateProfileDetails={setDetails}
-          openSignUpModal={openSignUpModal}
-        />
-      )}
-      {!isLoading && (
-        <SignUp
-          isOpen={signUpModalIsOpen}
-          setIsOpen={setSignUpModalIsOpen}
-          updateProfileDetails={setDetails}
-          openSignInModal={openSignUpModal}
-        />
-      )}
-      {Boolean(details.userId) && !isLoading && (
+      {Boolean(currentUser.userId) && (
         <EditProfile
-          input={{ ...details, password: "", passwordConfirmation: "" }}
+          input={{ ...currentUser, password: "", passwordConfirmation: "" }}
           updateDetails={handleEditedDetails}
           isOpen={editModalisOpen}
           setIsOpen={setEditModalIsOpen}
         />
       )}
-      {Boolean(details.userId) && !isLoading && (
+      {Boolean(currentUser.userId) && (
         <VStack alignItems="stretch">
           <VStack alignItems="stretch" py={2} style={{ backgroundColor: "orange" }}>
             <VStack justifyContent="center" alignItems="center">
@@ -110,12 +56,8 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
                   source={require('../assets/images/transparent_profile.png')}
                 />
               </VStack>
-              <Text fontWeight="bold" fontSize="2xl" color="black">
-                {details.username}
-              </Text>
-              <Text fontSize="md" color="black">
-                {details.phoneNumber}
-              </Text>
+              <Text fontWeight="bold" fontSize="2xl" color="black">{currentUser.username}</Text>
+              <Text fontSize="md" color="black">{currentUser.phoneNumber}</Text>
             </VStack>
             <Flex flexGrow={1} />
             <HStack justifyContent="center" alignItems="center" p={2} space={4}>
@@ -124,7 +66,7 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
                   Edit Profile
                 </Text>
               </Button>
-              <Button onPress={signOut} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
+              <Button onPress={handleSignIn} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
                 <Text color="black" fontWeight={"bold"} fontSize="md">
                   Log Out
                 </Text>
@@ -133,15 +75,15 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
           </VStack>
           <VStack alignItems="stretch" p={2}>
             <Text bold fontSize="md" px="3" pt="2" color="#fff">
-              {!query.isLoading && `${ posts.length } post(s) so far`}
-              {query.isLoading && "Loading Posts..."}
+              {!postsQuery.isLoading && `${ posts.length } post(s) so far`}
+              {postsQuery.isLoading && "Loading Posts..."}
             </Text>
-            {query.isError && (
-              <CustomError retry={refetchCallback}>
-                {query.error.message}
+            {postsQuery.isError && (
+              <CustomError retry={refetchPostsCallback}>
+                {postsQuery.error.message}
               </CustomError>
             )}
-            {query.data && (
+            {Boolean(postsQuery.data) && (
               <VStack alignItems="stretch" p={2}>
                 <Grid>
                   {toMatrix(posts, 3).map((row, index) => (
@@ -150,8 +92,8 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
                         <Col key={post.id}>
                           <VStack justifyContent={"center"} alignItems="stretch" p={1}>
                             <Image
-                              alt="Loading..." backgroundColor="#a1a1a1" borderRadius="5" size={150} resizeMode={"cover"}
-                              defaultSource={IMAGE_DEFAULT_SOURCE}
+                              alt="Loading..." backgroundColor="#a1a1a1" borderRadius="5"
+                              size={150} resizeMode={"cover"} defaultSource={IMAGE_DEFAULT_SOURCE}
                               source={getImageSource(getPostThumbnailUrl(post.publicId, post.resourceUrl))}
                             />
                           </VStack>
