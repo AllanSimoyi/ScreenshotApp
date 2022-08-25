@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { CURRENT_USER_KEY, getFromLocalStorage } from "../lib/session";
+import { useCallback, useEffect, useState } from "react";
+import { CURRENT_USER_KEY, deleteFromLocalStorage, getFromLocalStorage } from "../lib/session";
 import { createEmptyUser, fetchCurrentUser, User } from "../lib/users";
 
 export function useProfileDetails () {
@@ -34,10 +34,18 @@ export function useProfileDetails () {
       }
     }
   }, [isRetryToggle, setIsLoading, setDetails, setError]);
+  const signOut = useCallback(async () => {
+    await deleteFromLocalStorage(CURRENT_USER_KEY);
+    setDetails({
+      userId: 0,
+      username: "",
+      phoneNumber: "",
+    });
+  }, []);
   return {
     isLoading, setIsLoading,
     details, setDetails,
     error, setError,
-    setIsRetryToggle,
+    setIsRetryToggle, signOut,
   }
 }
