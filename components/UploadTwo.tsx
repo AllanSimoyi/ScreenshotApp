@@ -8,13 +8,14 @@ import {
 import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useProfileDetails } from '../hooks/useProfileDetails';
 import { getImageSource } from '../lib/image-rendering';
 import { categoryOptions, PostCategory, UploadMode } from '../lib/posts';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
 import { CustomImageBackground } from "./CustomImageBackground";
+import { SignInComponent } from './SignInComponent';
 import { UploadModeMenu } from './UploadModeMenu';
+import { useCurrentUser } from './useCurrentUser';
 
 interface Props {
   mode: UploadMode;
@@ -27,7 +28,7 @@ interface Props {
 
 export default function UploadTwo (props: Props) {
   const { sendMessage, sending, mode, setMode, error, setError } = props;
-  const { details: currentUser } = useProfileDetails();
+  const { currentUser } = useCurrentUser();
   const [base64, setBase64] = useState('');
   const [imagePath, setImagePath] = useState('');
   const [resourceType, setResourceType] = useState('');
@@ -102,61 +103,68 @@ export default function UploadTwo (props: Props) {
     sendMessage(result.data);
   }, [CreatePostSchema, category, description, base64, mode]);
 
+  const handleBackFromSignIn = useCallback(() => setMode("Publicly"), [setMode]);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <VStack alignItems="stretch" style={{ height: "100%" }}>
-        <VStack justifyContent={"center"} alignItems="stretch" pb={2} style={{ height: 300 }}>
-          <CustomImageBackground source={getImageSource(imagePath)} borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
-            <Flex direction="row" justify="center" align="flex-end">
-              <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
-                <Button
-                  size="xs" leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
-                  colorScheme="yellow" variant="solid" bgColor="yellow.600" onPress={takePicture}
-                  borderColor="yellow.600" borderWidth={1} borderRadius={35} isLoading={isLoading} isLoadingText="PROCESSING">
-                  <Text color="#333" fontWeight={"bold"} fontSize="xs">CAMERA</Text>
-                </Button>
-              </VStack>
-              <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
-                <Button
-                  leftIcon={<Icon as={Ionicons} />} onPress={selectImage} name="images"
-                  size="xs" colorScheme="yellow" color="#333" isLoading={isLoading} isLoadingText="PROCESSING"
-                  variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={35}>
-                  <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
-                </Button>
-              </VStack>
-            </Flex>
-          </CustomImageBackground>
-        </VStack>
-        <VStack alignItems="stretch" p={2}>
-          <HStack alignItems="center">
-            <Text bold fontSize="md" mt="2" color="#fff">Category</Text>
-            <Flex flexGrow={1} />
-            <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
-          </HStack>
-          <Select
-            borderRadius={15} color="white" placeholder="Choose Category"
-            fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
-            _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
-          >
-            {categoryOptions.map(category => <Select.Item label={category} value={category} />)}
-          </Select>
-          <Text bold fontSize="md" mb="2" mt="4" color="#fff">
-            Description (optional)
-          </Text>
-          <TextArea
-            placeholder="Provide a description (optional)"
-            autoCompleteType borderRadius={15} value={description} onChangeText={setDescription}
-            isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
-          />
-          {Boolean(error) && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
-          <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={35} py={2} px={4} mt={6} mb={4}>
-            <Text color="#333" fontWeight={"bold"} fontSize="xl">
-              {sending && "SENDING..."}
-              {!sending && "SEND"}
+      {mode === "Publicly" && !currentUser.userId && (
+        <SignInComponent onSuccess={undefined} back={handleBackFromSignIn} />
+      )}
+      {!(mode === "Publicly" && !currentUser.userId) && (
+        <VStack alignItems="stretch" style={{ height: "100%" }}>
+          <VStack justifyContent={"center"} alignItems="stretch" pb={2} style={{ height: 300 }}>
+            <CustomImageBackground source={getImageSource(imagePath)} borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
+              <Flex direction="row" justify="center" align="flex-end">
+                <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
+                  <Button
+                    size="xs" leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
+                    colorScheme="yellow" variant="solid" bgColor="yellow.600" onPress={takePicture}
+                    borderColor="yellow.600" borderWidth={1} borderRadius={35} isLoading={isLoading} isLoadingText="PROCESSING">
+                    <Text color="#333" fontWeight={"bold"} fontSize="xs">CAMERA</Text>
+                  </Button>
+                </VStack>
+                <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
+                  <Button
+                    leftIcon={<Icon as={Ionicons} />} onPress={selectImage} name="images"
+                    size="xs" colorScheme="yellow" color="#333" isLoading={isLoading} isLoadingText="PROCESSING"
+                    variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={35}>
+                    <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
+                  </Button>
+                </VStack>
+              </Flex>
+            </CustomImageBackground>
+          </VStack>
+          <VStack alignItems="stretch" p={2}>
+            <HStack alignItems="center">
+              <Text bold fontSize="md" mt="2" color="#fff">Category</Text>
+              <Flex flexGrow={1} />
+              <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
+            </HStack>
+            <Select
+              borderRadius={15} color="white" placeholder="Choose Category"
+              fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
+              _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
+            >
+              {categoryOptions.map(category => <Select.Item label={category} value={category} />)}
+            </Select>
+            <Text bold fontSize="md" mb="2" mt="4" color="#fff">
+              Description (optional)
             </Text>
-          </Button>
+            <TextArea
+              placeholder="Provide a description (optional)"
+              autoCompleteType borderRadius={15} value={description} onChangeText={setDescription}
+              isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
+            />
+            {Boolean(error) && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
+            <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={35} py={2} px={4} mt={6} mb={4}>
+              <Text color="#333" fontWeight={"bold"} fontSize="xl">
+                {sending && "SENDING..."}
+                {!sending && "SEND"}
+              </Text>
+            </Button>
+          </VStack>
         </VStack>
-      </VStack>
+      )}
     </ScrollView>
   );
 }
