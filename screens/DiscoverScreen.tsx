@@ -11,8 +11,9 @@ import { FlatListFooter } from "../components/FlatListFooter";
 import { NoListItems } from "../components/NoListItems";
 import { ShadowedText } from "../components/ShadowedText";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
+import { flattenArrays } from "../lib/arrays";
 import { getImageSource } from "../lib/image-rendering";
-import { categoryOptions, flattenPostPages, PostCategory, postHasSearchString } from '../lib/posts';
+import { categoryOptions, PostCategory, postHasSearchString } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
 
@@ -24,7 +25,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data?.pages ?
-    flattenPostPages(query.data.pages).filter(item => {
+    flattenArrays(query.data.pages).filter(item => {
       if (search.trim()) {
         return postHasSearchString(item, search);
       }
@@ -63,7 +64,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
         ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-        ListFooterComponent={<FlatListFooter listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
+        ListFooterComponent={<FlatListFooter isEmptyList={!categoryItems.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.2}
         renderItem={({ item }) => (
