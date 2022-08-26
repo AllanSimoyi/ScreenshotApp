@@ -1,116 +1,102 @@
 import dayjs from 'dayjs';
-import { Button, FlatList, Flex, HStack, Text, VStack } from 'native-base';
+import { FlatList, HStack, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
 import { RefreshControl } from 'react-native';
+import { useQueryClient } from 'react-query';
 import { CustomError } from '../components/CustomError';
 import { CustomSkeletons } from '../components/CustomSkeletons';
+import { FlatListFooter } from '../components/FlatListFooter';
 import { NoListItems } from '../components/NoListItems';
 import { SendMessage } from '../components/SendMessage';
-import { SignIn } from '../components/SignIn';
-import { SignUp } from '../components/SignUp';
-import { useMessages, useRecordMessage } from '../hooks/useMessages';
-import { useProfileDetails } from '../hooks/useProfileDetails';
-import { Message } from '../lib/messages';
+import { SignInComponent } from '../components/SignInComponent';
+import { useCurrentUser } from '../components/useCurrentUser';
+import { useInfiniteMessages } from '../hooks/useInfiniteMessages';
+import { useRecordMessage } from '../hooks/useMessages';
+import { flattenArrays } from '../lib/arrays';
+import { createOptimisticMessage, Message } from '../lib/messages';
+import { CreateMessage } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
+const queryKey = "messages";
+
 export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
-  const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
-  const [signUpModalIsOpen, setSignUpModalIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { isLoading, details, setDetails, error, setError, setIsRetryToggle, } = useProfileDetails();
-  const { refetch, ...query } = useMessages('messages');
+  const { currentUser } = useCurrentUser();
+  const queryClient = useQueryClient();
+  const { fetchNextPage, refetch, ...query } = useInfiniteMessages(queryKey, currentUser.userId);
   const refetchCallback = useCallback(() => refetch(), [refetch]);
-  const setErrorCallback = useCallback((error: unknown) => setError(error as string), []);
-  const { mutate, ...mutation } = useRecordMessage({
-    onError: setErrorCallback,
-    onSettled: refetchCallback
+  const { mutate } = useRecordMessage({
+    onMutate: async (newMessage: CreateMessage) => {
+      setMessage("");
+      await queryClient.cancelQueries([queryKey]);
+      const previousMessages = queryClient.getQueryData<{ pages: Message[][] }>([queryKey]);
+      queryClient.setQueryData<{ pages: Message[][] }>([queryKey], old => {
+        const message = createOptimisticMessage(newMessage, currentUser);
+        return old ?
+          { ...old, pages: [[message, ...old.pages[0]], ...old.pages] } :
+          { pages: [[message]] };
+      });
+      return { previousMessages }
+    },
+    onError: (_, __, context) => {
+      queryClient.setQueryData([queryKey], context.previousMessages);
+    },
+    onSettled: () => queryClient.invalidateQueries([queryKey]),
   });
-  const isUserMessage = useCallback((message: Message) => {
-    return message.senderId === details.userId || message.receiverId === details.userId;
-  }, [details.userId]);
-  const messages = details.userId ? query.data?.filter(isUserMessage) || [] : [];
   const sendMessage = useCallback(() => {
     if (message) {
-      mutate({ userId: details.userId, content: message, receiverId: 123 });
+      mutate({ userId: currentUser.userId, content: message, receiverId: 123 });
     }
   }, [message, mutate]);
-  const toggleRetry = useCallback(() => setIsRetryToggle(prevState => !prevState), []);
-  const openSignInModal = useCallback(() => setSignInModalIsOpen(true), []);
-  const openSignUpModal = useCallback(() => setSignUpModalIsOpen(true), []);
+  const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
+  const messages = flattenArrays(query.data?.pages || [] as Message[][]);
   return (
-    <VStack alignItems="stretch" px={0} pb={16} style={{ height: "100%" }}>
-      <HStack alignItems="center" py={2}>
-        <Text bold fontSize="md" px="3" color="#fff">
-          Messages
-        </Text>
-        <Flex flexGrow={1} />
-      </HStack>
-      {query.isError && (
-        <CustomError retry={refetchCallback}>
-          {query?.error?.message}
-        </CustomError>
+    <VStack alignItems="stretch" px={0} style={{ height: "100%" }}>
+      {!Boolean(currentUser.userId) && (
+        <SignInComponent noBack={true} />
       )}
-      {Boolean(error) && (
-        <CustomError retry={toggleRetry}>
-          {error}
-        </CustomError>
-      )}
-      {(query.isLoading || isLoading) && (
-        <CustomSkeletons num={4} h={20} />
-      )}
-      {!isLoading && (
-        <SignIn
-          isOpen={signInModalIsOpen}
-          setIsOpen={setSignInModalIsOpen}
-          updateProfileDetails={setDetails}
-          openSignUpModal={openSignUpModal}
-        />
-      )}
-      {!isLoading && (
-        <SignUp
-          isOpen={signUpModalIsOpen}
-          updateProfileDetails={setDetails}
-          setIsOpen={setSignUpModalIsOpen}
-          openSignInModal={openSignInModal}
-        />
-      )}
-      {Boolean(messages) && (
-        <FlatList
-          data={messages}
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyExtractor={(_, index) => index.toString()}
-          refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
-          ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
-          renderItem={({ item: report }) => (
-            <VStack alignItems="stretch" px={4} py={2}>
-              <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
-                <Text color="yellow.600" fontSize={"lg"}>
-                  {report.sender.username}
-                </Text>
-                <Text color="white" fontSize={"md"}>
-                  {report.content}
-                </Text>
-              </VStack>
-              <HStack justifyContent="flex-end" alignItems="center" p={2}>
-                <Text color="white" fontSize={"xs"}>
-                  {dayjs(report.createdAt).format('hh:mm a')}
-                </Text>
-              </HStack>
-            </VStack>
+      {Boolean(currentUser.userId) && (
+        <>
+          {query.isError && (
+            <CustomError retry={refetchCallback}>
+              {query?.error?.message}
+            </CustomError>
           )}
-        />
-      )}
-      {!Boolean(details.userId) && (
-        <VStack justifyContent="center" alignItems="stretch" px={4} py={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
-          <Button onPress={openSignInModal} size="lg" colorScheme="yellow" variant="solid" borderRadius={10} py={4} px={6}>
-            SIGN IN / CREATE ACCOUNT
-          </Button>
-        </VStack>
-      )}
-      {Boolean(details.userId) && (
-        <VStack justifyContent="center" alignItems="stretch" p={2} style={{ position: "absolute", bottom: 2, left: 0, width: "100%", backgroundColor: "#000" }}>
-          <SendMessage message={message} setMessage={setMessage} sendMessage={sendMessage} />
-        </VStack>
+          {query.isLoading && <CustomSkeletons num={4} h={20} />}
+          {query.data?.pages && (
+            <FlatList
+              data={messages}
+              keyExtractor={(_, index) => index.toString()}
+              contentContainerStyle={{ flexGrow: 1 }}
+              refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
+              ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
+              ListFooterComponent={<FlatListFooter isEmptyList={!messages.length} listName={"Messages"} isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.2}
+              inverted
+              renderItem={({ item: report }) => (
+                <VStack alignItems="stretch" px={4} py={2}>
+                  <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
+                    <Text color="yellow.600" fontSize={"lg"}>
+                      {report.sender.username}
+                    </Text>
+                    <Text color="white" fontSize={"md"}>
+                      {report.content}
+                    </Text>
+                  </VStack>
+                  <HStack justifyContent="flex-end" alignItems="center" p={2}>
+                    <Text color="white" fontSize={"xs"}>
+                      {dayjs(report.createdAt).format('hh:mm a')}
+                    </Text>
+                  </HStack>
+                </VStack>
+              )}
+            />
+          )}
+          <VStack justifyContent="center" alignItems="stretch" p={2} style={{ backgroundColor: "#000" }}>
+            <SendMessage message={message} setMessage={setMessage} sendMessage={sendMessage} />
+          </VStack>
+        </>
       )}
     </VStack>
   );
