@@ -10,6 +10,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon, Input, Text, VStack } from 'native-base';
 import * as React from 'react';
 import { ColorSchemeName, StatusBar } from 'react-native';
+import { useCurrentUser } from '../components/useCurrentUser';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import DiscoverScreen from '../screens/DiscoverScreen';
@@ -59,6 +60,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator () {
   const colorScheme = useColorScheme();
+  const { currentUser } = useCurrentUser();
 
   return (
     <BottomTab.Navigator
@@ -104,16 +106,18 @@ function BottomTabNavigator () {
         name="Inbox"
         component={InboxScreen}
         options={({ }: RootTabScreenProps<'Inbox'>) => ({
-          headerStyle: { backgroundColor: "orange", height: 150 },
+          headerStyle: { backgroundColor: "orange", height: currentUser.userId ? 150 : undefined },
           headerTitle: (_) => (
             <VStack alignItems="stretch" py={2} minWidth="full">
               <Text fontSize="2xl" fontWeight="bold" color="#333">Inbox</Text>
-              <Input
-                size="xl" mt="2" py="1" px="4"
-                fontWeight="bold" color="black" width="80%"
-                borderWidth="2" variant="rounded" borderColor="#333" placeholder="Search"
-                InputRightElement={<Icon mx="2" size="6" color="#333" as={<Ionicons name="ios-search" />} />}
-              />
+              {Boolean(currentUser.userId) && (
+                <Input
+                  size="xl" mt="2" py="1" px="4"
+                  fontWeight="bold" color="black" width="80%"
+                  borderWidth="2" variant="rounded" borderColor="#333" placeholder="Search"
+                  InputRightElement={<Icon mx="2" size="6" color="#333" as={<Ionicons name="ios-search" />} />}
+                />
+              )}
             </VStack>
           ),
           tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
