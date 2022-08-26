@@ -8,9 +8,10 @@ import { FlatListFooter } from '../components/FlatListFooter';
 import { NoListItems } from '../components/NoListItems';
 import { ShadowedText } from '../components/ShadowedText';
 import { useInfinitePosts } from '../hooks/useInfinitePosts';
+import { flattenArrays } from '../lib/arrays';
 import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { getImageSource } from '../lib/image-rendering';
-import { flattenPostPages } from '../lib/posts';
+import { Post } from '../lib/posts';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
@@ -21,6 +22,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
     navigate('Discover', { category });
   }, [navigate]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
+  const posts = flattenArrays(query.data?.pages || [] as Post[][]);
   return (
     <View style={styles.container}>
       <VStack alignItems="stretch">
@@ -32,12 +34,12 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
         {query.isLoading && <CustomSkeletons num={4} />}
         {query.data?.pages && (
           <FlatList
-            data={flattenPostPages(query.data.pages)}
+            data={posts}
             keyExtractor={(_, index) => index.toString()}
             contentContainerStyle={{ flexGrow: 1 }}
             refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
             ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-            ListFooterComponent={<FlatListFooter listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
+            ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.2}
             renderItem={({ item }) => (
