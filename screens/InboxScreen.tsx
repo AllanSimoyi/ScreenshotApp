@@ -68,7 +68,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
               data={messages}
               keyExtractor={(_, index) => index.toString()}
               contentContainerStyle={{ flexGrow: 1 }}
-              refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
+              // refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
               ListEmptyComponent={<NoListItems>No messages found</NoListItems>}
               ListFooterComponent={<FlatListFooter isEmptyList={!messages.length} listName={"Messages"} isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
               onEndReached={onEndReached}
