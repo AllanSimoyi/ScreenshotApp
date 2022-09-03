@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { IconButton, Menu, Pressable, Text } from 'native-base';
+import { Button, IconButton, Menu, Pressable, Text } from 'native-base';
 import { categoryOptions, UploadMode, uploadModes } from '../lib/posts';
 
 interface Props {
@@ -20,9 +20,11 @@ export function UploadModeMenu (props: Props) {
   }));
   return (
     <Menu w="190" defaultIsOpen={false} trigger={triggerProps => (
-      <Pressable {...triggerProps}>
-        <Text italic fontSize="md" mt="2" color="white">{uploadMode}</Text>
-      </Pressable>
+      <Button {...triggerProps}
+        size="xs" colorScheme="yellow" variant="solid" bgColor="yellow.600"
+        borderColor="yellow.600" borderWidth={1} borderRadius={5}>
+        <Text color="#333" fontWeight={"bold"} fontSize="xs">{uploadMode.toUpperCase()}</Text>
+      </Button>
     )}>
       {items.map(item => (
         <Menu.Item key={item.caption} onPress={item.onPress}>
