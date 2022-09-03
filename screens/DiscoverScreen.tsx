@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, HStack, Icon, Input, VStack } from 'native-base';
+import { FlatList, HStack, Icon, Input, Pressable, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDebounce } from 'use-debounce';
@@ -14,12 +14,12 @@ import { ShadowedText } from "../components/ShadowedText";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
 import { flattenArrays } from "../lib/arrays";
 import { getImageSource } from "../lib/image-rendering";
-import { PostCategory } from '../lib/posts';
+import { Post, PostCategory } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
-  const { route } = props;
+  const { route, navigation: { navigate } } = props;
   const initialCategory = route.params?.category as PostCategory || undefined;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<PostCategory | undefined>(initialCategory || undefined);
@@ -34,6 +34,9 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
     setSearch("");
     setCategory(undefined);
   }, []);
+  const navigateToPostDetail = useCallback((post: Post) => {
+    navigate('PostDetail', { post });
+  }, [navigate]);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
@@ -68,19 +71,21 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         onEndReachedThreshold={0.2}
         renderItem={({ item }) => (
           <VStack alignItems="stretch" pb={1}>
-            <CustomImageBackground
-              source={getImageSource(item.resourceUrl)}
-              noImageFound={!item.publicId && !item.resourceUrl}
-              style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-            >
-              <VStack alignItems="flex-start" py={2} px={4}>
-                <ShadowedText>
-                  <CustomHighlight searchString={search}>
-                    {shortenString(item.description, 100, "addEllipsis")}
-                  </CustomHighlight>
-                </ShadowedText>
-              </VStack>
-            </CustomImageBackground>
+            <Pressable onPress={(e) => navigateToPostDetail(item)}>
+              <CustomImageBackground
+                source={getImageSource(item.resourceUrl)}
+                noImageFound={!item.publicId && !item.resourceUrl}
+                style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+              >
+                <VStack alignItems="flex-start" py={2} px={4}>
+                  <ShadowedText>
+                    <CustomHighlight searchString={search}>
+                      {shortenString(item.description, 100, "addEllipsis")}
+                    </CustomHighlight>
+                  </ShadowedText>
+                </VStack>
+              </CustomImageBackground>
+            </Pressable>
           </VStack>
         )}
       />

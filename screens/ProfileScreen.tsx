@@ -1,4 +1,4 @@
-import { Button, FlatList, Flex, HStack, Image, ScrollView, Text, VStack } from 'native-base';
+import { Button, FlatList, Flex, HStack, Image, Pressable, ScrollView, Text, VStack } from 'native-base';
 import { useCallback, useState } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -20,7 +20,7 @@ import { capitalizeFirstLetter, shortenString } from '../lib/strings';
 import { ProfileDetails } from '../lib/users';
 import { RootTabScreenProps } from '../types';
 
-export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
+export default function ProfileScreen ({ navigation: { navigate } }: RootTabScreenProps<'Profile'>) {
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
   const { currentUser, updateCurrentUser } = useCurrentUser();
   const { fetchNextPage, refetch: refetchPosts, ...postsQuery } = useInfinitePosts('profile', currentUser.userId);
@@ -37,6 +37,9 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
   }, [updateCurrentUser]);
   const posts = flattenArrays(postsQuery.data?.pages || [] as Post[][]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
+  const navigateToPostDetail = useCallback((post: Post) => {
+    navigate('PostDetail', { post });
+  }, [navigate]);
   return (
     <VStack alignItems="stretch" h="100%">
       {!Boolean(currentUser.userId) && (
@@ -103,54 +106,27 @@ export default function ProfileScreen ({ }: RootTabScreenProps<'Profile'>) {
                   onEndReachedThreshold={0.2}
                   renderItem={({ item }) => (
                     <VStack alignItems="stretch" pb={1}>
-                      <CustomImageBackground
-                        source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                        noImageFound={!item.publicId && !item.resourceUrl}
-                        style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                      >
-                        <VStack alignItems="flex-start" py={2} px={4}>
-                          <ShadowedText>
-                            {shortenString(item.description, 100, "addEllipsis")}
-                          </ShadowedText>
-                        </VStack>
-                      </CustomImageBackground>
+                      <Pressable onPress={(e) => navigateToPostDetail(item)}>
+                        <CustomImageBackground
+                          source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
+                          noImageFound={!item.publicId && !item.resourceUrl}
+                          style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+                        >
+                          <VStack alignItems="flex-start" py={2} px={4}>
+                            <ShadowedText>
+                              {shortenString(item.description, 100, "addEllipsis")}
+                            </ShadowedText>
+                          </VStack>
+                        </CustomImageBackground>
+                      </Pressable>
                     </VStack>
                   )}
                 />
               </VStack>
             )}
-            {/* {Boolean(postsQuery.data) && (
-              <VStack alignItems="stretch" p={2}>
-                <Grid>
-                  {toMatrix(posts, 3).map((row, index) => (
-                    <Row key={index}>
-                      {row.map(post => (
-                        <Col key={post.id}>
-                          <VStack justifyContent={"center"} alignItems="stretch" p={1}>
-                            <Image
-                              alt="Loading..." backgroundColor="#a1a1a1" borderRadius="5"
-                              size={150} resizeMode={"cover"} defaultSource={IMAGE_DEFAULT_SOURCE}
-                              source={getImageSource(getPostThumbnailUrl(post.publicId, post.resourceUrl))}
-                            />
-                          </VStack>
-                        </Col>
-                      ))}
-                    </Row>
-                  ))}
-                </Grid>
-              </VStack>
-            )} */}
           </VStack>
         </VStack>
       )}
     </VStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
-  },
-});

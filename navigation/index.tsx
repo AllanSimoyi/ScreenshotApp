@@ -18,6 +18,7 @@ import FeedScreen from '../screens/FeedScreen';
 import InboxScreen from '../screens/InboxScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
+import PostDetailScreen from '../screens/PostDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import UploadScreen from '../screens/UploadScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
@@ -39,12 +40,17 @@ export default function Navigation ({ colorScheme }: { colorScheme: ColorSchemeN
  * https://reactnavigation.org/docs/modal
  */
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 function RootNavigator () {
+  const colorScheme = useColorScheme();
   return (
     <Stack.Navigator>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{
+        // title: 'Post Detail', 
+        headerStyle: { backgroundColor: '#000' },
+        headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#fff">Post Detail</Text>,
+      }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>

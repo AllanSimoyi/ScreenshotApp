@@ -1,4 +1,4 @@
-import { FlatList, View, VStack } from 'native-base';
+import { FlatList, Pressable, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -19,8 +19,8 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   const { navigate } = props.navigation;
   const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
   const refetchCallback = useCallback(() => refetch(), [refetch]);
-  const navigateToDiscover = useCallback((category: string) => {
-    navigate('Discover', { category });
+  const navigateToPostDetail = useCallback((post: Post) => {
+    navigate('PostDetail', { post });
   }, [navigate]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
   const posts = flattenArrays(query.data?.pages || [] as Post[][]);
@@ -45,17 +45,19 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
             onEndReachedThreshold={0.2}
             renderItem={({ item }) => (
               <VStack alignItems="stretch" pb={1}>
-                <CustomImageBackground
-                  source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                  noImageFound={!item.publicId && !item.resourceUrl}
-                  style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                >
-                  <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText>
-                      {shortenString(item.description, 100, "addEllipsis")}
-                    </ShadowedText>
-                  </VStack>
-                </CustomImageBackground>
+                <Pressable onPress={(e) => navigateToPostDetail(item)}>
+                  <CustomImageBackground
+                    source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
+                    noImageFound={!item.publicId && !item.resourceUrl}
+                    style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+                  >
+                    <VStack alignItems="flex-start" py={2} px={4}>
+                      <ShadowedText>
+                        {shortenString(item.description, 100, "addEllipsis")}
+                      </ShadowedText>
+                    </VStack>
+                  </CustomImageBackground>
+                </Pressable>
               </VStack>
             )}
           />

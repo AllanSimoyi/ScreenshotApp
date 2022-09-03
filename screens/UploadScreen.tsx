@@ -1,8 +1,10 @@
 import { VStack } from 'native-base';
 import { useCallback, useState } from 'react';
+import { SignInComponent } from '../components/SignInComponent';
 import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
+import { useCurrentUser } from '../components/useCurrentUser';
 import { usePostMutation } from '../hooks/usePostMutation';
 import { UploadMode } from '../lib/posts';
 import { CreatePost } from '../lib/validations';
@@ -10,6 +12,7 @@ import { RootTabScreenProps } from '../types';
 
 export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   const { navigate } = props.navigation;
+  const { currentUser } = useCurrentUser();
   const [stage, setStage] = useState(1);
   const [mode, setMode] = useState<UploadMode>("Anonymously");
   const [error, setError] = useState("");
@@ -30,14 +33,21 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   const sendMessage = useCallback((newPost: CreatePost) => mutate(newPost), [mutate]);
   return (
     <VStack alignItems="stretch">
-      {stage === 1 && (<UploadOne nextStage={nextStage} />)}
-      {stage === 2 && (
-        <UploadTwo
-          mode={mode} setMode={setMode} sending={mutation.isLoading}
-          sendMessage={sendMessage} error={error} setError={setError}
-        />
+      {!currentUser.userId && (
+        <SignInComponent noBack={true} />
       )}
-      {stage === 3 && (<UploadThree />)}
+      {Boolean(currentUser.userId) && (
+        <>
+          {stage === 1 && (<UploadOne nextStage={nextStage} />)}
+          {stage === 2 && (
+            <UploadTwo
+              mode={mode} setMode={setMode} sending={mutation.isLoading}
+              sendMessage={sendMessage} error={error} setError={setError}
+            />
+          )}
+          {stage === 3 && (<UploadThree />)}
+        </>
+      )}
     </VStack>
   );
 }
