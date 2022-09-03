@@ -18,3 +18,7 @@ export function shortenString (subject: string, maxLength: number, addEllipsis?:
   trimmedString = trimmedString.substring(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
   return trimmedString + (addEllipsis ? "..." : "");
 }
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
