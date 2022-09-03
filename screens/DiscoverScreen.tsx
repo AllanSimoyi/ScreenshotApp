@@ -16,13 +16,15 @@ import { getImageSource } from "../lib/image-rendering";
 import { categoryOptions, PostCategory, postHasSearchString } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
+import { useDebounce } from 'use-debounce';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { route } = props;
   const initialCategory = route.params?.category as PostCategory || categoryOptions[0];
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<PostCategory>(initialCategory || categoryOptions[0]);
-  const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed');
+  const [debouncedSearch] = useDebounce(search, 800);
+  const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed', undefined, debouncedSearch);
   useEffect(() => setCategory(initialCategory), [initialCategory]);
   const categoryItems = query.data?.pages ?
     flattenArrays(query.data.pages).filter(item => {
@@ -35,6 +37,9 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const refetchCallback = useCallback(() => refetch(), [refetch]);
   const searchOnChange = useCallback((text: string) => setSearch(text), []);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
+  const closeSearch = useCallback((e: any) => {
+    setSearch("");
+  }, []);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
       <HStack alignItems="center">
@@ -44,7 +49,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
             borderWidth="2" fontWeight="bold" variant="rounded"
             color="yellow.600" placeholder="Search" my="2" py="1" px="4"
             borderColor="yellow.600" onChangeText={searchOnChange}
-            InputRightElement={<Icon mx="2" size="6" color="yellow.600" as={<Ionicons name="ios-search" />} />}
+            InputRightElement={<Icon onPress={closeSearch} mx="2" size="6" color="yellow.600" as={<Ionicons name="close" />} />}
           />
         </VStack>
         <VStack justifyContent={"center"} alignItems="center" p={2}>

@@ -8,19 +8,19 @@ interface PayloadType {
   errorMessage: string;
 }
 
-async function fetchProjects ({ pageParam = 0 }) {
-  const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v2?lastPostId=" + pageParam);
-  if (err) {
-    throw err;
+export function useInfinitePosts (queryKey: QueryKey, userId?: number, search?: string) {
+  async function fetchPosts ({ pageParam = 0 }: any) {
+    console.log("Running search:", search);
+    const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v3?lastPostId=" + pageParam + "&userId=" + (userId || "0").toString() + "&search=" + (search || "") );
+    if (err) {
+      throw err;
+    }
+    if (result?.errorMessage) {
+      throw new Error(result?.errorMessage);
+    }
+    return result?.posts || [];
   }
-  if (result?.errorMessage) {
-    throw new Error(result?.errorMessage);
-  }
-  return result?.posts || [];
-}
-
-export function useInfinitePosts (queryKey: QueryKey) {
-  return useInfiniteQuery<Post[], Error, Post[], QueryKey>(queryKey, fetchProjects, {
+  return useInfiniteQuery<Post[], Error, Post[], QueryKey>([queryKey, userId, search], fetchPosts, {
     getNextPageParam: (lastPage) => {
       return lastPage?.[(lastPage?.length || 1) - 1]?.id || undefined;
     },
