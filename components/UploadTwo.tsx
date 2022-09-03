@@ -103,12 +103,12 @@ export default function UploadTwo (props: Props) {
     sendMessage(result.data);
   }, [CreatePostSchema, category, description, base64, mode]);
 
-  const handleBackFromSignIn = useCallback(() => setMode("Publicly"), [setMode]);
+  const handleBackFromSignIn = useCallback(() => setMode("Anonymously"), [setMode]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {mode === "Publicly" && !currentUser.userId && (
-        <SignInComponent onSuccess={undefined} back={handleBackFromSignIn} />
+        <SignInComponent h={"100%"} onSuccess={undefined} back={handleBackFromSignIn} />
       )}
       {!(mode === "Publicly" && !currentUser.userId) && (
         <VStack alignItems="stretch" style={{ height: "100%" }}>
@@ -125,8 +125,8 @@ export default function UploadTwo (props: Props) {
                 </VStack>
                 <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                   <Button
-                    leftIcon={<Icon as={Ionicons} />} onPress={selectImage} name="images"
-                    size="xs" colorScheme="yellow" color="#333" isLoading={isLoading} isLoadingText="PROCESSING"
+                    leftIcon={<Icon as={Ionicons} color="#333" name="images" size="xs" />} onPress={selectImage} 
+                    size="xs" colorScheme="yellow" isLoading={isLoading} isLoadingText="PROCESSING"
                     variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={5}>
                     <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
                   </Button>
@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: 'stretch',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    height: "100%",
   },
 });
