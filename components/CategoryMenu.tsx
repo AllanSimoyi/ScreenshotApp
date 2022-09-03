@@ -3,7 +3,6 @@ import { IconButton, Menu, Pressable } from 'native-base';
 import { categoryOptions, PostCategory } from '../lib/posts';
 
 interface Props {
-  currentCategory: PostCategory
   setCurrentCategory: (newCurrentCategory: PostCategory) => void
 }
 
@@ -13,7 +12,7 @@ interface Item {
 }
 
 export function CategoryMenu (props: Props) {
-  const { currentCategory, setCurrentCategory } = props;
+  const { setCurrentCategory } = props;
   const items: Item[] = categoryOptions.map(option => ({
     caption: option,
     onPress: () => setCurrentCategory(option),

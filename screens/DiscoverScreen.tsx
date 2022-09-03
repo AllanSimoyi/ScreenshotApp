@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FlatList, HStack, Icon, Input, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
+import { useDebounce } from 'use-debounce';
 import { CategoryMenu } from "../components/CategoryMenu";
 import { CustomError } from "../components/CustomError";
 import { CustomHighlight } from "../components/CustomHighlight";
@@ -13,32 +14,25 @@ import { ShadowedText } from "../components/ShadowedText";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
 import { flattenArrays } from "../lib/arrays";
 import { getImageSource } from "../lib/image-rendering";
-import { categoryOptions, PostCategory, postHasSearchString } from '../lib/posts';
+import { PostCategory } from '../lib/posts';
 import { shortenString } from "../lib/strings";
 import { RootTabScreenProps } from '../types';
-import { useDebounce } from 'use-debounce';
 
 export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
   const { route } = props;
-  const initialCategory = route.params?.category as PostCategory || categoryOptions[0];
+  const initialCategory = route.params?.category as PostCategory || undefined;
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<PostCategory>(initialCategory || categoryOptions[0]);
+  const [category, setCategory] = useState<PostCategory | undefined>(initialCategory || undefined);
   const [debouncedSearch] = useDebounce(search, 800);
-  const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed', undefined, debouncedSearch);
+  const { fetchNextPage, refetch, ...query } = useInfinitePosts('infiniteFeed', undefined, debouncedSearch, category);
   useEffect(() => setCategory(initialCategory), [initialCategory]);
-  const categoryItems = query.data?.pages ?
-    flattenArrays(query.data.pages).filter(item => {
-      if (search.trim()) {
-        return postHasSearchString(item, search);
-      }
-      return (item.category === category);
-    }) :
-    [];
+  const posts = flattenArrays(query.data?.pages || []);
   const refetchCallback = useCallback(() => refetch(), [refetch]);
   const searchOnChange = useCallback((text: string) => setSearch(text), []);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
   const closeSearch = useCallback((e: any) => {
     setSearch("");
+    setCategory(undefined);
   }, []);
   return (
     <VStack alignItems="stretch" style={{ height: "100%" }}>
@@ -53,7 +47,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
           />
         </VStack>
         <VStack justifyContent={"center"} alignItems="center" p={2}>
-          <CategoryMenu currentCategory={category} setCurrentCategory={setCategory} />
+          <CategoryMenu setCurrentCategory={setCategory} />
         </VStack>
       </HStack>
       {query.isError && (
@@ -63,13 +57,13 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
       )}
       {query.isLoading && <CustomSkeletons num={4} />}
       <FlatList
-        data={categoryItems}
+        data={posts}
         flexGrow={1}
         keyExtractor={(_, index) => index.toString()}
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
         ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-        ListFooterComponent={<FlatListFooter isEmptyList={!categoryItems.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
+        ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.2}
         renderItem={({ item }) => (

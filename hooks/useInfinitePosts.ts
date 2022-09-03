@@ -8,10 +8,19 @@ interface PayloadType {
   errorMessage: string;
 }
 
-export function useInfinitePosts (queryKey: QueryKey, userId?: number, search?: string) {
+export function useInfinitePosts (queryKey: QueryKey, userId?: number, search?: string, category?: string) {
   async function fetchPosts ({ pageParam = 0 }: any) {
-    console.log("Running search:", search);
-    const [result, err] = await getRequest<PayloadType>(URL_PREFIX + "/api/posts_v3?lastPostId=" + pageParam + "&userId=" + (userId || "0").toString() + "&search=" + (search || "") );
+    const baseUrl = URL_PREFIX + "/api/posts_v3";
+    const queryParams: [string, string][] = [
+      ["lastPostId", pageParam.toString()],
+      ["userId", userId?.toString() || ""],
+      ["search", search || ""],
+      ["category", category || ""],
+    ];
+    const finalUrl = baseUrl + "?" + queryParams
+      .filter(el => el[1] !== "")
+      .map(([key, value]) => `${ key }=${ value }`).join("&");
+    const [result, err] = await getRequest<PayloadType>(finalUrl);
     if (err) {
       throw err;
     }
@@ -20,7 +29,7 @@ export function useInfinitePosts (queryKey: QueryKey, userId?: number, search?: 
     }
     return result?.posts || [];
   }
-  return useInfiniteQuery<Post[], Error, Post[], QueryKey>([queryKey, userId, search], fetchPosts, {
+  return useInfiniteQuery<Post[], Error, Post[], QueryKey>([queryKey, userId, search, category], fetchPosts, {
     getNextPageParam: (lastPage) => {
       return lastPage?.[(lastPage?.length || 1) - 1]?.id || undefined;
     },
