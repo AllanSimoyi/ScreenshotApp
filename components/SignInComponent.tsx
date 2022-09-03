@@ -8,15 +8,16 @@ import { User } from '../lib/users';
 import { CustomError } from './CustomError';
 import { SignUpComponent } from './SignUpComponent';
 import { useCurrentUser } from './useCurrentUser';
+import { InterfaceVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 
-interface Props {
+interface Props extends InterfaceVStackProps {
   onSuccess?: (newCurrentUser: User) => void
   noBack?: boolean
   back?: () => void
 }
 
 export function SignInComponent (props: Props) {
-  const { onSuccess, noBack, back } = props;
+  const { onSuccess, noBack, back, ...restOfProps } = props;
   const { updateCurrentUser } = useCurrentUser();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +43,7 @@ export function SignInComponent (props: Props) {
   const closeCreateAccount = useCallback(() => setCreateAccountIsOpen(false), []);
   const handleSubmit = useCallback(() => mutate({ username, password }), [mutate, username, password]);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <VStack alignItems="stretch" {...restOfProps}>
       {!createAccountIsOpen && (
         <VStack justifyContent={"center"} alignItems="stretch" style={{ height: "100%" }} p={2} space={2}>
           <VStack alignItems="center" py={2}>
@@ -86,7 +87,7 @@ export function SignInComponent (props: Props) {
       {createAccountIsOpen && (
         <SignUpComponent onSuccess={onSuccess} noBack={noBack} back={back} openSignIn={closeCreateAccount} />
       )}
-    </ScrollView>
+    </VStack>
   )
 }
 
