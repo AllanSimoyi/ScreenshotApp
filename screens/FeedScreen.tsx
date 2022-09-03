@@ -12,6 +12,7 @@ import { flattenArrays } from '../lib/arrays';
 import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
+import { shortenString } from '../lib/strings';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
@@ -50,8 +51,8 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
                   style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
                 >
                   <VStack alignItems="flex-start" py={2} px={4}>
-                    <ShadowedText onPress={() => navigateToDiscover(item.category)}>
-                      {item.category}
+                    <ShadowedText>
+                      {shortenString(item.description, 100, "addEllipsis")}
                     </ShadowedText>
                   </VStack>
                 </CustomImageBackground>
