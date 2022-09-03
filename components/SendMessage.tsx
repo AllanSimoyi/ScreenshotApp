@@ -14,7 +14,7 @@ export function SendMessage (props: Props) {
       <VStack justifyContent="center" alignItems="center" pl={2} py={2} style={{ flexGrow: 1 }}>
         <Input
           value={message} onChangeText={setMessage}
-          fontWeight="bold" variant="rounded" placeholder="Type Something..."
+          fontWeight="bold" variant="outline" placeholder="Type Something..."
           color="yellow.600" borderColor="yellow.600" borderWidth="1"
           size="xl" width="100%" my={2} py={2} px={4}
         />

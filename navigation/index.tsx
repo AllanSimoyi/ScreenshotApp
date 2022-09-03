@@ -113,8 +113,8 @@ function BottomTabNavigator () {
               {Boolean(currentUser.userId) && (
                 <Input
                   size="xl" mt="2" py="1" px="4"
-                  fontWeight="bold" color="black" width="80%"
-                  borderWidth="2" variant="rounded" borderColor="#333" placeholder="Search"
+                  fontWeight="bold" color="black" width="100%"
+                  borderWidth="2" variant="outline" borderColor="#333" placeholder="Search"
                   InputRightElement={<Icon mx="2" size="6" color="#333" as={<Ionicons name="ios-search" />} />}
                 />
               )}

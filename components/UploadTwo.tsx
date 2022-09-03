@@ -119,7 +119,7 @@ export default function UploadTwo (props: Props) {
                   <Button
                     size="xs" leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
                     colorScheme="yellow" variant="solid" bgColor="yellow.600" onPress={takePicture}
-                    borderColor="yellow.600" borderWidth={1} borderRadius={35} isLoading={isLoading} isLoadingText="PROCESSING">
+                    borderColor="yellow.600" borderWidth={1} borderRadius={5} isLoading={isLoading} isLoadingText="PROCESSING">
                     <Text color="#333" fontWeight={"bold"} fontSize="xs">CAMERA</Text>
                   </Button>
                 </VStack>
@@ -127,7 +127,7 @@ export default function UploadTwo (props: Props) {
                   <Button
                     leftIcon={<Icon as={Ionicons} />} onPress={selectImage} name="images"
                     size="xs" colorScheme="yellow" color="#333" isLoading={isLoading} isLoadingText="PROCESSING"
-                    variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={35}>
+                    variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={5}>
                     <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
                   </Button>
                 </VStack>
@@ -141,7 +141,7 @@ export default function UploadTwo (props: Props) {
               <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
             </HStack>
             <Select
-              borderRadius={15} color="white" placeholder="Choose Category"
+              borderRadius={5} color="white" placeholder="Choose Category"
               fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
               _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
             >
@@ -152,11 +152,11 @@ export default function UploadTwo (props: Props) {
             </Text>
             <TextArea
               placeholder="Provide a description (optional)"
-              autoCompleteType borderRadius={15} value={description} onChangeText={setDescription}
+              autoCompleteType borderRadius={5} value={description} onChangeText={setDescription}
               isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
             />
             {Boolean(error) && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
-            <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={35} py={2} px={4} mt={6} mb={4}>
+            <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={5} py={2} px={4} mt={6} mb={4}>
               <Text color="#333" fontWeight={"bold"} fontSize="xl">
                 {sending && "SENDING..."}
                 {!sending && "SEND"}

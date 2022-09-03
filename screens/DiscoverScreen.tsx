@@ -40,13 +40,13 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
         <VStack justifyContent="center" alignItems="stretch" p={2} style={{ flexGrow: 1 }} width="70%">
           <Input
             size="xl" width="100%" value={search}
-            borderWidth="2" fontWeight="bold" variant="rounded"
+            borderWidth="2" fontWeight="bold" variant="outline"
             color="yellow.600" placeholder="Search" my="2" py="1" px="4"
             borderColor="yellow.600" onChangeText={searchOnChange}
             InputRightElement={<Icon onPress={closeSearch} mx="2" size="6" color="yellow.600" as={<Ionicons name="close" />} />}
           />
         </VStack>
-        <VStack justifyContent={"center"} alignItems="center" p={2}>
+        <VStack justifyContent={"center"} alignItems="center">
           <CategoryMenu setCurrentCategory={setCategory} />
         </VStack>
       </HStack>
