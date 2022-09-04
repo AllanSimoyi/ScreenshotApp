@@ -6,13 +6,14 @@ import { CreatePost } from '../lib/validations';
 
 interface Props {
   onSuccess: (newPost: Post | undefined) => void;
-  onError: (error: unknown) => void;
+  onError: (error: unknown, post: Post) => void;
 }
 
 export function usePostMutation (props: Props) {
   const { onSuccess, onError } = props;
   return useMutation(async (newPost: CreatePost) => {
-    const [result, err] = await postRequest<{ post: Post; errorMessage: string; }>(URL_PREFIX + "/api/create-post", newPost);
+    const { resourceBase64, ...details } = newPost;
+    const [result, err] = await postRequest<{ post: Post; errorMessage: string; }>(URL_PREFIX + "/api/create-post_v2", newPost);
     if (err) {
       throw err;
     }
@@ -22,6 +23,16 @@ export function usePostMutation (props: Props) {
     return result?.post || undefined;
   }, {
     onSuccess,
-    onError,
+    onError: (error, variables) => {
+      onError(error, {
+        ...variables,
+        id: 1,
+        userId: Number(variables.userId),
+        resourceUrl: variables.resourceBase64 || "",
+        description: variables.description || "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    },
   });
 }
