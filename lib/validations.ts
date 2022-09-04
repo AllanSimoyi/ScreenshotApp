@@ -2,6 +2,7 @@ import { z } from "zod"
 
 export const CreatePostSchema = z.object({
   userId: z.number().int().min(1).optional(),
+  uuid: z.string().min(4),
   resourceBase64: z.string().optional(),
   resourceType: z.union([z.literal("Image"), z.literal("Video")]),
   publicly: z.boolean(),

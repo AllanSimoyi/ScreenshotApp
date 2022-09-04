@@ -1,12 +1,13 @@
 export interface Post {
   id: number;
   userId: number;
+  uuid: string;
   resourceUrl: string;
   publicId?: string;
   width?: number;
   height?: number;
 
-  resourceType: string;
+  resourceType: "Image" | "Video";
   publicly: boolean;
   category: string;
   description: string;
