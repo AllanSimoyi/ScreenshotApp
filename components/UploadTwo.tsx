@@ -5,9 +5,10 @@ import {
   MediaTypeOptions,
   requestCameraPermissionsAsync
 } from 'expo-image-picker';
-import { Button, Flex, HStack, Icon, ScrollView, Select, Text, TextArea, VStack } from 'native-base';
+import { Button, Flex, HStack, Icon, Select, Text, TextArea, VStack } from 'native-base';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import { getImageSource } from '../lib/image-rendering';
 import { categoryOptions, PostCategory, UploadMode } from '../lib/posts';
 import { CreatePost, CreatePostSchema } from '../lib/validations';
@@ -87,6 +88,7 @@ export default function UploadTwo (props: Props) {
     setError("");
     const details: CreatePost = {
       userId: currentUser.userId,
+      uuid: uuidv4(),
       resourceBase64: 'data:image/jpeg;base64,' + base64,
       resourceType: "Image",
       publicly: mode !== "Anonymously",
@@ -106,7 +108,7 @@ export default function UploadTwo (props: Props) {
   const handleBackFromSignIn = useCallback(() => setMode("Anonymously"), [setMode]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <VStack alignItems="stretch" h="100%">
       {mode === "Publicly" && !currentUser.userId && (
         <SignInComponent h={"100%"} onSuccess={undefined} back={handleBackFromSignIn} />
       )}
@@ -125,7 +127,7 @@ export default function UploadTwo (props: Props) {
                 </VStack>
                 <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                   <Button
-                    leftIcon={<Icon as={Ionicons} color="#333" name="images" size="xs" />} onPress={selectImage} 
+                    leftIcon={<Icon as={Ionicons} color="#333" name="images" size="xs" />} onPress={selectImage}
                     size="xs" colorScheme="yellow" isLoading={isLoading} isLoadingText="PROCESSING"
                     variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={5}>
                     <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
@@ -165,15 +167,6 @@ export default function UploadTwo (props: Props) {
           </VStack>
         </VStack>
       )}
-    </ScrollView>
+    </VStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    height: "100%",
-  },
-});
