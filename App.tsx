@@ -1,20 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
 import { extendTheme, NativeBaseProvider } from "native-base";
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
-
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
-  focusManager, onlineManager, QueryClient,
+  focusManager, QueryClient,
   QueryClientProvider
 } from 'react-query';
-import { NoInternetModal } from './components/NoInternet';
-import { useAppState } from './hooks/useAppState';
-import { useOnlineManager } from './hooks/useOnlineManager';
 import { CurrentUserProvider } from './components/CurrentUserProvider';
+import { Sync } from './components/Sync';
+import { useAppState } from './hooks/useAppState';
+import useCachedResources from './hooks/useCachedResources';
+import useColorScheme from './hooks/useColorScheme';
+import { db } from './lib/db';
+import Navigation from './navigation';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -27,28 +26,50 @@ function onAppStateChange (status: string) {
   }
 }
 
+function createPostsTableSQL () {
+  const fields = [
+    "id integer primary key not null",
+    "userId int",
+    "uuid text",
+    "resourceUrl text",
+    "publicId text",
+    "width int",
+    "height int",
+    "resourceType text",
+    "publicly int",
+    "category text",
+    "description text",
+    "createdAt text",
+    "updatedAt text",
+  ];
+  return `create table if not exists posts (${ fields.join(", ") });`
+}
+
 export default function App () {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-
-  useOnlineManager();
-  const isOnline = onlineManager.isOnline()
   useAppState(onAppStateChange);
-
   const { colors } = extendTheme({});
-
   const theme = extendTheme({
     colors: {
-      // Add new color
       primary: colors.black,
       secondary: colors.orange,
     },
     config: {
-      useSystemColorMode: false,
-      // initialColorMode: 'dark',
+      useSystemColorMode: true,
     },
   });
-
+  useEffect(() => {
+    try {
+      db.transaction((tx) => {
+        // tx.executeSql(`drop table posts;`, []);
+        tx.executeSql(createPostsTableSQL());
+      });
+      console.log("Database created.");
+    } catch ({ message }) {
+      console.error(message as string || "Something went wrong.");
+    } 
+  }, []);
   if (!isLoadingComplete) {
     return null;
   } else {
@@ -57,8 +78,9 @@ export default function App () {
         <NativeBaseProvider theme={theme}>
           <SafeAreaProvider>
             <CurrentUserProvider>
-              <NoInternetModal show={!isOnline} />
-              <Navigation colorScheme={colorScheme} />
+              <Sync isLoadingComplete={isLoadingComplete}>
+                <Navigation colorScheme={colorScheme} />
+              </Sync>
               <StatusBar />
             </CurrentUserProvider>
           </SafeAreaProvider>
