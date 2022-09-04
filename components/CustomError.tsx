@@ -3,7 +3,7 @@ import { InterfaceVStackProps } from 'native-base/lib/typescript/components/prim
 
 interface Props extends InterfaceVStackProps {
   retry: () => void;
-  children: React.ReactNode;
+  children: string;
 }
 
 export function CustomError (props: Props) {
@@ -15,7 +15,7 @@ export function CustomError (props: Props) {
           <HStack space={2} flexShrink={1} justifyContent="center" alignItems="center">
             <Alert.Icon mt="1" />
             <Text fontSize="sm" color="coolGray.800" p="1">
-              {children}
+              {children.toString()}
             </Text>
           </HStack>
           <VStack justifyContent="center" alignItems="stretch">
