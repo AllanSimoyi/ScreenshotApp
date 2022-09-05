@@ -4,6 +4,7 @@ import { useCreateAccount } from '../hooks/useCreateAccount';
 import { FALLBACK_ERROR_MESSAGE } from '../lib/errors';
 import { User } from '../lib/users';
 import { CustomError } from './CustomError';
+import { CustomPassword } from './CustomPassword';
 import { useCurrentUser } from './useCurrentUser';
 
 interface Props {
@@ -59,11 +60,11 @@ export function SignUpComponent (props: Props) {
       </VStack>
       <VStack alignItems="stretch" justifyContent="center" py={2}>
         <Text bold fontSize="md" color="#fff">Password</Text>
-        <Input color="white" placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
+        <CustomPassword color="white" placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
       </VStack>
       <VStack alignItems="stretch" justifyContent="center" py={2}>
         <Text bold fontSize="md" color="#fff">Re-Enter Password</Text>
-        <Input color="white" placeholder="Re-enter Password" type="password" w="100%" value={passwordConfirmation} onChangeText={setPasswordConfirmation} isDisabled={mutation.isLoading} />
+        <CustomPassword color="white" placeholder="Re-enter Password" type="password" w="100%" value={passwordConfirmation} onChangeText={setPasswordConfirmation} isDisabled={mutation.isLoading} />
       </VStack>
       <VStack alignItems="stretch" justifyContent="center" py={2}>
         {Boolean(mutation.isError) && (

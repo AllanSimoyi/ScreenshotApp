@@ -9,6 +9,7 @@ import { CustomError } from './CustomError';
 import { SignUpComponent } from './SignUpComponent';
 import { useCurrentUser } from './useCurrentUser';
 import { InterfaceVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
+import { CustomPassword } from './CustomPassword';
 
 interface Props extends InterfaceVStackProps {
   onSuccess?: (newCurrentUser: User) => void
@@ -18,7 +19,7 @@ interface Props extends InterfaceVStackProps {
 
 export function SignInComponent (props: Props) {
   const { onSuccess, noBack, back, ...restOfProps } = props;
-  const { updateCurrentUser } = useCurrentUser();
+  const { login } = useCurrentUser();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [createAccountIsOpen, setCreateAccountIsOpen] = useState(false);
@@ -26,14 +27,8 @@ export function SignInComponent (props: Props) {
     onMutate: (_) => { },
     onSuccess: async (newCurrentUser: User | undefined) => {
       if (newCurrentUser) {
-        updateCurrentUser({
-          userId: newCurrentUser.id,
-          username: newCurrentUser.username,
-          phoneNumber: newCurrentUser.phoneNumber,
-        });
-        if (onSuccess) {
-          onSuccess(newCurrentUser);
-        }
+        login(newCurrentUser);
+        onSuccess?.(newCurrentUser);
       }
     },
     onError: (_) => { },
@@ -55,7 +50,7 @@ export function SignInComponent (props: Props) {
           </VStack>
           <VStack alignItems="stretch" justifyContent="center" py={2}>
             <Text bold fontSize="md" color="#fff">Password</Text>
-            <Input color="white" placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
+            <CustomPassword color="white" placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
           </VStack>
           <VStack alignItems="stretch" justifyContent="center" py={2}>
             {Boolean(mutation.isError) && (
@@ -90,11 +85,3 @@ export function SignInComponent (props: Props) {
     </VStack>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
-  },
-});
