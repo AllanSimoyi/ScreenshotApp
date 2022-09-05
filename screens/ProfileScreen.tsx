@@ -63,7 +63,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
     });
   }, [updateCurrentUser]);
   const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
-  const handleSignIn = useCallback(() => {
+  const handleSignOut = useCallback(() => {
     updateCurrentUser({ userId: 0, username: "", phoneNumber: "" });
   }, [updateCurrentUser]);
   const posts = flattenArrays(postsQuery.data?.pages || [] as Post[][]);
@@ -100,7 +100,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
                   Edit Profile
                 </Text>
               </Button>
-              <Button onPress={handleSignIn} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
+              <Button onPress={handleSignOut} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
                 <Text color="black" fontWeight={"bold"} fontSize="md">
                   Log Out
                 </Text>
