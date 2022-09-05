@@ -5,6 +5,21 @@ const CURRENT_USER_ID = "CURRENT_USER_ID";
 const CURRENT_USERNAME = "CURRENT_USERNAME";
 const CURRENT_PHONENUMBER = "CURRENT_PHONENUMBER";
 
+const LAST_LOGOUT = "LAST_LOGOUT";
+
+export async function saveLastLogIn (dateTime: number) {
+  await saveToLocalStorage(LAST_LOGOUT, dateTime.toString());
+  const lastLogIn = await getFromLocalStorage(LAST_LOGOUT);
+  if (!lastLogIn) {
+    console.log("Didn't save shit");
+  }
+}
+
+export async function getLastLogIn () {
+  const lastLogIn = await getFromLocalStorage(LAST_LOGOUT);
+  return lastLogIn ? Number(lastLogIn) : undefined;
+}
+
 export async function saveUserToLocalStorage (user: CurrentUser) {
   await Promise.all([
     saveToLocalStorage(CURRENT_USER_ID, user.userId.toString()),

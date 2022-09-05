@@ -23,7 +23,7 @@ import { RootTabScreenProps } from '../types';
 
 export default function ProfileScreen ({ navigation: { navigate } }: RootTabScreenProps<'Profile'>) {
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
-  const { currentUser, updateCurrentUser } = useCurrentUser();
+  const { currentUser, updateCurrentUser, logout } = useCurrentUser();
   const [mode, setMode] = useState<"Uploaded" | "NotYetUploaded">("Uploaded");
   const { fetchNextPage, refetch: refetchPosts, ...postsQuery } = useInfinitePosts('profile', currentUser.userId);
   const [localPosts, setLocalPosts] = useState<Post[]>([]);
@@ -63,9 +63,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
     });
   }, [updateCurrentUser]);
   const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
-  const handleSignOut = useCallback(() => {
-    updateCurrentUser({ userId: 0, username: "", phoneNumber: "" });
-  }, [updateCurrentUser]);
+  const handleSignOut = useCallback(() => logout(), [logout]);
   const posts = flattenArrays(postsQuery.data?.pages || [] as Post[][]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
   const navigateToPostDetail = useCallback((post: Post) => {
