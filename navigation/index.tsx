@@ -7,12 +7,14 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Icon, Input, Text, VStack } from 'native-base';
+import { Flex, HStack, Icon, Input, StatusBar, Text, useColorMode, VStack } from 'native-base';
 import * as React from 'react';
-import { ColorSchemeName, StatusBar } from 'react-native';
+import { ColorSchemeName } from 'react-native';
+import { ProfileMenu } from '../components/ProfileMenu';
 import { useCurrentUser } from '../components/useCurrentUser';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+import { capitalizeFirstLetter } from '../lib/strings';
 import DiscoverScreen from '../screens/DiscoverScreen';
 import FeedScreen from '../screens/FeedScreen';
 import InboxScreen from '../screens/InboxScreen';
@@ -29,7 +31,8 @@ export default function Navigation ({ colorScheme }: { colorScheme: ColorSchemeN
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar animated={true} barStyle={'dark-content'} />
+      {/* <StatusBar animated={true} barStyle={ colorScheme === 'dark' ? 'dark-content' : 'light-content'} /> */}
+      <StatusBar />
       <RootNavigator />
     </NavigationContainer>
   );
@@ -41,15 +44,12 @@ export default function Navigation ({ colorScheme }: { colorScheme: ColorSchemeN
  */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator () {
-  const colorScheme = useColorScheme();
   return (
     <Stack.Navigator>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{
-        // title: 'Post Detail', 
-        headerStyle: { backgroundColor: '#000' },
-        headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#fff">Post Detail</Text>,
+        headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold">Post Detail</Text>,
       }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
@@ -66,20 +66,22 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator () {
   const colorScheme = useColorScheme();
-  const { currentUser } = useCurrentUser();
+  const { currentUser, logout } = useCurrentUser();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <BottomTab.Navigator
       initialRouteName="Feed"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        headerStyle: { backgroundColor: 'orange' }
+        tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
+        // tabBarActiveTintColor: Colors[colorScheme].tint,
+        // headerStyle: { backgroundColor: colorMode === "light" ? "white" : "black" }
       }}>
       <BottomTab.Screen
         name="Feed"
         component={FeedScreen}
         options={({ }: RootTabScreenProps<'Feed'>) => ({
-          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Feed</Text>,
+          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold">Feed</Text>,
           tabBarIcon: ({ color }) => <TabBarIcon name="feed" color={color} />,
         })}
       />
@@ -87,10 +89,9 @@ function BottomTabNavigator () {
         name="Discover"
         component={DiscoverScreen}
         options={({ }: RootTabScreenProps<'Discover'>) => ({
-          headerStyle: { backgroundColor: "orange" },
           headerTitle: (_) => (
             <VStack alignItems="stretch" minWidth="full">
-              <Text fontSize="2xl" fontWeight="bold" color="#333">Discover</Text>
+              <Text fontSize="2xl" fontWeight="bold">Discover</Text>
             </VStack>
           ),
           tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
@@ -100,11 +101,7 @@ function BottomTabNavigator () {
         name="Upload"
         component={UploadScreen}
         options={({ }: RootTabScreenProps<'Upload'>) => ({
-          headerTitle: (_) => (
-            <VStack justifyContent="center" alignItems="center" minWidth="full">
-              <Text fontSize="2xl" fontWeight="bold" color="#333">Speak Up & Help</Text>
-            </VStack>
-          ),
+          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" >Speak Up & Help</Text>,
           tabBarIcon: ({ color }) => <TabBarIcon name="plus-square" color={color} />,
         })}
       />
@@ -112,16 +109,16 @@ function BottomTabNavigator () {
         name="Inbox"
         component={InboxScreen}
         options={({ }: RootTabScreenProps<'Inbox'>) => ({
-          headerStyle: { backgroundColor: "orange", height: currentUser.userId ? 150 : undefined },
+          headerStyle: { height: currentUser.userId ? 150 : undefined },
           headerTitle: (_) => (
             <VStack alignItems="stretch" py={2} minWidth="full">
-              <Text fontSize="2xl" fontWeight="bold" color="#333">Inbox</Text>
+              <Text fontSize="2xl" fontWeight="bold" >Inbox</Text>
               {Boolean(currentUser.userId) && (
                 <Input
                   size="xl" mt="2" py="1" px="4"
                   fontWeight="bold" color="black" width="100%"
                   borderWidth="2" variant="outline" borderColor="#333" placeholder="Search"
-                  InputRightElement={<Icon mx="2" size="6" color="#333" as={<Ionicons name="ios-search" />} />}
+                  InputRightElement={<Icon mx="2" size="6" as={<Ionicons name="ios-search" />} />}
                 />
               )}
             </VStack>
@@ -132,8 +129,24 @@ function BottomTabNavigator () {
       <BottomTab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={({ }: RootTabScreenProps<'Profile'>) => ({
-          headerTitle: (_) => <Text fontSize="2xl" fontWeight="bold" color="#333">Profile</Text>,
+        options={({ navigation }: RootTabScreenProps<'Profile'>) => ({
+          headerTitle: (_) => {
+            const textColor = colorMode === "light" ? "black" : "white";
+            const darkModeCaption = colorMode === "light" ? "Turn On Dark Mode" : "Turn Off Dark Mode";
+            return (
+              <HStack justifyContent="flex-start" alignItems="center" minWidth="full">
+                <Text fontSize="2xl" fontWeight="bold" color={textColor}>
+                  {capitalizeFirstLetter(currentUser.username || "Profile")}
+                </Text>
+                <Flex flexGrow={1} />
+                <ProfileMenu items={[
+                  { caption: darkModeCaption, onPress: () => toggleColorMode() },
+                  { caption: "Edit Profile", onPress: () => { } },
+                  { caption: "Log Out", onPress: () => logout() },
+                ]} />
+              </HStack>
+            )
+          },
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         })}
       />

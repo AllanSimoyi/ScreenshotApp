@@ -6,6 +6,7 @@ import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { FlatListFooter } from '../components/FlatListFooter';
 import { NoListItems } from '../components/NoListItems';
+import { PostThumbnail } from '../components/PostThumbnail';
 import { ShadowedText } from '../components/ShadowedText';
 import { useInfinitePosts } from '../hooks/useInfinitePosts';
 import { flattenArrays } from '../lib/arrays';
@@ -26,7 +27,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
   const posts = flattenArrays(query.data?.pages || [] as Post[][]);
   return (
     <View style={styles.container}>
-      <VStack alignItems="stretch">
+      <VStack justifyContent="center" alignItems="stretch" minHeight="100%">
         {query.isError && (
           <CustomError retry={refetchCallback}>
             {query.error.message}
@@ -43,23 +44,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
             ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.2}
-            renderItem={({ item }) => (
-              <VStack alignItems="stretch" pb={1}>
-                <Pressable onPress={(e) => navigateToPostDetail(item)}>
-                  <CustomImageBackground
-                    source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                    noImageFound={!item.publicId && !item.resourceUrl}
-                    style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                  >
-                    <VStack alignItems="flex-start" py={2} px={4}>
-                      <ShadowedText>
-                        {shortenString(item.description, 100, "addEllipsis")}
-                      </ShadowedText>
-                    </VStack>
-                  </CustomImageBackground>
-                </Pressable>
-              </VStack>
-            )}
+            renderItem={({ item }) => <PostThumbnail {...item} onPress={() => navigateToPostDetail(item)} />}
           />
         )}
       </VStack>

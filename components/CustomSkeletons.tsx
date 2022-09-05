@@ -9,7 +9,7 @@ export function CustomSkeletons (props: Props) {
   return (
     <VStack alignItems="stretch" p={4}>
       {createNumberedArray(num).map((_, index) => (
-        <Skeleton key={index.toString()} mb="4" h="40" rounded="10" {...restOfProps} />
+        <Skeleton startColor="coolGray.400" key={index.toString()} mb="4" h="40" rounded="10" {...restOfProps} />
       ))}
     </VStack>
   )

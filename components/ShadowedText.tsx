@@ -10,13 +10,7 @@ interface Props extends InterfaceTextProps {
 export function ShadowedText (props: Props) {
   const { onPress, children, bottomBorder = false, ...restOfProps } = props;
   return (
-    <Text
-      fontSize="lg"
-      fontWeight="bold"
-      color="#fff"
-      borderBottomWidth={bottomBorder ? 2 : undefined}
-      borderBottomColor={bottomBorder ? "orange.400" : undefined}
-      onPress={onPress}
+    <Text fontSize="md" fontWeight="bold" onPress={onPress} color="#fff"
       style={{
         textShadowColor: 'rgba(0, 0, 0, 0.95)',
         textShadowOffset: { width: -2, height: 2 },

@@ -11,8 +11,8 @@ export function FlatListFooter (props: Props) {
   const {listName, isLoadingMore, atEndOfList, isEmptyList} = props;
   return (
     <VStack alignItems="center" p={4}>
-      {isLoadingMore && <Spinner size="lg" color="yellow.600" />}
-      {atEndOfList && !isEmptyList && <Text fontSize="sm" color="white" p="1">End Of {listName}</Text>}
+      {isLoadingMore && <Spinner size="lg" color="coolGray.400" />}
+      {atEndOfList && !isEmptyList && <Text fontSize="sm" p="1">End Of {listName}</Text>}
     </VStack>
   )
 }

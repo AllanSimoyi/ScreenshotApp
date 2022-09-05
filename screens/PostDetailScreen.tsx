@@ -12,7 +12,7 @@ export default function PostDetailScreen ({ route }: RootStackScreenProps<"PostD
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {!post && (
-        <Text fontSize="sm" color="#fff">Category</Text>
+        <Text fontSize="sm" color="#fff">Something went wrong, please restart the app</Text>
       )}
       {Boolean(post) && (
         <VStack alignItems="stretch" pb={8}>
@@ -21,19 +21,19 @@ export default function PostDetailScreen ({ route }: RootStackScreenProps<"PostD
             borderRadius={5}
             style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
           </CustomImageBackground>
-          <VStack alignItems="stretch" p={2}>
-            <Text fontSize="sm" color="#d1d1d1">Category</Text>
-            <Text fontWeight="bold" fontSize="xl" color="#fff">{capitalizeFirstLetter(post!.category)}</Text>
+          <VStack alignItems="stretch" py={2} px={4}>
+            <Text fontSize="xs">Category</Text>
+            <Text fontWeight="bold" fontSize="md">{capitalizeFirstLetter(post!.category)}</Text>
           </VStack>
           {Boolean(post!.description) && (
-            <VStack alignItems="stretch" p={2}>
-              <Text fontSize="sm" color="#d1d1d1">Description</Text>
-              <Text fontWeight="bold" fontSize="xl" color="#fff">{capitalizeFirstLetter(post!.description)}</Text>
+            <VStack alignItems="stretch" py={2} px={4}>
+              <Text fontSize="xs">Description</Text>
+              <Text fontWeight="bold" fontSize="md">{capitalizeFirstLetter(post!.description)}</Text>
             </VStack>
           )}
-          <VStack alignItems="stretch" p={2}>
-            <Text fontSize="sm" color="#d1d1d1">Posted On</Text>
-            <Text fontWeight="bold" fontSize="xl" color="#fff">{dayjs(post!.createdAt).format('DD MMM YYYY')}</Text>
+          <VStack alignItems="stretch" py={2} px={4}>
+            <Text fontSize="xs">Posted On</Text>
+            <Text fontWeight="bold" fontSize="md">{dayjs(post!.createdAt).format('DD MMM YYYY')}</Text>
           </VStack>
         </VStack>
       )}

@@ -10,6 +10,7 @@ import { CustomImageBackground } from "../components/CustomImageBackground";
 import { CustomSkeletons } from "../components/CustomSkeletons";
 import { FlatListFooter } from "../components/FlatListFooter";
 import { NoListItems } from "../components/NoListItems";
+import { PostThumbnail } from "../components/PostThumbnail";
 import { ShadowedText } from "../components/ShadowedText";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
 import { flattenArrays } from "../lib/arrays";
@@ -38,57 +39,41 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
     navigate('PostDetail', { post });
   }, [navigate]);
   return (
-    <VStack alignItems="stretch" style={{ height: "100%" }}>
+    <VStack alignItems="stretch" minHeight="100%">
       <HStack alignItems="center">
-        <VStack justifyContent="center" alignItems="stretch" p={2} style={{ flexGrow: 1 }} width="70%">
+        <VStack justifyContent="center" alignItems="stretch" px={2} style={{ flexGrow: 1 }} width="70%">
           <Input
-            size="xl" width="100%" value={search}
-            borderWidth="2" fontWeight="bold" variant="outline"
-            color="yellow.600" placeholder="Search" my="2" py="1" px="4"
-            borderColor="yellow.600" onChangeText={searchOnChange}
-            InputRightElement={<Icon onPress={closeSearch} mx="2" size="6" color="yellow.600" as={<Ionicons name="close" />} />}
+            width="100%" value={search}
+            fontWeight="bold" variant="outline"
+            placeholder="Search" my="2" py="1" px="4"
+            onChangeText={searchOnChange} fontSize="lg"
+            InputRightElement={<Icon onPress={closeSearch} mx="2" size="6" as={<Ionicons name="close" />} />}
           />
         </VStack>
         <VStack justifyContent={"center"} alignItems="center">
           <CategoryMenu setCurrentCategory={setCategory} />
         </VStack>
       </HStack>
-      {query.isError && (
-        <CustomError retry={refetchCallback}>
-          {query.error.message}
-        </CustomError>
-      )}
-      {query.isLoading && <CustomSkeletons num={4} />}
-      <FlatList
-        data={posts}
-        flexGrow={1}
-        keyExtractor={(_, index) => index.toString()}
-        contentContainerStyle={{ flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
-        ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-        ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.2}
-        renderItem={({ item }) => (
-          <VStack alignItems="stretch" pb={1}>
-            <Pressable onPress={(e) => navigateToPostDetail(item)}>
-              <CustomImageBackground
-                source={getImageSource(item.resourceUrl)}
-                noImageFound={!item.publicId && !item.resourceUrl}
-                style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-              >
-                <VStack alignItems="flex-start" py={2} px={4}>
-                  <ShadowedText>
-                    <CustomHighlight searchString={search}>
-                      {shortenString(item.description, 100, "addEllipsis")}
-                    </CustomHighlight>
-                  </ShadowedText>
-                </VStack>
-              </CustomImageBackground>
-            </Pressable>
-          </VStack>
+      <VStack justifyContent="center" alignItems="stretch" flexGrow={1}>
+        {query.isError && (
+          <CustomError retry={refetchCallback}>
+            {query.error.message}
+          </CustomError>
         )}
-      />
+        {query.isLoading && <CustomSkeletons num={4} />}
+        <FlatList
+          data={posts}
+          flexGrow={1}
+          keyExtractor={(_, index) => index.toString()}
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={<RefreshControl refreshing={query.isLoading} onRefresh={refetchCallback} />}
+          ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
+          ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Feed" isLoadingMore={query.isFetchingNextPage} atEndOfList={!query.hasNextPage} />}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.2}
+          renderItem={({ item }) => <PostThumbnail {...item} highlight={search} onPress={() => navigateToPostDetail(item)} />}
+        />
+      </VStack>
     </VStack>
   );
 }

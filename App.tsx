@@ -52,8 +52,8 @@ export default function App () {
   const { colors } = extendTheme({});
   const theme = extendTheme({
     colors: {
-      primary: colors.black,
-      secondary: colors.orange,
+      primary: colors.white,
+      secondary: colors.coolGray,
     },
     config: {
       useSystemColorMode: true,

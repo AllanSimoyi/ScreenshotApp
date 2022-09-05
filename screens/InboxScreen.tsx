@@ -14,6 +14,7 @@ import { useInfiniteMessages } from '../hooks/useInfiniteMessages';
 import { useRecordMessage } from '../hooks/useMessages';
 import { flattenArrays } from '../lib/arrays';
 import { createOptimisticMessage, Message } from '../lib/messages';
+import { capitalizeFirstLetter } from '../lib/strings';
 import { CreateMessage } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
@@ -76,16 +77,16 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
               inverted
               renderItem={({ item: report }) => (
                 <VStack alignItems="stretch" px={4} py={2}>
-                  <VStack alignItems="stretch" p={2} style={{ backgroundColor: "rgba(255, 255, 255, 0.24)", borderRadius: 10 }}>
-                    <Text color="yellow.600" fontSize={"lg"}>
-                      {report.sender.username}
+                  <VStack alignItems="stretch" py={2} px={2} borderRadius={10} space={1} _light={{ bgColor:"coolGray.300" }} _dark={{ bgColor:"coolGray.600" }}>
+                    <Text fontSize={"xs"}>
+                      {capitalizeFirstLetter(report.sender.username)}
                     </Text>
-                    <Text color="white" fontSize={"md"}>
+                    <Text fontSize={"md"} fontWeight="bold">
                       {report.content}
                     </Text>
                   </VStack>
-                  <HStack justifyContent="flex-end" alignItems="center" p={2}>
-                    <Text color="white" fontSize={"xs"}>
+                  <HStack justifyContent="flex-end" alignItems="center" px={2} py={1}>
+                    <Text fontSize={"xs"}>
                       {dayjs(report.createdAt).format('hh:mm a')}
                     </Text>
                   </HStack>
@@ -93,7 +94,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
               )}
             />
           )}
-          <VStack justifyContent="center" alignItems="stretch" p={2} style={{ backgroundColor: "#000" }}>
+          <VStack justifyContent="center" alignItems="stretch" py={1} px={2}>
             <SendMessage message={message} setMessage={setMessage} sendMessage={sendMessage} />
           </VStack>
         </>

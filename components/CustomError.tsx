@@ -9,18 +9,18 @@ interface Props extends InterfaceVStackProps {
 export function CustomError (props: Props) {
   const { retry, children, ...restOfProps } = props;
   return (
-    <VStack py={2} justifyContent="center" alignItems="stretch" {...restOfProps}>
-      <Alert w="100%" status="error">
+    <VStack p={2} justifyContent="center" alignItems="stretch" borderRadius={5} {...restOfProps}>
+      <Alert w="100%" status="error" variant="left-accent">
         <VStack space={2} flexShrink={1} w="100%">
           <HStack space={2} flexShrink={1} justifyContent="center" alignItems="center">
-            <Alert.Icon mt="1" />
-            <Text fontSize="sm" color="coolGray.800" p="1">
+            <Alert.Icon />
+            <Text fontSize="sm" fontWeight={"bold"} p="1">
               {children.toString()}
             </Text>
           </HStack>
           <VStack justifyContent="center" alignItems="stretch">
-            <Button borderColor="black" onPress={retry} variant="outline" py={2} px={4}>
-              <Text color="black">RETRY</Text>
+            <Button colorScheme="coolGray" onPress={retry} variant="solid" py={2} px={4}>
+              RETRY
             </Button>
           </VStack>
         </VStack>

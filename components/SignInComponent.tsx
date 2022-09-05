@@ -42,15 +42,15 @@ export function SignInComponent (props: Props) {
       {!createAccountIsOpen && (
         <VStack justifyContent={"center"} alignItems="stretch" style={{ height: "100%" }} p={2} space={2}>
           <VStack alignItems="center" py={2}>
-            <Text bold fontSize="2xl" color="#fff">Sign In</Text>
+            <Text bold fontSize="2xl">Sign In</Text>
           </VStack>
           <VStack alignItems="stretch" justifyContent="center" py={2}>
-            <Text bold fontSize="md" color="#fff">Username</Text>
-            <Input color="white" placeholder="Username" w="100%" value={username} onChangeText={setUsername} isDisabled={mutation.isLoading} />
+            <Text bold fontSize="md">Username</Text>
+            <Input placeholder="Username" w="100%" value={username} onChangeText={setUsername} isDisabled={mutation.isLoading} />
           </VStack>
           <VStack alignItems="stretch" justifyContent="center" py={2}>
-            <Text bold fontSize="md" color="#fff">Password</Text>
-            <CustomPassword color="white" placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
+            <Text bold fontSize="md">Password</Text>
+            <CustomPassword placeholder="Password" type="password" w="100%" value={password} onChangeText={setPassword} isDisabled={mutation.isLoading} />
           </VStack>
           <VStack alignItems="stretch" justifyContent="center" py={2}>
             {Boolean(mutation.isError) && (
@@ -60,21 +60,17 @@ export function SignInComponent (props: Props) {
             )}
           </VStack>
           <VStack alignItems="stretch" justifyContent={"center"} py={2} space={2}>
-            <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" isDisabled={mutation.isLoading}>
-              <Text color="#000" fontWeight={"bold"} fontSize="xl">
-                {mutation.isLoading && "SIGNING IN..."}
-                {!mutation.isLoading && "SIGN IN"}
-              </Text>
+            <Button onPress={handleSubmit} variant="solid" colorScheme="coolGray" isDisabled={mutation.isLoading}>
+              {mutation.isLoading && "SIGNING IN..."}
+              {!mutation.isLoading && "SIGN IN"}
             </Button>
             {!noBack && Boolean(back) && (
-              <Button onPress={back} size="md" variant="ghost" isDisabled={mutation.isLoading}>
-                <Text color="yellow.600" fontWeight={"bold"} fontSize="xl">
-                  BACK
-                </Text>
+              <Button onPress={back} variant="ghost" colorScheme="coolGray" isDisabled={mutation.isLoading}>
+                BACK
               </Button>
             )}
-            <Button size="md" variant="ghost" onPress={openCreateAccount} isDisabled={mutation.isLoading}>
-              <Text color="yellow.600">I DON'T HAVE AN ACCOUNT</Text>
+            <Button colorScheme={"coolGray"} variant="ghost" onPress={openCreateAccount} isDisabled={mutation.isLoading}>
+              I DON'T HAVE AN ACCOUNT
             </Button>
           </VStack>
         </VStack>

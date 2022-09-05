@@ -1,4 +1,4 @@
-import { Button, FlatList, Flex, HStack, Pressable, Text, VStack } from 'native-base';
+import { Button, FlatList, Flex, HStack, Pressable, Text, useColorMode, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -8,6 +8,7 @@ import { EditProfile } from '../components/EditProfile';
 import { FlatListFooter } from '../components/FlatListFooter';
 import { LoadingText } from '../components/LoadingText';
 import { NoListItems } from '../components/NoListItems';
+import { PostThumbnail } from '../components/PostThumbnail';
 import { ShadowedText } from '../components/ShadowedText';
 import { SignInComponent } from '../components/SignInComponent';
 import { useCurrentUser } from '../components/useCurrentUser';
@@ -22,6 +23,7 @@ import { ProfileDetails } from '../lib/users';
 import { RootTabScreenProps } from '../types';
 
 export default function ProfileScreen ({ navigation: { navigate } }: RootTabScreenProps<'Profile'>) {
+  const { colorMode, toggleColorMode } = useColorMode();
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
   const { currentUser, updateCurrentUser, logout } = useCurrentUser();
   const [mode, setMode] = useState<"Uploaded" | "NotYetUploaded">("Uploaded");
@@ -66,9 +68,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
   const handleSignOut = useCallback(() => logout(), [logout]);
   const posts = flattenArrays(postsQuery.data?.pages || [] as Post[][]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
-  const navigateToPostDetail = useCallback((post: Post) => {
-    navigate('PostDetail', { post });
-  }, [navigate]);
+  const navigateToPostDetail = useCallback((post: Post) => navigate('PostDetail', { post }), [navigate]);
   const toggleUplaoded = useCallback(() => setMode("Uploaded"), []);
   const toggleNotYetUplaoded = useCallback(() => setMode("NotYetUploaded"), []);
   return (
@@ -85,118 +85,81 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
         />
       )}
       {Boolean(currentUser.userId) && (
-        <VStack alignItems="stretch">
-          <VStack alignItems="stretch" py={2} style={{ backgroundColor: "orange" }}>
-            <VStack justifyContent="center" alignItems="center">
-              <Text fontWeight="bold" fontSize="2xl" color="black">{capitalizeFirstLetter(currentUser.username)}</Text>
-              <Text fontSize="md" color="black">{currentUser.phoneNumber}</Text>
-            </VStack>
-            <Flex flexGrow={1} />
-            <HStack justifyContent="center" alignItems="center" p={2} space={4}>
-              <Button onPress={openEditModal} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
-                <Text color="black" fontWeight={"bold"} fontSize="md">
-                  Edit Profile
-                </Text>
+        <VStack alignItems="stretch" h="100%" pb={2}>
+          <HStack justifyContent={"center"} alignItems="center" space={4} py={2}>
+            <Button.Group isAttached colorScheme="coolGray">
+              <Button onPress={toggleUplaoded} variant={mode === "Uploaded" ? undefined : "outline"}>
+                UPLOADED POSTS
               </Button>
-              <Button onPress={handleSignOut} size="md" colorScheme="yellow" variant="outline" borderColor="black" borderWidth={1}>
-                <Text color="black" fontWeight={"bold"} fontSize="md">
-                  Log Out
-                </Text>
+              <Button onPress={toggleNotYetUplaoded} variant={mode === "NotYetUploaded" ? undefined : "outline"}>
+                NOT YET UPLOADED
               </Button>
-            </HStack>
-          </VStack>
-          <VStack alignItems="stretch" p={2}>
-            <HStack justifyContent={"center"} alignItems="center" space={4} py={4}>
-              <Button onPress={toggleUplaoded}
-                size="xs" colorScheme="yellow" variant={mode === "Uploaded" ? "solid" : "ghost"} borderRadius={5}>
-                <Text color={mode === "Uploaded" ? "#333" : "yellow.400"} fontWeight={"bold"} fontSize="xs">UPLOADED POSTS</Text>
-              </Button>
-              <Button onPress={toggleNotYetUplaoded}
-                size="xs" colorScheme="yellow" variant={mode === "NotYetUploaded" ? "solid" : "ghost"} borderRadius={5}>
-                <Text color={mode === "NotYetUploaded" ? "#333" : "yellow.400"} fontWeight={"bold"} fontSize="xs">NOT YET UPLOADED</Text>
-              </Button>
-            </HStack>
-            {mode === "Uploaded" && (
-              <>
-                {postsQuery.isLoading && <CustomSkeletons num={4} />}
-                {postsQuery.isError && (
-                  <CustomError retry={refetchPostsCallback}>
-                    {postsQuery.error.message}
-                  </CustomError>
-                )}
+            </Button.Group>
+          </HStack>
+          {mode === "Uploaded" && (
+            <>
+              {postsQuery.isLoading && <CustomSkeletons num={4} />}
+              {postsQuery.isError && (
+                <CustomError retry={refetchPostsCallback}>
+                  {postsQuery.error.message}
+                </CustomError>
+              )}
+              <VStack pb={12}>
+                <FlatList
+                  data={posts}
+                  keyExtractor={(_, index) => index.toString()}
+                  contentContainerStyle={{ flexGrow: 1 }}
+                  refreshControl={<RefreshControl refreshing={postsQuery.isLoading} onRefresh={refetchPostsCallback} />}
+                  ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
+                  ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Profile Posts" isLoadingMore={postsQuery.isFetchingNextPage} atEndOfList={!postsQuery.hasNextPage} />}
+                  onEndReached={onEndReached}
+                  onEndReachedThreshold={0.2}
+                  renderItem={({ item }) => (
+                    <VStack alignItems="stretch" pb={1}>
+                      <Pressable onPress={(e) => navigateToPostDetail(item)}>
+                        <CustomImageBackground
+                          source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
+                          noImageFound={!item.publicId && !item.resourceUrl}
+                          style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
+                        >
+                          <VStack alignItems="flex-start" py={2} px={4}>
+                            <ShadowedText>
+                              {shortenString(item.description, 100, "addEllipsis")}
+                            </ShadowedText>
+                          </VStack>
+                        </CustomImageBackground>
+                      </Pressable>
+                    </VStack>
+                  )}
+                />
+              </VStack>
+            </>
+          )}
+          {mode === "NotYetUploaded" && (
+            <>
+              {isLoadingPosts && (
+                <VStack justifyContent={"center"} alignItems="center" py={6}>
+                  <LoadingText />
+                </VStack>
+              )}
+              {Boolean(localPostsError) && !isLoadingPosts && (
+                <CustomError retry={() => setLocalPostsRetryToggle(prevState => !prevState)}>
+                  {localPostsError}
+                </CustomError>
+              )}
+              {!isLoadingPosts && (
                 <VStack pb={12}>
                   <FlatList
-                    data={posts}
-                    keyExtractor={(_, index) => index.toString()}
+                    data={localPosts}
+                    keyExtractor={(post) => `Local${ post.id.toString() }`}
                     contentContainerStyle={{ flexGrow: 1 }}
-                    refreshControl={<RefreshControl refreshing={postsQuery.isLoading} onRefresh={refetchPostsCallback} />}
                     ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-                    ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Profile Posts" isLoadingMore={postsQuery.isFetchingNextPage} atEndOfList={!postsQuery.hasNextPage} />}
-                    onEndReached={onEndReached}
-                    onEndReachedThreshold={0.2}
-                    renderItem={({ item }) => (
-                      <VStack alignItems="stretch" pb={1}>
-                        <Pressable onPress={(e) => navigateToPostDetail(item)}>
-                          <CustomImageBackground
-                            source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                            noImageFound={!item.publicId && !item.resourceUrl}
-                            style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                          >
-                            <VStack alignItems="flex-start" py={2} px={4}>
-                              <ShadowedText>
-                                {shortenString(item.description, 100, "addEllipsis")}
-                              </ShadowedText>
-                            </VStack>
-                          </CustomImageBackground>
-                        </Pressable>
-                      </VStack>
-                    )}
+                    renderItem={({ item }) => <PostThumbnail {...item} onPress={() => navigateToPostDetail(item)} />}
                   />
                 </VStack>
-              </>
-            )}
-            {mode === "NotYetUploaded" && (
-              <>
-                {isLoadingPosts && (
-                  <VStack justifyContent={"center"} alignItems="center" py={6}>
-                    <LoadingText />
-                  </VStack>
-                )}
-                {Boolean(localPostsError) && !isLoadingPosts && (
-                  <CustomError retry={() => setLocalPostsRetryToggle(prevState => !prevState)}>
-                    {localPostsError}
-                  </CustomError>
-                )}
-                {!isLoadingPosts && (
-                  <VStack pb={12}>
-                    <FlatList
-                      data={localPosts}
-                      keyExtractor={(post) => `Local${post.id.toString()}`}
-                      contentContainerStyle={{ flexGrow: 1 }}
-                      ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
-                      renderItem={({ item }) => (
-                        <VStack alignItems="stretch" pb={1}>
-                          <Pressable onPress={(e) => navigateToPostDetail(item)}>
-                            <CustomImageBackground
-                              source={getImageSource(item.resourceUrl)}
-                              noImageFound={!item.publicId && !item.resourceUrl}
-                              style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                            >
-                              <VStack alignItems="flex-start" py={2} px={4}>
-                                <ShadowedText>
-                                  {shortenString(item.description, 100, "addEllipsis")}
-                                </ShadowedText>
-                              </VStack>
-                            </CustomImageBackground>
-                          </Pressable>
-                        </VStack>
-                      )}
-                    />
-                  </VStack>
-                )}
-              </>
-            )}
-          </VStack>
+              )}
+            </>
+          )}
         </VStack>
       )}
     </VStack>

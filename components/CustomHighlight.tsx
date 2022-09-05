@@ -16,7 +16,7 @@ export function CustomHighlight (props: Props) {
       )}
       {searchString && (
         <Highlighter
-          highlightStyle={{ backgroundColor: 'orange' }}
+          highlightStyle={{ backgroundColor: 'lightblue' }}
           searchWords={[searchString]}
           textToHighlight={children}
         />

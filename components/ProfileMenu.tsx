@@ -3,23 +3,25 @@ import { IconButton, Menu, Pressable } from 'native-base';
 import { categoryOptions, PostCategory } from '../lib/posts';
 
 interface Props {
-  setCurrentCategory: (newCurrentCategory: PostCategory) => void
+  items: Item[]
 }
 
 interface Item {
-  caption: PostCategory
+  caption: string
   onPress: () => void
 }
 
-export function CategoryMenu (props: Props) {
-  const { setCurrentCategory } = props;
-  const items: Item[] = categoryOptions.map(option => ({
-    caption: option,
-    onPress: () => setCurrentCategory(option),
-  }));
+export function ProfileMenu (props: Props) {
+  const { items } = props;
   return (
     <Menu w="190" defaultIsOpen={false} trigger={triggerProps => (
-      <IconButton {...triggerProps} colorScheme="coolGray" variant="ghost" _icon={{ as: MaterialIcons, name: "more-vert" }} />
+      <IconButton
+        {...triggerProps}
+        size="md"
+        colorScheme="coolGray"
+        variant="ghost"
+        _icon={{ as: MaterialIcons, name: "more-vert" }}
+      />
     )}>
       {items.map(item => (
         <Menu.Item key={item.caption} onPress={item.onPress}>

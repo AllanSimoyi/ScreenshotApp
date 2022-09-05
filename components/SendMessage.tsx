@@ -10,17 +10,16 @@ interface Props {
 export function SendMessage (props: Props) {
   const { message, setMessage, sendMessage } = props;
   return (
-    <HStack alignItems="stretch" style={{ borderRadius: 10, backgroundColor: "rgba(255, 255, 255, 0.1)" }}>
-      <VStack justifyContent="center" alignItems="center" pl={2} py={2} style={{ flexGrow: 1 }}>
+    <HStack alignItems="stretch" borderRadius={10}>
+      <VStack justifyContent="center" alignItems="center" pl={2} flexGrow={1}>
         <Input
+          width="100%" my={2} px={4} colorScheme="red"
           value={message} onChangeText={setMessage}
-          fontWeight="bold" variant="outline" placeholder="Type Something..."
-          color="yellow.600" borderColor="yellow.600" borderWidth="1"
-          size="xl" width="100%" my={2} py={2} px={4}
+          fontWeight="bold" variant="rounded" placeholder="Type Something..."
         />
       </VStack>
       <VStack justifyContent="center" alignItems="center" p={2}>
-        <IconButton colorScheme="yellow" size="md" onPress={sendMessage} _icon={{ as: MaterialIcons, name: "send" }} />
+        <IconButton colorScheme="coolGray" onPress={sendMessage} _icon={{ as: MaterialIcons, name: "send" }} />
       </VStack>
     </HStack>
   )

@@ -20,10 +20,8 @@ export function UploadModeMenu (props: Props) {
   }));
   return (
     <Menu w="190" defaultIsOpen={false} trigger={triggerProps => (
-      <Button {...triggerProps}
-        size="xs" colorScheme="yellow" variant="solid" bgColor="yellow.600"
-        borderColor="yellow.600" borderWidth={1} borderRadius={5}>
-        <Text color="#333" fontWeight={"bold"} fontSize="xs">{uploadMode.toUpperCase()}</Text>
+      <Button {...triggerProps} colorScheme="coolGray" variant="solid">
+        {uploadMode.toUpperCase()}
       </Button>
     )}>
       {items.map(item => (

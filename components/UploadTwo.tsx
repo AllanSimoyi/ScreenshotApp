@@ -119,51 +119,55 @@ export default function UploadTwo (props: Props) {
               <Flex direction="row" justify="center" align="flex-end">
                 <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                   <Button
-                    size="xs" leftIcon={<Icon as={Ionicons} color="#333" name="camera" size="xs" />}
-                    colorScheme="yellow" variant="solid" bgColor="yellow.600" onPress={takePicture}
-                    borderColor="yellow.600" borderWidth={1} borderRadius={5} isLoading={isLoading} isLoadingText="PROCESSING">
-                    <Text color="#333" fontWeight={"bold"} fontSize="xs">CAMERA</Text>
+                    leftIcon={<Icon as={Ionicons} name="camera" />}
+                    colorScheme="coolGray" variant="solid" onPress={takePicture}
+                    isLoading={isLoading} isLoadingText="PROCESSING">
+                    CAMERA
                   </Button>
                 </VStack>
                 <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
                   <Button
-                    leftIcon={<Icon as={Ionicons} color="#333" name="images" size="xs" />} onPress={selectImage}
-                    size="xs" colorScheme="yellow" isLoading={isLoading} isLoadingText="PROCESSING"
-                    variant="solid" bgColor="yellow.600" borderColor="yellow.600" borderWidth={1} borderRadius={5}>
-                    <Text color="#333" fontWeight={"bold"} fontSize="xs">GALLERY</Text>
+                    leftIcon={<Icon as={Ionicons} name="images" />}
+                    colorScheme="coolGray" variant="solid" onPress={selectImage}
+                    isLoading={isLoading} isLoadingText="PROCESSING">
+                    GALLERY
                   </Button>
                 </VStack>
               </Flex>
             </CustomImageBackground>
           </VStack>
-          <VStack alignItems="stretch" p={2}>
-            <HStack alignItems="center">
-              <Text bold fontSize="md" mt="2" color="#fff">Category</Text>
-              <Flex flexGrow={1} />
-              <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
-            </HStack>
-            <Select
-              borderRadius={5} color="white" placeholder="Choose Category"
-              fontSize={"md"} selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
-              _selectedItem={{ bg: "gray.400" }} mt={1} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
-            >
-              {categoryOptions.map(category => <Select.Item label={category} value={category} />)}
-            </Select>
-            <Text bold fontSize="md" mb="2" mt="4" color="#fff">
-              Description (optional)
-            </Text>
-            <TextArea
-              placeholder="Provide a description (optional)"
-              autoCompleteType borderRadius={5} value={description} onChangeText={setDescription}
-              isDisabled={isLoading} w="100%" fontSize={"md"} color="white"
-            />
+          <VStack alignItems="stretch" pb={2} px={2}>
+            <VStack pb={4}>
+              <HStack alignItems="flex-end" py={1}>
+                <Text bold>Category</Text>
+                <Flex flexGrow={1} />
+                <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
+              </HStack>
+              <Select
+                placeholder="Choose Category"
+                selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
+                _selectedItem={{ bg: "coolGray.400" }} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
+              >
+                {categoryOptions.map(category => <Select.Item label={category} value={category} />)}
+              </Select>
+            </VStack>
+            <VStack space={2}>
+              <Text bold>
+                Description (optional)
+              </Text>
+              <TextArea
+                placeholder="Provide a description (optional)"
+                isDisabled={isLoading} w="100%"
+                autoCompleteType borderRadius={5} value={description} onChangeText={setDescription}
+              />
+            </VStack>
             {Boolean(error) && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
-            <Button onPress={handleSubmit} size="md" variant="solid" bgColor="yellow.600" borderWidth={1} borderRadius={5} py={2} px={4} mt={6} mb={4}>
-              <Text color="#333" fontWeight={"bold"} fontSize="xl">
+            <VStack alignItems="stretch" py={6}>
+              <Button onPress={handleSubmit} variant="solid" colorScheme="coolGray">
                 {sending && "SENDING..."}
                 {!sending && "SEND"}
-              </Text>
-            </Button>
+              </Button>
+            </VStack>
           </VStack>
         </VStack>
       )}
