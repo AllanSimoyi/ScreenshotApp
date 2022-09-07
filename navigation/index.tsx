@@ -140,8 +140,8 @@ function BottomTabNavigator () {
                 </Text>
                 <Flex flexGrow={1} />
                 <ProfileMenu items={[
-                  { caption: darkModeCaption, onPress: () => toggleColorMode() },
-                  { caption: "Edit Profile", onPress: () => { } },
+                  // { caption: darkModeCaption, onPress: () => toggleColorMode() },
+                  // { caption: "Edit Profile", onPress: () => { } },
                   { caption: "Log Out", onPress: () => logout() },
                 ]} />
               </HStack>
