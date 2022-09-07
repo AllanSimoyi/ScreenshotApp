@@ -1,19 +1,14 @@
-import { FlatList, Pressable, View, VStack } from 'native-base';
+import { FlatList, View, VStack } from 'native-base';
 import { useCallback } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
 import { CustomError } from '../components/CustomError';
-import { CustomImageBackground } from '../components/CustomImageBackground';
 import { CustomSkeletons } from '../components/CustomSkeletons';
 import { FlatListFooter } from '../components/FlatListFooter';
 import { NoListItems } from '../components/NoListItems';
 import { PostThumbnail } from '../components/PostThumbnail';
-import { ShadowedText } from '../components/ShadowedText';
 import { useInfinitePosts } from '../hooks/useInfinitePosts';
 import { flattenArrays } from '../lib/arrays';
-import { getPostThumbnailUrl } from '../lib/cloudinary';
-import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
-import { shortenString } from '../lib/strings';
 import { RootTabScreenProps } from '../types';
 
 export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
