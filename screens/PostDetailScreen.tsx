@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { ScrollView, Text, VStack } from 'native-base';
 import { StyleSheet } from 'react-native';
 import { CustomImageBackground } from '../components/CustomImageBackground';
+import { CustomVideo } from '../components/CustomVideo';
 import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { getImageSource } from '../lib/image-rendering';
 import { capitalizeFirstLetter } from '../lib/strings';
@@ -9,6 +10,7 @@ import { RootStackScreenProps } from '../types';
 
 export default function PostDetailScreen ({ route }: RootStackScreenProps<"PostDetail">) {
   const post = route.params?.post;
+  const isVideo = post ? capitalizeFirstLetter(post.resourceType) === "Video" : false;
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {!post && (
@@ -16,11 +18,16 @@ export default function PostDetailScreen ({ route }: RootStackScreenProps<"PostD
       )}
       {Boolean(post) && (
         <VStack alignItems="stretch" pb={8}>
-          <CustomImageBackground
-            source={getImageSource(getPostThumbnailUrl(post!.publicId, post!.resourceUrl))}
-            borderRadius={5}
-            style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
-          </CustomImageBackground>
+          {!isVideo && (
+            <CustomImageBackground
+              source={getImageSource(getPostThumbnailUrl(post!.publicId, post!.resourceUrl))}
+              borderRadius={5}
+              style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
+            </CustomImageBackground>
+          )}
+          {isVideo && (
+            <CustomVideo publicId={post!.publicId || ""} uri={post!.resourceUrl} />
+          )}
           <VStack alignItems="stretch" py={2} px={4}>
             <Text fontSize="xs">Category</Text>
             <Text fontWeight="bold" fontSize="md">{capitalizeFirstLetter(post!.category)}</Text>
