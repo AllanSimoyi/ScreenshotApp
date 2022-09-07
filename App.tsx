@@ -7,6 +7,7 @@ import {
   focusManager, QueryClient,
   QueryClientProvider
 } from 'react-query';
+import { CurrentUploadsProvider } from './components/CurrentUploadsProvider';
 import { CurrentUserProvider } from './components/CurrentUserProvider';
 import { Sync } from './components/Sync';
 import { useAppState } from './hooks/useAppState';
@@ -68,7 +69,7 @@ export default function App () {
       console.log("Database created.");
     } catch ({ message }) {
       console.error(message as string || "Something went wrong.");
-    } 
+    }
   }, []);
   if (!isLoadingComplete) {
     return null;
@@ -78,9 +79,11 @@ export default function App () {
         <NativeBaseProvider theme={theme}>
           <SafeAreaProvider>
             <CurrentUserProvider>
-              <Sync isLoadingComplete={isLoadingComplete}>
-                <Navigation colorScheme={colorScheme} />
-              </Sync>
+              <CurrentUploadsProvider>
+                <Sync isLoadingComplete={isLoadingComplete}>
+                  <Navigation colorScheme={colorScheme} />
+                </Sync>
+              </CurrentUploadsProvider>
               <StatusBar />
             </CurrentUserProvider>
           </SafeAreaProvider>
