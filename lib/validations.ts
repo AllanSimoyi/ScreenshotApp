@@ -9,8 +9,18 @@ export const CreatePostSchema = z.object({
   category: z.string().min(1),
   description: z.string().max(800).optional(),
 })
-
 export type CreatePost = z.infer<typeof CreatePostSchema>;
+
+export const CreateVideoPostSchema = z.object({
+  userId: z.number().int().min(1).optional(),
+  uuid: z.string().min(4),
+  uri: z.string(),
+  resourceType: z.union([z.literal("Image"), z.literal("Video")]),
+  publicly: z.boolean(),
+  category: z.string().min(1),
+  description: z.string().max(800).optional(),
+})
+export type CreateVideoPost = z.infer<typeof CreateVideoPostSchema>;
 
 export const username = z.string().transform((str) => str.toLowerCase().trim())
 
