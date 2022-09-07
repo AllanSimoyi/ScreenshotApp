@@ -1,4 +1,4 @@
-import { Button, FlatList, Flex, HStack, Pressable, Text, useColorMode, VStack } from 'native-base';
+import { Button, FlatList, HStack, Pressable, Text, VStack } from 'native-base';
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl } from 'react-native';
 import { CustomError } from '../components/CustomError';
@@ -18,12 +18,11 @@ import { getPostThumbnailUrl } from '../lib/cloudinary';
 import { db } from '../lib/db';
 import { getImageSource } from '../lib/image-rendering';
 import { Post } from '../lib/posts';
-import { capitalizeFirstLetter, shortenString } from '../lib/strings';
+import { shortenString } from '../lib/strings';
 import { ProfileDetails } from '../lib/users';
 import { RootTabScreenProps } from '../types';
 
 export default function ProfileScreen ({ navigation: { navigate } }: RootTabScreenProps<'Profile'>) {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [editModalisOpen, setEditModalIsOpen] = useState(false);
   const { currentUser, updateCurrentUser, logout } = useCurrentUser();
   const [mode, setMode] = useState<"Uploaded" | "NotYetUploaded">("Uploaded");
@@ -64,8 +63,6 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
       ...editedDetails,
     });
   }, [updateCurrentUser]);
-  const openEditModal = useCallback(() => setEditModalIsOpen(true), []);
-  const handleSignOut = useCallback(() => logout(), [logout]);
   const posts = flattenArrays(postsQuery.data?.pages || [] as Post[][]);
   const onEndReached = useCallback(() => fetchNextPage(), [fetchNextPage]);
   const navigateToPostDetail = useCallback((post: Post) => navigate('PostDetail', { post }), [navigate]);
@@ -98,7 +95,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
           </HStack>
           {mode === "Uploaded" && (
             <>
-              {postsQuery.isLoading && <CustomSkeletons num={4} />}
+              {postsQuery.isLoading && <CustomSkeletons identifier='uploaded' num={4} />}
               {postsQuery.isError && (
                 <CustomError retry={refetchPostsCallback}>
                   {postsQuery.error.message}
@@ -107,30 +104,14 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
               <VStack pb={12}>
                 <FlatList
                   data={posts}
-                  keyExtractor={(_, index) => index.toString()}
+                  keyExtractor={(post) => `UploadedPost-${post.id}`}
                   contentContainerStyle={{ flexGrow: 1 }}
                   refreshControl={<RefreshControl refreshing={postsQuery.isLoading} onRefresh={refetchPostsCallback} />}
                   ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
                   ListFooterComponent={<FlatListFooter isEmptyList={!posts.length} listName="Profile Posts" isLoadingMore={postsQuery.isFetchingNextPage} atEndOfList={!postsQuery.hasNextPage} />}
                   onEndReached={onEndReached}
                   onEndReachedThreshold={0.2}
-                  renderItem={({ item }) => (
-                    <VStack alignItems="stretch" pb={1}>
-                      <Pressable onPress={(e) => navigateToPostDetail(item)}>
-                        <CustomImageBackground
-                          source={getImageSource(getPostThumbnailUrl(item.publicId, item.resourceUrl))}
-                          noImageFound={!item.publicId && !item.resourceUrl}
-                          style={{ flex: 1, justifyContent: 'flex-end', height: 250, width: "100%" }}
-                        >
-                          <VStack alignItems="flex-start" py={2} px={4}>
-                            <ShadowedText>
-                              {shortenString(item.description, 100, "addEllipsis")}
-                            </ShadowedText>
-                          </VStack>
-                        </CustomImageBackground>
-                      </Pressable>
-                    </VStack>
-                  )}
+                  renderItem={({ item }) => <PostThumbnail {...item} onPress={() => navigateToPostDetail(item)} />}
                 />
               </VStack>
             </>
@@ -138,12 +119,12 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
           {mode === "NotYetUploaded" && (
             <>
               {isLoadingPosts && (
-                <VStack justifyContent={"center"} alignItems="center" py={6}>
+                <VStack key={"NotYetUploaded_Loading"} justifyContent={"center"} alignItems="center" py={6}>
                   <LoadingText />
                 </VStack>
               )}
               {Boolean(localPostsError) && !isLoadingPosts && (
-                <CustomError retry={() => setLocalPostsRetryToggle(prevState => !prevState)}>
+                <CustomError key="NotYetUploaded_Error" retry={() => setLocalPostsRetryToggle(prevState => !prevState)}>
                   {localPostsError}
                 </CustomError>
               )}
@@ -151,7 +132,7 @@ export default function ProfileScreen ({ navigation: { navigate } }: RootTabScre
                 <VStack pb={12}>
                   <FlatList
                     data={localPosts}
-                    keyExtractor={(post) => `Local${ post.id.toString() }`}
+                    keyExtractor={(post) => `Local${ post.id }`}
                     contentContainerStyle={{ flexGrow: 1 }}
                     ListEmptyComponent={<NoListItems>No posts found</NoListItems>}
                     renderItem={({ item }) => <PostThumbnail {...item} onPress={() => navigateToPostDetail(item)} />}
