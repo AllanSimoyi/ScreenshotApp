@@ -12,7 +12,6 @@ interface Props {
 export function usePostMutation (props: Props) {
   const { onSuccess, onError } = props;
   return useMutation(async (newPost: CreatePost) => {
-    const { resourceBase64, ...details } = newPost;
     const [result, err] = await postRequest<{ post: Post; errorMessage: string; }>(URL_PREFIX + "/api/create-post_v2", newPost);
     if (err) {
       throw err;
