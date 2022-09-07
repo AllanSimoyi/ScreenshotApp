@@ -28,7 +28,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.tbga.screenshot",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
