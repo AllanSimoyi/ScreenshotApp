@@ -63,7 +63,7 @@ export default function InboxScreen (_: RootTabScreenProps<'Inbox'>) {
               {query?.error?.message}
             </CustomError>
           )}
-          {query.isLoading && <CustomSkeletons num={4} h={20} />}
+          {query.isLoading && <CustomSkeletons identifier="Inbox" num={4} h={20} />}
           {query.data?.pages && (
             <FlatList
               data={messages}

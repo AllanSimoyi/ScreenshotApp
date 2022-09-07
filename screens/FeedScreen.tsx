@@ -33,7 +33,7 @@ export default function FeedScreen (props: RootTabScreenProps<'Feed'>) {
             {query.error.message}
           </CustomError>
         )}
-        {query.isLoading && <CustomSkeletons num={4} />}
+        {query.isLoading && <CustomSkeletons identifier="Feed" num={4} />}
         {query.data?.pages && (
           <FlatList
             data={posts}

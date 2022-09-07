@@ -60,7 +60,7 @@ export default function DiscoverScreen (props: RootTabScreenProps<'Discover'>) {
             {query.error.message}
           </CustomError>
         )}
-        {query.isLoading && <CustomSkeletons num={4} />}
+        {query.isLoading && <CustomSkeletons identifier="Discover" num={4} />}
         <FlatList
           data={posts}
           flexGrow={1}
