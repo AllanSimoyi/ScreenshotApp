@@ -11,6 +11,7 @@ export interface Post {
   publicly: boolean;
   category: string;
   description: string;
+  verified?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
