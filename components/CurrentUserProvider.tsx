@@ -93,7 +93,7 @@ export function CurrentUserProvider (props: Props) {
         console.log("Already logged out.");
         return;
       }
-      const LOGOUT_INTERVAL = 1000 * 60 * 5; // 5 minutes
+      const LOGOUT_INTERVAL = 1000 * 60 * 10; // 10 minutes
       // const LOGOUT_INTERVAL = 1000 * 60 * 30; // 30 minutes
       const lastLogIn = await getLastLogIn();
       if (!lastLogIn) {
