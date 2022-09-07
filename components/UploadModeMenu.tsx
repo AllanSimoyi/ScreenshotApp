@@ -1,8 +1,8 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { Button, IconButton, Menu, Pressable, Text } from 'native-base';
-import { categoryOptions, UploadMode, uploadModes } from '../lib/posts';
+import { Button, Menu } from 'native-base';
+import { UploadMode, uploadModes } from '../lib/posts';
 
 interface Props {
+  isUploading: boolean;
   uploadMode: UploadMode
   setUploadMode: (newUploadMode: UploadMode) => void
 }
@@ -13,14 +13,14 @@ interface Item {
 }
 
 export function UploadModeMenu (props: Props) {
-  const { uploadMode, setUploadMode } = props;
+  const { isUploading, uploadMode, setUploadMode } = props;
   const items: Item[] = uploadModes.map(mode => ({
     caption: mode,
     onPress: () => setUploadMode(mode),
   }));
   return (
     <Menu w="190" defaultIsOpen={false} trigger={triggerProps => (
-      <Button {...triggerProps} colorScheme="coolGray" variant="solid">
+      <Button {...triggerProps} isDisabled={isUploading} colorScheme="coolGray" variant="solid">
         {uploadMode.toUpperCase()}
       </Button>
     )}>
