@@ -8,7 +8,7 @@ interface Props extends ISkeletonProps {
 const items = ((num: number) => {
   const result: number[] = [];
   for (let i = 0; i < num; i++) {
-    result.push(num);
+    result.push(i);
   }
   return result;
 })(4);
