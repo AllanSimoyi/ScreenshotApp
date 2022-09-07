@@ -5,57 +5,48 @@ import { SignInComponent } from '../components/SignInComponent';
 import UploadOne from '../components/UploadOne';
 import UploadThree from '../components/UploadThree';
 import UploadTwo from '../components/UploadTwo';
+import { useCurrentUploads } from '../components/useCurrentUploads';
 import { useCurrentUser } from '../components/useCurrentUser';
-import { usePostMutation } from '../hooks/usePostMutation';
-import { db } from '../lib/db';
-import { Post, UploadMode } from '../lib/posts';
-import { CreatePost } from '../lib/validations';
+import { useUploadImagePost } from '../hooks/useUploadImagePost';
+import { useUploadVideoPost } from '../hooks/useUploadVideoPost';
+import { UploadMode } from '../lib/posts';
+import { CreatePost, CreateVideoPost } from '../lib/validations';
 import { RootTabScreenProps } from '../types';
 
 export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
   const { navigate } = props.navigation;
   const { currentUser } = useCurrentUser();
+  const currentUploadsObject = useCurrentUploads();
   const [stage, setStage] = useState(1);
   const [mode, setMode] = useState<UploadMode>("Anonymously");
   const [error, setError] = useState("");
-  
-  const writePostToLocalDB = useCallback((post: Post) => {
-    const { userId, uuid, resourceUrl, publicId, width, height, resourceType } = post;
-    const { publicly, category, description, createdAt, updatedAt } = post;
-    return new Promise<string>((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(`
-          insert into posts 
-          (userId, uuid, resourceUrl, publicId, width, height, resourceType, 
-          publicly, category, description, createdAt, updatedAt) 
-          values 
-          (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `, [
-            userId, uuid, resourceUrl, publicId || "", width || 0, height || 0, resourceType,
-            Number(publicly) || 0, category, description, createdAt.getTime().toString(), updatedAt.getTime().toString()
-          ]);
-        },
-        (error) => reject(error.message || "Something went wrong, please try again"),
-        () => resolve(""),
-      );
-    });
-  }, []);
 
-  const removePostFromLocalDB = useCallback((uuid: string) => {
-    db.transaction((tx) => {
-      tx.executeSql(`delete from posts where uuid = ?;`, [uuid])
-    });
-  }, []);
-  
-  const { mutate, ...mutation } = usePostMutation({
+  const { handleVideoPostMutation, ...videoPostMutation } = useUploadVideoPost({
+    ...currentUploadsObject,
     onSuccess: (newPost) => {
       if (newPost) {
-        removePostFromLocalDB(newPost.uuid);
         setStage(3);
         setTimeout(() => {
           setStage(1);
-          navigate('Discover', { category: undefined });
+          navigate('Profile');
+        }, 2000);
+      } else {
+        setError("Something went wrong, please try again");
+      }
+    },
+    onError: async (error) => {
+      setError(error as string);
+    },
+  })
+
+  const { handleImagePostMutation, ...imagePostMutation } = useUploadImagePost({
+    ...currentUploadsObject,
+    onSuccess: (newPost) => {
+      if (newPost) {
+        setStage(3);
+        setTimeout(() => {
+          setStage(1);
+          navigate('Profile');
         }, 2000);
       } else {
         setError("Something went wrong, please try again");
@@ -71,30 +62,34 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
     setMode(mode);
   }, []);
 
-  const sendMessage = useCallback(async (newPost: CreatePost) => {
+  const uploadImagePost = useCallback(async (newPost: CreatePost) => {
     try {
-      const post: Post = {
-        ...newPost,
-        id: 1,
-        userId: Number(newPost.userId),
-        resourceUrl: newPost.resourceBase64 || "",
-        description: newPost.description || "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      const err = await writePostToLocalDB(post);
+      const err = await handleImagePostMutation(newPost, "newPost");
       if (err) {
-        return setError(err);
+        throw new Error(err);
       }
-      mutate(newPost);
+    } catch (error) {
+      const errorMessage = (error as any)?.message as string || "Something went wrong, please try again";
+      console.error(errorMessage);
+      setError(errorMessage);
+    }
+  }, [handleImagePostMutation]);
+
+  const uploadVideoPost = useCallback(async (newPost: CreateVideoPost) => {
+    try {
+      const err = await handleVideoPostMutation(newPost, "newPost");
+      if (err) {
+        throw new Error(err);
+      }
     } catch ({ message }) {
       const errorMessage = message as string || "Something went wrong, please try again";
       console.error(errorMessage);
       setError(errorMessage);
     }
-  }, [mutate]);
+  }, [handleVideoPostMutation]);
+
   return (
-      <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {!currentUser.userId && (
         <SignInComponent noBack={true} />
       )}
@@ -103,14 +98,17 @@ export default function UploadScreen (props: RootTabScreenProps<'Upload'>) {
           {stage === 1 && (<UploadOne nextStage={nextStage} />)}
           {stage === 2 && (
             <UploadTwo
-              mode={mode} setMode={setMode} sending={mutation.isLoading}
-              sendMessage={sendMessage} error={error} setError={setError}
+              isUploading={imagePostMutation.isLoading || videoPostMutation.isLoading}
+              mode={mode} setMode={setMode} 
+              error={error} setError={setError}
+              sending={imagePostMutation.isLoading || videoPostMutation.isLoading}
+              uploadImagePost={uploadImagePost} uploadVideoPost={uploadVideoPost}
             />
           )}
           {stage === 3 && (<UploadThree />)}
         </>
       )}
-      </ScrollView>
+    </ScrollView>
   );
 }
 

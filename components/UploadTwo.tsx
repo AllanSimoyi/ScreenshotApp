@@ -11,7 +11,7 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { getImageSource } from '../lib/image-rendering';
 import { categoryOptions, PostCategory, UploadMode } from '../lib/posts';
-import { CreatePost, CreatePostSchema } from '../lib/validations';
+import { CreatePost, CreatePostSchema, CreateVideoPost, CreateVideoPostSchema } from '../lib/validations';
 import { CustomError } from './CustomError';
 import { CustomImageBackground } from "./CustomImageBackground";
 import { SignInComponent } from './SignInComponent';
@@ -21,17 +21,20 @@ import { useCurrentUser } from './useCurrentUser';
 interface Props {
   mode: UploadMode;
   setMode: (newMode: UploadMode) => void;
-  sendMessage: (newPost: CreatePost) => void;
+  uploadImagePost: (newPost: CreatePost) => void;
+  uploadVideoPost: (newPost: CreateVideoPost) => void;
+  isUploading: boolean;
   sending: boolean;
   error: string;
   setError: (error: string) => void;
 }
 
 export default function UploadTwo (props: Props) {
-  const { sendMessage, sending, mode, setMode, error, setError } = props;
+  const { uploadImagePost, uploadVideoPost, sending, isUploading, mode, setMode, error, setError } = props;
   const { currentUser } = useCurrentUser();
   const [base64, setBase64] = useState('');
   const [imagePath, setImagePath] = useState('');
+  const [uploadMode, setUploadMode] = useState<"Image" | "Video">("Image");
   const [resourceType, setResourceType] = useState('');
   const [fileName, setFileName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +49,7 @@ export default function UploadTwo (props: Props) {
 
   const processCameraResult = useCallback((result: ImagePickerResult) => {
     if (!result.cancelled) {
+      console.log(result);
       setBase64(result.base64 || '');
       setImagePath(result.uri);
       setResourceType(result.type || "");
@@ -57,7 +61,7 @@ export default function UploadTwo (props: Props) {
     try {
       setIsLoading(true);
       await requestCamera();
-      const result = await launchCameraAsync({ base64: true, quality: 1 });
+      const result = await launchCameraAsync({ mediaTypes: MediaTypeOptions.Images, base64: true, quality: 1 });
       processCameraResult(result);
     } catch ({ message }) {
       console.error(message as string);
@@ -66,23 +70,59 @@ export default function UploadTwo (props: Props) {
     }
   }, [requestCameraPermissionsAsync, launchCameraAsync]);
 
+  const takeVideo = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await requestCamera();
+      const result = await launchCameraAsync({ mediaTypes: MediaTypeOptions.Videos, base64: true, quality: 1 });
+      processCameraResult(result);
+      setUploadMode("Video");
+    } catch ({ message }) {
+      console.error(message as string);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const selectImage = useCallback(async () => {
     try {
       setIsLoading(true);
       await requestCamera();
       const result = await launchImageLibraryAsync({
-        mediaTypes: MediaTypeOptions.All,
+        mediaTypes: MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 1,
         base64: true,
       });
       processCameraResult(result);
+      setUploadMode("Image");
     } catch ({ message }) {
       console.error(message as string);
     } finally {
       setIsLoading(false);
     }
   }, [requestCameraPermissionsAsync, launchImageLibraryAsync]);
+
+  const handleVideoSubmit = useCallback(async () => {
+    setError("");
+    const details: CreateVideoPost = {
+      userId: currentUser.userId,
+      uuid: uuidv4(),
+      uri: imagePath,
+      resourceType: "Video",
+      publicly: mode !== "Anonymously",
+      category,
+      description,
+    }
+    const result = await CreateVideoPostSchema.safeParseAsync(details);
+    if (!result.success) {
+      const errorMessage = result.error.issues
+        .map(issue => `${ issue.path[0].toString() } ${ issue.message.toLowerCase() }`)
+        .join(", ");
+      return setError(errorMessage);
+    }
+    uploadVideoPost(result.data);
+  }, [CreateVideoPostSchema, category, description, base64, mode]);
 
   const handleSubmit = useCallback(async () => {
     setError("");
@@ -102,7 +142,7 @@ export default function UploadTwo (props: Props) {
         .join(", ");
       return setError(errorMessage);
     }
-    sendMessage(result.data);
+    uploadImagePost(result.data);
   }, [CreatePostSchema, category, description, base64, mode]);
 
   const handleBackFromSignIn = useCallback(() => setMode("Anonymously"), [setMode]);
@@ -117,22 +157,26 @@ export default function UploadTwo (props: Props) {
           <VStack justifyContent={"center"} alignItems="stretch" pb={2} style={{ height: 300 }}>
             <CustomImageBackground source={getImageSource(imagePath)} borderRadius={5} style={{ flex: 1, justifyContent: 'flex-end', height: 300 }}>
               <Flex direction="row" justify="center" align="flex-end">
-                <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
-                  <Button
+                <HStack justifyContent="center" alignItems="stretch" space={2} p={2}>
+                  <Button flexGrow={1} flexBasis="33%" isDisabled={isUploading}
                     leftIcon={<Icon as={Ionicons} name="camera" />}
-                    colorScheme="coolGray" variant="solid" onPress={takePicture}
+                    variant="solid" colorScheme={"coolGray"} onPress={takePicture}
                     isLoading={isLoading} isLoadingText="PROCESSING">
-                    CAMERA
+                    PIC
                   </Button>
-                </VStack>
-                <VStack justifyContent={"center"} alignItems="stretch" p={2} style={{ flexGrow: 1 }}>
-                  <Button
+                  <Button flexGrow={1} flexBasis="33%" isDisabled={isUploading}
+                    leftIcon={<Icon as={Ionicons} name="videocam" />}
+                    variant="solid" colorScheme={"coolGray"} onPress={takeVideo}
+                    isLoading={isLoading} isLoadingText="PROCESSING">
+                    VIDEO
+                  </Button>
+                  <Button flexGrow={1} flexBasis="33%" isDisabled={isUploading}
                     leftIcon={<Icon as={Ionicons} name="images" />}
-                    colorScheme="coolGray" variant="solid" onPress={selectImage}
+                    variant="solid" colorScheme={"coolGray"} onPress={selectImage}
                     isLoading={isLoading} isLoadingText="PROCESSING">
                     GALLERY
                   </Button>
-                </VStack>
+                </HStack>
               </Flex>
             </CustomImageBackground>
           </VStack>
@@ -141,10 +185,10 @@ export default function UploadTwo (props: Props) {
               <HStack alignItems="flex-end" py={1}>
                 <Text bold>Category</Text>
                 <Flex flexGrow={1} />
-                <UploadModeMenu uploadMode={mode} setUploadMode={setMode} />
+                <UploadModeMenu isUploading={isLoading || isUploading} uploadMode={mode} setUploadMode={setMode} />
               </HStack>
               <Select
-                placeholder="Choose Category"
+                placeholder="Choose Category" isDisabled={isLoading || isUploading}
                 selectedValue={category} minWidth="200" accessibilityLabel="Choose Category"
                 _selectedItem={{ bg: "coolGray.400" }} onValueChange={itemValue => setCategory(itemValue as PostCategory)}
               >
@@ -157,15 +201,23 @@ export default function UploadTwo (props: Props) {
               </Text>
               <TextArea
                 placeholder="Provide a description (optional)"
-                isDisabled={isLoading} w="100%"
+                isDisabled={isLoading || isUploading} w="100%"
                 autoCompleteType borderRadius={5} value={description} onChangeText={setDescription}
               />
             </VStack>
-            {Boolean(error) && (<CustomError retry={handleSubmit}>{error}</CustomError>)}
+            {Boolean(error) && !isLoading && !isUploading && (
+              <CustomError retry={uploadMode === "Image" ? handleSubmit : handleVideoSubmit}>
+                {error}
+              </CustomError>
+            )}
             <VStack alignItems="stretch" py={6}>
-              <Button onPress={handleSubmit} variant="solid" colorScheme="coolGray">
-                {sending && "SENDING..."}
-                {!sending && "SEND"}
+              <Button
+                isDisabled={isLoading || isUploading}
+                onPress={uploadMode === "Image" ? handleSubmit : handleVideoSubmit}
+                variant="solid" colorScheme="coolGray"
+              >
+                {sending && "UPLOADING..."}
+                {!sending && "UPLOAD"}
               </Button>
             </VStack>
           </VStack>

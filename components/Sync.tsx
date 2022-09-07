@@ -1,8 +1,11 @@
 import * as Network from 'expo-network';
 import { useCallback, useEffect, useState } from 'react';
-import { usePostMutation } from '../hooks/usePostMutation';
+import { useUploadImagePost } from '../hooks/useUploadImagePost';
+import { useUploadVideoPost } from '../hooks/useUploadVideoPost';
 import { db } from '../lib/db';
 import { Post } from '../lib/posts';
+import { capitalizeFirstLetter } from '../lib/strings';
+import { useCurrentUploads } from './useCurrentUploads';
 
 interface Props {
   children: React.ReactNode;
@@ -12,21 +15,22 @@ interface Props {
 export function Sync (props: Props) {
   const { children, isLoadingComplete } = props;
   const [retryToggle, setRetryToggle] = useState(false);
-  const removePostFromLocalDB = useCallback((uuid: string) => {
-    db.transaction((tx) => {
-      tx.executeSql(`delete from posts where uuid = ?;`, [uuid])
-    });
-  }, []);
-  const { mutate: uploadPost } = usePostMutation({
-    onSuccess: async (newPost: Post | undefined) => {
-      if (newPost) {
-        removePostFromLocalDB(newPost.uuid);
-      }
-    },
-    onError: (_) => {},
+  const currentUploadsObject = useCurrentUploads();
+
+  const { handleVideoPostMutation } = useUploadVideoPost({
+    ...currentUploadsObject,
+    onSuccess: (_) => { },
+    onError: async (_) => { },
+  })
+
+  const { handleImagePostMutation } = useUploadImagePost({
+    ...currentUploadsObject,
+    onSuccess: (_) => { },
+    onError: async (_) => { },
   });
+
   const fetchLocalPosts = useCallback(() => {
-    return new Promise<[Post[], string | undefined]>((resolve, reject) => {
+    return new Promise<[Post[], string | undefined]>((resolve) => {
       db.transaction((tx) => {
         tx.executeSql(
           `select * from posts;`, [],
@@ -36,14 +40,18 @@ export function Sync (props: Props) {
       );
     })
   }, []);
+
   useEffect(() => {
     if (isLoadingComplete) {
       init();
     }
+    
     const TWO_MINUTES_IN_MILLISECONDS = 60 * 2 * 1000;
+    
     const interval = setInterval(() => {
       setRetryToggle(prevState => !prevState);
     }, TWO_MINUTES_IN_MILLISECONDS);
+
     async function init () {
       try {
         const [pendingPosts, err] = await fetchLocalPosts();
@@ -53,16 +61,25 @@ export function Sync (props: Props) {
         const networkState = await Network.getNetworkStateAsync();
         if (networkState.isInternetReachable) {
           console.log("PENDING POSTS FOUND:", pendingPosts.length);
-          pendingPosts.forEach((post) => {
+          await Promise.all(pendingPosts.map(post => {
             const { id, resourceUrl, createdAt, updatedAt, ...details } = post;
-            return uploadPost({
+            if (capitalizeFirstLetter(post.resourceType) === "Video") {
+              return handleVideoPostMutation({
+                ...details,
+                userId: Number(details.userId),
+                uri: post.resourceUrl,
+                resourceType: "Video",
+                publicly: Boolean(details.publicly),
+              }, undefined);
+            }
+            return handleImagePostMutation({
               ...details,
               userId: Number(details.userId),
               resourceBase64: post.resourceUrl,
               resourceType: "Image",
               publicly: Boolean(details.publicly),
-            });
-          });
+            }, undefined);
+          }));
         } else {
           throw new Error("No internet connection");
         }
@@ -71,7 +88,9 @@ export function Sync (props: Props) {
         console.error(errorMessage);
       }
     }
+
     return () => clearInterval(interval);
-  }, [Network.getNetworkStateAsync, uploadPost, retryToggle]);
+  }, [Network.getNetworkStateAsync, handleVideoPostMutation, handleImagePostMutation, retryToggle]);
+  
   return (<>{children}</>)
 }
