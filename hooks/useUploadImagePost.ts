@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Post } from "../lib/posts";
 import { CreatePost } from '../lib/validations';
-import { useLocalDb } from './useLocalDB';
+import { useLocalDb } from './useLocalDb';
 import { usePostMutation } from './usePostMutation';
 
 interface Props {
