@@ -27,8 +27,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tbga.screenshot",
-      "versionCode": 3
+      "package": "com.tbga.citizenapp",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
